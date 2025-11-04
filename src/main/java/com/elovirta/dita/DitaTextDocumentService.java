@@ -6,14 +6,17 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DitaTextDocumentService implements TextDocumentService {
 
     private static final Logger logger = LoggerFactory.getLogger(DitaTextDocumentService.class);
-    
+
     private final DitaLanguageServer server;
     private final Map<String, String> openDocuments = new ConcurrentHashMap<>();
 
@@ -98,7 +101,7 @@ public class DitaTextDocumentService implements TextDocumentService {
         client.publishDiagnostics(publishParams);
     }
 
-    private static List<Diagnostic> doValidation(String content) {
+    private List<Diagnostic> doValidation(String content) {
         List<Diagnostic> diagnostics = new ArrayList<>();
 
         // Simple validation: check if it contains "topic" element

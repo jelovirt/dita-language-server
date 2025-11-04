@@ -1,6 +1,8 @@
 package com.elovirta.dita;
 
-import org.eclipse.lsp4j.*;
+import org.eclipse.lsp4j.DidChangeConfigurationParams;
+import org.eclipse.lsp4j.DidChangeWatchedFilesParams;
+import org.eclipse.lsp4j.FileEvent;
 import org.eclipse.lsp4j.services.WorkspaceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +10,7 @@ import org.slf4j.LoggerFactory;
 public class DitaWorkspaceService implements WorkspaceService {
 
     private static final Logger logger = LoggerFactory.getLogger(DitaWorkspaceService.class);
-    
+
     private final DitaLanguageServer server;
 
     public DitaWorkspaceService(DitaLanguageServer server) {
