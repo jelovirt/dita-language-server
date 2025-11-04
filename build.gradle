@@ -5,8 +5,8 @@ plugins {
 }
 
 group = 'com.elovirta'
-version = '1.0.0'
-description = 'DITA-OT LSP'
+version = '0.1.0'
+description = 'DITA Language Server'
 sourceCompatibility = '17'
 
 repositories {
