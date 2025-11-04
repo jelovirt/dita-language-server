@@ -1,145 +1,142 @@
 package com.elovirta.dita;
 
-import org.eclipse.lsp4j.*;
-import org.eclipse.lsp4j.services.LanguageClient;
-import org.eclipse.lsp4j.services.TextDocumentService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import org.eclipse.lsp4j.*;
+import org.eclipse.lsp4j.services.LanguageClient;
+import org.eclipse.lsp4j.services.TextDocumentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DitaTextDocumentService implements TextDocumentService {
 
-    private static final Logger logger = LoggerFactory.getLogger(DitaTextDocumentService.class);
+  private static final Logger logger = LoggerFactory.getLogger(DitaTextDocumentService.class);
 
-    private final DitaLanguageServer server;
-    private final Map<String, String> openDocuments = new ConcurrentHashMap<>();
+  private final DitaLanguageServer server;
+  private final Map<String, String> openDocuments = new ConcurrentHashMap<>();
 
-    public DitaTextDocumentService(DitaLanguageServer server) {
-        this.server = server;
+  public DitaTextDocumentService(DitaLanguageServer server) {
+    this.server = server;
+  }
+
+  @Override
+  public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
+    String uri = params.getTextDocument().getUri();
+
+    // Get the content from storage
+    String content = openDocuments.get(uri);
+    if (content == null) {
+      // Document not opened yet, return empty diagnostics
+      return CompletableFuture.completedFuture(
+          new DocumentDiagnosticReport(
+              new RelatedFullDocumentDiagnosticReport(Collections.emptyList())));
     }
 
-    @Override
-    public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
-        String uri = params.getTextDocument().getUri();
+    List<Diagnostic> diagnostics = doValidation(content);
 
-        // Get the content from storage
-        String content = openDocuments.get(uri);
-        if (content == null) {
-            // Document not opened yet, return empty diagnostics
-            return CompletableFuture.completedFuture(
-                    new DocumentDiagnosticReport(
-                            new RelatedFullDocumentDiagnosticReport(Collections.emptyList()))
-            );
-        }
+    FullDocumentDiagnosticReport fullReport = new FullDocumentDiagnosticReport(diagnostics);
+    RelatedFullDocumentDiagnosticReport report =
+        new RelatedFullDocumentDiagnosticReport(fullReport.getItems());
 
-        List<Diagnostic> diagnostics = doValidation(content);
+    return CompletableFuture.completedFuture(new DocumentDiagnosticReport(report));
+  }
 
-        FullDocumentDiagnosticReport fullReport = new FullDocumentDiagnosticReport(diagnostics);
-        RelatedFullDocumentDiagnosticReport report = new RelatedFullDocumentDiagnosticReport(fullReport.getItems());
+  @Override
+  public void didOpen(DidOpenTextDocumentParams params) {
+    String uri = params.getTextDocument().getUri();
+    String text = params.getTextDocument().getText();
 
-        return CompletableFuture.completedFuture(
-                new DocumentDiagnosticReport(report)
-        );
+    System.err.println("Document opened: " + uri);
+    openDocuments.put(uri, text);
+
+    // Validate the document
+    validateDocument(uri, text);
+  }
+
+  @Override
+  public void didChange(DidChangeTextDocumentParams params) {
+    String uri = params.getTextDocument().getUri();
+    String text = params.getContentChanges().get(0).getText();
+
+    System.err.println("Document changed: " + uri);
+    openDocuments.put(uri, text);
+
+    // Re-validate
+    validateDocument(uri, text);
+  }
+
+  @Override
+  public void didClose(DidCloseTextDocumentParams params) {
+    String uri = params.getTextDocument().getUri();
+    System.err.println("Document closed: " + uri);
+    openDocuments.remove(uri);
+  }
+
+  @Override
+  public void didSave(DidSaveTextDocumentParams params) {
+    System.err.println("Document saved: " + params.getTextDocument().getUri());
+  }
+
+  public void revalidateAllOpenDocuments() {
+    System.err.println("Revalidating all open documents");
+    openDocuments.forEach(this::validateDocument);
+  }
+
+  private void validateDocument(String uri, String content) {
+    // Add null check
+    LanguageClient client = server.getClient();
+    if (client == null) {
+      System.err.println("Client not yet connected, skipping validation for " + uri);
+      return;
     }
 
-    @Override
-    public void didOpen(DidOpenTextDocumentParams params) {
-        String uri = params.getTextDocument().getUri();
-        String text = params.getTextDocument().getText();
+    List<Diagnostic> diagnostics = doValidation(content);
 
-        System.err.println("Document opened: " + uri);
-        openDocuments.put(uri, text);
+    System.err.println("Publishing " + diagnostics.size() + " diagnostics for " + uri);
 
-        // Validate the document
-        validateDocument(uri, text);
+    // Send diagnostics to client
+    PublishDiagnosticsParams publishParams = new PublishDiagnosticsParams(uri, diagnostics);
+    client.publishDiagnostics(publishParams);
+  }
+
+  private List<Diagnostic> doValidation(String content) {
+    List<Diagnostic> diagnostics = new ArrayList<>();
+
+    // Simple validation: check if it contains "topic" element
+    if (!content.contains("<topic")) {
+      Diagnostic diagnostic = new Diagnostic();
+      diagnostic.setSeverity(DiagnosticSeverity.Warning);
+      diagnostic.setRange(new Range(new Position(0, 0), new Position(0, 1)));
+      diagnostic.setMessage("DITA topic element not found");
+      diagnostic.setSource("dita-validator");
+
+      diagnostics.add(diagnostic);
     }
 
-    @Override
-    public void didChange(DidChangeTextDocumentParams params) {
-        String uri = params.getTextDocument().getUri();
-        String text = params.getContentChanges().get(0).getText();
+    // Check for common DITA errors
+    if (content.contains("<p>") && !content.contains("</p>")) {
+      Diagnostic diagnostic = new Diagnostic();
+      diagnostic.setSeverity(DiagnosticSeverity.Error);
+      diagnostic.setRange(new Range(new Position(0, 0), new Position(0, 1)));
+      diagnostic.setMessage("Unclosed <p> element");
+      diagnostic.setSource("dita-validator");
 
-        System.err.println("Document changed: " + uri);
-        openDocuments.put(uri, text);
-
-        // Re-validate
-        validateDocument(uri, text);
+      diagnostics.add(diagnostic);
     }
 
-    @Override
-    public void didClose(DidCloseTextDocumentParams params) {
-        String uri = params.getTextDocument().getUri();
-        System.err.println("Document closed: " + uri);
-        openDocuments.remove(uri);
+    // Get current root map from workspace service
+    // Access from server directly
+    String rootMapUri = server.getCurrentRootMapUri();
+
+    if (rootMapUri != null) {
+      // Validate keyrefs against root map
+      //            validateKeyrefs(content, diagnostics, rootMapUri);
     }
 
-    @Override
-    public void didSave(DidSaveTextDocumentParams params) {
-        System.err.println("Document saved: " + params.getTextDocument().getUri());
-    }
-
-    public void revalidateAllOpenDocuments() {
-        System.err.println("Revalidating all open documents");
-        openDocuments.forEach(this::validateDocument);
-    }
-
-    private void validateDocument(String uri, String content) {
-        // Add null check
-        LanguageClient client = server.getClient();
-        if (client == null) {
-            System.err.println("Client not yet connected, skipping validation for " + uri);
-            return;
-        }
-
-        List<Diagnostic> diagnostics = doValidation(content);
-
-        System.err.println("Publishing " + diagnostics.size() + " diagnostics for " + uri);
-
-        // Send diagnostics to client
-        PublishDiagnosticsParams publishParams = new PublishDiagnosticsParams(uri, diagnostics);
-        client.publishDiagnostics(publishParams);
-    }
-
-    private List<Diagnostic> doValidation(String content) {
-        List<Diagnostic> diagnostics = new ArrayList<>();
-
-        // Simple validation: check if it contains "topic" element
-        if (!content.contains("<topic")) {
-            Diagnostic diagnostic = new Diagnostic();
-            diagnostic.setSeverity(DiagnosticSeverity.Warning);
-            diagnostic.setRange(new Range(new Position(0, 0), new Position(0, 1)));
-            diagnostic.setMessage("DITA topic element not found");
-            diagnostic.setSource("dita-validator");
-
-            diagnostics.add(diagnostic);
-        }
-
-        // Check for common DITA errors
-        if (content.contains("<p>") && !content.contains("</p>")) {
-            Diagnostic diagnostic = new Diagnostic();
-            diagnostic.setSeverity(DiagnosticSeverity.Error);
-            diagnostic.setRange(new Range(new Position(0, 0), new Position(0, 1)));
-            diagnostic.setMessage("Unclosed <p> element");
-            diagnostic.setSource("dita-validator");
-
-            diagnostics.add(diagnostic);
-        }
-
-        // Get current root map from workspace service
-        // Access from server directly
-        String rootMapUri = server.getCurrentRootMapUri();
-
-        if (rootMapUri != null) {
-            // Validate keyrefs against root map
-//            validateKeyrefs(content, diagnostics, rootMapUri);
-        }
-
-        return diagnostics;
-    }
+    return diagnostics;
+  }
 }

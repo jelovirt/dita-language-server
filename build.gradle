@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'com.diffplug.spotless' version '6.25.0'
 }
 
 group = 'com.elovirta'
@@ -68,5 +69,22 @@ shadowJar {
     archiveVersion.set('1.0.0')
     manifest {
         attributes 'Main-Class': 'com.example.dita.DitaLanguageServer'
+    }
+}
+
+spotless {
+    java {
+        googleJavaFormat()
+        // Optional: specify version
+        // googleJavaFormat('1.18.1')
+
+        // Optional: specify AOSP style instead of Google style
+        // googleJavaFormat().aosp()
+
+        // Optional: target specific files
+        target 'src/**/*.java'
+
+        // Optional: exclude generated files
+        targetExclude 'build/**'
     }
 }
