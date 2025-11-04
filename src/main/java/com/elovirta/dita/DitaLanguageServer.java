@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
@@ -21,6 +22,8 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
     private final DitaWorkspaceService workspaceService;
     private final Properties properties;
     private LanguageClient client;
+
+    private String currentRootMapUri = null;
 
     public DitaLanguageServer() {
         textDocumentService = new DitaTextDocumentService(this);
@@ -40,12 +43,15 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
 
         // Declare server capabilities
         ServerCapabilities capabilities = new ServerCapabilities();
-
         // We support text document sync
         capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
-
         // We provide diagnostics (validation)
         capabilities.setDiagnosticProvider(new DiagnosticRegistrationOptions());
+        // Advertise custom command
+        ExecuteCommandOptions commandOptions = new ExecuteCommandOptions(
+                List.of("dita.setRootMap")
+        );
+        capabilities.setExecuteCommandProvider(commandOptions);
 
         ServerInfo serverInfo = new ServerInfo(
                 properties.getProperty("description"),
@@ -77,6 +83,16 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
     @Override
     public WorkspaceService getWorkspaceService() {
         return workspaceService;
+    }
+
+    public String getCurrentRootMapUri() {
+        return currentRootMapUri;
+    }
+
+    public void setCurrentRootMapUri(String uri) {
+        this.currentRootMapUri = uri;
+        // Optionally trigger revalidation here
+        textDocumentService.revalidateAllOpenDocuments();
     }
 
     @Override

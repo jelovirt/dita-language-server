@@ -84,6 +84,11 @@ public class DitaTextDocumentService implements TextDocumentService {
         System.err.println("Document saved: " + params.getTextDocument().getUri());
     }
 
+    public void revalidateAllOpenDocuments() {
+        System.err.println("Revalidating all open documents");
+        openDocuments.forEach(this::validateDocument);
+    }
+
     private void validateDocument(String uri, String content) {
         // Add null check
         LanguageClient client = server.getClient();
@@ -124,6 +129,15 @@ public class DitaTextDocumentService implements TextDocumentService {
             diagnostic.setSource("dita-validator");
 
             diagnostics.add(diagnostic);
+        }
+
+        // Get current root map from workspace service
+        // Access from server directly
+        String rootMapUri = server.getCurrentRootMapUri();
+
+        if (rootMapUri != null) {
+            // Validate keyrefs against root map
+//            validateKeyrefs(content, diagnostics, rootMapUri);
         }
 
         return diagnostics;
