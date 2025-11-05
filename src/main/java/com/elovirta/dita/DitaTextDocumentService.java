@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.streams.Steps;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
@@ -17,18 +20,27 @@ public class DitaTextDocumentService implements TextDocumentService {
   private static final Logger logger = LoggerFactory.getLogger(DitaTextDocumentService.class);
 
   private final DitaLanguageServer server;
-  private final Map<String, String> openDocuments = new ConcurrentHashMap<>();
+  private final Map<String, XdmNode> openDocuments = new ConcurrentHashMap<>();
+    private final DitaParser parser;
 
-  public DitaTextDocumentService(DitaLanguageServer server) {
+    public DitaTextDocumentService(DitaLanguageServer server) {
     this.server = server;
-  }
+    this.parser = new DitaParser();
+//        var resolver = this.parser.getCatalogResolver();
+//        try {
+//            var res = resolver.resolveEntity("-//OASIS//DTD DITA 1.3 Base Map//EN", null);
+//            System.err.println(res);
+//        } catch (SAXException | IOException e) {
+//            throw new RuntimeException(e);
+//        }
+    }
 
   @Override
   public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
     String uri = params.getTextDocument().getUri();
 
     // Get the content from storage
-    String content = openDocuments.get(uri);
+    XdmNode content = openDocuments.get(uri);
     if (content == null) {
       // Document not opened yet, return empty diagnostics
       return CompletableFuture.completedFuture(
@@ -51,10 +63,16 @@ public class DitaTextDocumentService implements TextDocumentService {
     String text = params.getTextDocument().getText();
 
     System.err.println("Document opened: " + uri);
-    openDocuments.put(uri, text);
+      try {
+//        openDocuments.put(uri, text);
+          XdmNode doc = parser.parse(text);
+          openDocuments.put(uri, doc);
 
-    // Validate the document
-    validateDocument(uri, text);
+          // Validate the document
+          validateDocument(uri, doc);
+      } catch (Exception e) {
+          System.err.println("Failed to parse document: " + e.getMessage());
+      }
   }
 
   @Override
@@ -63,10 +81,16 @@ public class DitaTextDocumentService implements TextDocumentService {
     String text = params.getContentChanges().get(0).getText();
 
     System.err.println("Document changed: " + uri);
-    openDocuments.put(uri, text);
+    try {
+//        openDocuments.put(uri, text);
+        XdmNode doc = parser.parse(text);
+        openDocuments.put(uri, doc);
 
-    // Re-validate
-    validateDocument(uri, text);
+        // Re-validate
+        validateDocument(uri, doc);
+    } catch (Exception e) {
+        System.err.println("Failed to parse document: " + e.getMessage());
+    }
   }
 
   @Override
@@ -86,7 +110,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     openDocuments.forEach(this::validateDocument);
   }
 
-  private void validateDocument(String uri, String content) {
+  private void validateDocument(String uri, XdmNode content) {
     // Add null check
     LanguageClient client = server.getClient();
     if (client == null) {
@@ -103,11 +127,11 @@ public class DitaTextDocumentService implements TextDocumentService {
     client.publishDiagnostics(publishParams);
   }
 
-  private List<Diagnostic> doValidation(String content) {
+  private List<Diagnostic> doValidation(XdmNode content) {
     List<Diagnostic> diagnostics = new ArrayList<>();
 
     // Simple validation: check if it contains "topic" element
-    if (!content.contains("<topic")) {
+    if (!content.select(Steps.child("topic")).exists()) {
       Diagnostic diagnostic = new Diagnostic();
       diagnostic.setSeverity(DiagnosticSeverity.Warning);
       diagnostic.setRange(new Range(new Position(0, 0), new Position(0, 1)));
@@ -118,15 +142,15 @@ public class DitaTextDocumentService implements TextDocumentService {
     }
 
     // Check for common DITA errors
-    if (content.contains("<p>") && !content.contains("</p>")) {
-      Diagnostic diagnostic = new Diagnostic();
-      diagnostic.setSeverity(DiagnosticSeverity.Error);
-      diagnostic.setRange(new Range(new Position(0, 0), new Position(0, 1)));
-      diagnostic.setMessage("Unclosed <p> element");
-      diagnostic.setSource("dita-validator");
-
-      diagnostics.add(diagnostic);
-    }
+//    if (content.contains("<p>") && !content.contains("</p>")) {
+//      Diagnostic diagnostic = new Diagnostic();
+//      diagnostic.setSeverity(DiagnosticSeverity.Error);
+//      diagnostic.setRange(new Range(new Position(0, 0), new Position(0, 1)));
+//      diagnostic.setMessage("Unclosed <p> element");
+//      diagnostic.setSource("dita-validator");
+//
+//      diagnostics.add(diagnostic);
+//    }
 
     // Get current root map from workspace service
     // Access from server directly

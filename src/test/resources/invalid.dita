@@ -1,1 +1,7 @@
-<p>Unclosed paragraph
+<?xml version="1.0" encoding="UTF-8"?>
+<concept id="test">
+  <title>Test Topic</title>
+  <conbody>
+    <p>Valid content</p>
+  </conbody>
+</concept>

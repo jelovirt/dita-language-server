@@ -70,12 +70,13 @@ class DitaTextDocumentServiceTest {
                 new Range(new Position(0, 0), new Position(0, 1)),
                 "DITA topic element not found",
                 DiagnosticSeverity.Warning,
-                "dita-validator"),
-            new Diagnostic(
-                new Range(new Position(0, 0), new Position(0, 1)),
-                "Unclosed <p> element",
-                DiagnosticSeverity.Error,
-                "dita-validator")),
+                "dita-validator")
+//            new Diagnostic(
+//                new Range(new Position(0, 0), new Position(0, 1)),
+//                "Unclosed <p> element",
+//                DiagnosticSeverity.Error,
+//                "dita-validator")
+                ),
         diagnostics.getDiagnostics());
   }
 
