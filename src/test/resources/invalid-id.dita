@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<topic id="test">
+  <title>Test Topic</title>
+  <body>
+    <p id="first">Valid content</p>
+    <p id="second">Valid content</p>
+    <p id="second">Valid content</p>
+  </body>
+</topic>

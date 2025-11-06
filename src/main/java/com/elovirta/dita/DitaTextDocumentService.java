@@ -1,12 +1,13 @@
 package com.elovirta.dita;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_NAMESPACE;
+import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_PREFIX;
+
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.streams.Steps;
 import org.eclipse.lsp4j.*;
@@ -21,19 +22,20 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   private final DitaLanguageServer server;
   private final Map<String, XdmNode> openDocuments = new ConcurrentHashMap<>();
-    private final DitaParser parser;
+  private XdmNode rootMap;
+  private final DitaParser parser;
 
-    public DitaTextDocumentService(DitaLanguageServer server) {
+  public DitaTextDocumentService(DitaLanguageServer server) {
     this.server = server;
     this.parser = new DitaParser();
-//        var resolver = this.parser.getCatalogResolver();
-//        try {
-//            var res = resolver.resolveEntity("-//OASIS//DTD DITA 1.3 Base Map//EN", null);
-//            System.err.println(res);
-//        } catch (SAXException | IOException e) {
-//            throw new RuntimeException(e);
-//        }
-    }
+    //        var resolver = this.parser.getCatalogResolver();
+    //        try {
+    //            var res = resolver.resolveEntity("-//OASIS//DTD DITA 1.3 Base Map//EN", null);
+    //            System.err.println(res);
+    //        } catch (SAXException | IOException e) {
+    //            throw new RuntimeException(e);
+    //        }
+  }
 
   @Override
   public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
@@ -63,16 +65,16 @@ public class DitaTextDocumentService implements TextDocumentService {
     String text = params.getTextDocument().getText();
 
     System.err.println("Document opened: " + uri);
-      try {
-//        openDocuments.put(uri, text);
-          XdmNode doc = parser.parse(text);
-          openDocuments.put(uri, doc);
+    try {
+      //        openDocuments.put(uri, text);
+      XdmNode doc = parser.parse(text);
+      openDocuments.put(uri, doc);
 
-          // Validate the document
-          validateDocument(uri, doc);
-      } catch (Exception e) {
-          System.err.println("Failed to parse document: " + e.getMessage());
-      }
+      // Validate the document
+      validateDocument(uri, doc);
+    } catch (Exception e) {
+      System.err.println("Failed to parse document: " + e.getMessage());
+    }
   }
 
   @Override
@@ -82,14 +84,15 @@ public class DitaTextDocumentService implements TextDocumentService {
 
     System.err.println("Document changed: " + uri);
     try {
-//        openDocuments.put(uri, text);
-        XdmNode doc = parser.parse(text);
-        openDocuments.put(uri, doc);
+      //        openDocuments.put(uri, text);
+      XdmNode doc = parser.parse(text);
+      System.err.println(doc.toString());
+      openDocuments.put(uri, doc);
 
-        // Re-validate
-        validateDocument(uri, doc);
+      // Re-validate
+      validateDocument(uri, doc);
     } catch (Exception e) {
-        System.err.println("Failed to parse document: " + e.getMessage());
+      System.err.println("Failed to parse document: " + e.getMessage());
     }
   }
 
@@ -132,35 +135,69 @@ public class DitaTextDocumentService implements TextDocumentService {
 
     // Simple validation: check if it contains "topic" element
     if (!content.select(Steps.child("topic")).exists()) {
-      Diagnostic diagnostic = new Diagnostic();
-      diagnostic.setSeverity(DiagnosticSeverity.Warning);
-      diagnostic.setRange(new Range(new Position(0, 0), new Position(0, 1)));
-      diagnostic.setMessage("DITA topic element not found");
-      diagnostic.setSource("dita-validator");
-
-      diagnostics.add(diagnostic);
+      diagnostics.add(
+          new Diagnostic(
+              new Range(new Position(0, 0), new Position(0, 1)),
+              "DITA topic element not found",
+              DiagnosticSeverity.Warning,
+              "dita-validator"));
     }
 
+    var ids = content.select(Steps.descendant().then(Steps.attribute("id"))).toList();
+    var idValues = ids.stream().map(XdmItem::getStringValue).toList();
+    if (Set.copyOf(idValues).size() != idValues.size()) {
+      Set<String> encountered = new HashSet<>();
+      for (XdmNode id : ids) {
+        var idValue = id.getStringValue();
+        if (encountered.contains(idValue)) {
+          var loc = id.getParent().getAttributeValue(new QName(LOC_PREFIX, LOC_NAMESPACE, "elem"));
+          var start = parsePosition(loc);
+          diagnostics.add(
+              new Diagnostic(
+                  new Range(start, start),
+                  "Duplicate id attribute value '" + id.getStringValue() + "'",
+                  DiagnosticSeverity.Warning,
+                  "dita-validator"));
+        } else {
+          encountered.add(idValue);
+        }
+      }
+    }
     // Check for common DITA errors
-//    if (content.contains("<p>") && !content.contains("</p>")) {
-//      Diagnostic diagnostic = new Diagnostic();
-//      diagnostic.setSeverity(DiagnosticSeverity.Error);
-//      diagnostic.setRange(new Range(new Position(0, 0), new Position(0, 1)));
-//      diagnostic.setMessage("Unclosed <p> element");
-//      diagnostic.setSource("dita-validator");
-//
-//      diagnostics.add(diagnostic);
-//    }
+    //    if (content.contains("<p>") && !content.contains("</p>")) {
+    //      Diagnostic diagnostic = new Diagnostic();
+    //      diagnostic.setSeverity(DiagnosticSeverity.Error);
+    //      diagnostic.setRange(new Range(new Position(0, 0), new Position(0, 1)));
+    //      diagnostic.setMessage("Unclosed <p> element");
+    //      diagnostic.setSource("dita-validator");
+    //
+    //      diagnostics.add(diagnostic);
+    //    }
 
     // Get current root map from workspace service
     // Access from server directly
-    String rootMapUri = server.getCurrentRootMapUri();
+    //    String rootMapUri = server.getCurrentRootMapUri();
 
-    if (rootMapUri != null) {
+    if (rootMap != null) {
       // Validate keyrefs against root map
       //            validateKeyrefs(content, diagnostics, rootMapUri);
     }
 
     return diagnostics;
+  }
+
+  private Position parsePosition(String loc) {
+    var delim = loc.indexOf(':');
+
+    return new Position(
+        Integer.parseInt(loc.substring(0, delim)), Integer.parseInt(loc.substring(delim + 1)));
+  }
+
+  public void setRootMapUri(String uri) {
+    try {
+      rootMap = parser.parse(uri);
+    } catch (Exception e) {
+      System.err.println("Failed to parse map document: " + e.getMessage());
+    }
   }
 }

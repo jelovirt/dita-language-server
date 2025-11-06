@@ -71,12 +71,42 @@ class DitaTextDocumentServiceTest {
                 "DITA topic element not found",
                 DiagnosticSeverity.Warning,
                 "dita-validator")
-//            new Diagnostic(
-//                new Range(new Position(0, 0), new Position(0, 1)),
-//                "Unclosed <p> element",
-//                DiagnosticSeverity.Error,
-//                "dita-validator")
-                ),
+            //            new Diagnostic(
+            //                new Range(new Position(0, 0), new Position(0, 1)),
+            //                "Unclosed <p> element",
+            //                DiagnosticSeverity.Error,
+            //                "dita-validator")
+            ),
+        diagnostics.getDiagnostics());
+  }
+
+  @Test
+  void testInvalidDitaDocumentId() throws ExecutionException, InterruptedException {
+    String invalidDita = readResource("invalid-id.dita");
+
+    DidOpenTextDocumentParams params = createOpenParams("file:///invalid-id.dita", invalidDita);
+    textDocumentService.didOpen(params);
+
+    ArgumentCaptor<PublishDiagnosticsParams> captor =
+        ArgumentCaptor.forClass(PublishDiagnosticsParams.class);
+    verify(mockClient).publishDiagnostics(captor.capture());
+
+    PublishDiagnosticsParams diagnostics = captor.getValue();
+
+    assertEquals("file:///invalid-id.dita", diagnostics.getUri());
+    assertEquals(
+        List.of(
+            new Diagnostic(
+                new Range(new Position(7, 20), new Position(7, 20)),
+                "Duplicate id attribute value 'second'",
+                DiagnosticSeverity.Warning,
+                "dita-validator")
+            //            new Diagnostic(
+            //                new Range(new Position(0, 0), new Position(0, 1)),
+            //                "Unclosed <p> element",
+            //                DiagnosticSeverity.Error,
+            //                "dita-validator")
+            ),
         diagnostics.getDiagnostics());
   }
 
