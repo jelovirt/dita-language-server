@@ -1,5 +1,8 @@
 package com.elovirta.dita.xml;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 
 public class XmlLexerTest {
@@ -8,25 +11,20 @@ public class XmlLexerTest {
 
   @Test
   void tokenize() {
-    String input =
-        """
-                <?xml version="1.0"?>
-                <!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
-                <root attr="value">
-                    <child>text content</child>
-                    <!-- comment -->
-                </root>
-                """;
-    XmlLexer lexer = new XmlLexer();
-    lexer.setInput(input);
-
+    lexer.setInput(readResource("/serializer/src/test.xml"));
     while (lexer.hasNext()) {
       XmlLexer.TokenType type = lexer.next();
-      //            if (type != XmlLexer.TokenType.WHITESPACE) {
       System.out.printf(
           "%s[%d:%d] '%s'%n",
           type, lexer.getLine(), lexer.getColumn(), new String(lexer.getText()));
-      //            }
+    }
+  }
+
+  private String readResource(String name) {
+    try (InputStream in = getClass().getResourceAsStream(name)) {
+      return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 }
