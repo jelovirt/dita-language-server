@@ -1,10 +1,11 @@
 package com.elovirta.dita;
 
-import java.io.IOException;
-import java.io.StringReader;
+import com.elovirta.dita.xml.XmlSerializer;
+import java.io.*;
 import java.util.List;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.lib.ResourceRequest;
 import net.sf.saxon.lib.ResourceResolver;
@@ -12,8 +13,6 @@ import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.trans.XPathException;
-import org.apache.xerces.parsers.XIncludeAwareParserConfiguration;
-import org.apache.xerces.xni.parser.XMLInputSource;
 import org.xmlresolver.Resolver;
 import org.xmlresolver.ResolverFeature;
 import org.xmlresolver.XMLResolverConfiguration;
@@ -59,20 +58,30 @@ public class DitaParser {
   }
 
   public XdmNode parse(String content) {
-    try (var in = new StringReader(content)) {
-      //      return processor.newDocumentBuilder().build(new StreamSource(in));
-      var builder = processor.newDocumentBuilder().newBuildingContentHandler();
+    var contentWithLocation = addLocation(content);
+    try (var in = new CharArrayReader(contentWithLocation)) {
+      return processor.newDocumentBuilder().build(new StreamSource(in));
+      //      var builder = processor.newDocumentBuilder().newBuildingContentHandler();
 
       //          var config = new XMLGrammarCachingConfiguration();
-      var config = new XIncludeAwareParserConfiguration();
-      var handler = new LocationEnrichingXNIHandler(builder);
-      config.setDocumentHandler(handler);
+      //      var config = new XIncludeAwareParserConfiguration();
+      //      var handler = new LocationEnrichingXNIHandler(builder);
+      //      config.setDocumentHandler(handler);
+      //
+      //      XMLInputSource input = new XMLInputSource(null, null, null, in, null);
+      //      config.parse(input);
+      //      return builder.getDocumentNode();
+    } catch (SaxonApiException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-      XMLInputSource input = new XMLInputSource(null, null, null, in, null);
-      config.parse(input);
-
-      return builder.getDocumentNode();
-    } catch (IOException | SaxonApiException e) {
+  private char[] addLocation(String content) {
+    var serializer = new XmlSerializer();
+    try (CharArrayWriter output = new CharArrayWriter()) {
+      serializer.serialize(content, output);
+      return output.toCharArray();
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }

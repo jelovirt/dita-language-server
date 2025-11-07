@@ -74,6 +74,7 @@ public class DitaTextDocumentService implements TextDocumentService {
       validateDocument(uri, doc);
     } catch (Exception e) {
       System.err.println("Failed to parse document: " + e.getMessage());
+      e.printStackTrace(System.err);
     }
   }
 
@@ -92,6 +93,7 @@ public class DitaTextDocumentService implements TextDocumentService {
       validateDocument(uri, doc);
     } catch (Exception e) {
       System.err.println("Failed to parse document: " + e.getMessage());
+      e.printStackTrace(System.err);
     }
   }
 
@@ -149,11 +151,12 @@ public class DitaTextDocumentService implements TextDocumentService {
       for (XdmNode id : ids) {
         var idValue = id.getStringValue();
         if (encountered.contains(idValue)) {
-          var loc = id.getParent().getAttributeValue(new QName(LOC_PREFIX, LOC_NAMESPACE, "elem"));
-          var start = parsePosition(loc);
+          var loc =
+              id.getParent().getAttributeValue(new QName(LOC_PREFIX, LOC_NAMESPACE, "attr-id"));
+          var range = parseRange(loc);
           diagnostics.add(
               new Diagnostic(
-                  new Range(start, start),
+                  range,
                   "Duplicate id attribute value '" + id.getStringValue() + "'",
                   DiagnosticSeverity.Warning,
                   "dita-validator"));
@@ -185,11 +188,12 @@ public class DitaTextDocumentService implements TextDocumentService {
     return diagnostics;
   }
 
-  private Position parsePosition(String loc) {
-    var delim = loc.indexOf(':');
+  private Range parseRange(String loc) {
+    var tokens = loc.split("[:\\-]");
 
-    return new Position(
-        Integer.parseInt(loc.substring(0, delim)), Integer.parseInt(loc.substring(delim + 1)));
+    return new Range(
+        new Position(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[1])),
+        new Position(Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3])));
   }
 
   public void setRootMapUri(String uri) {

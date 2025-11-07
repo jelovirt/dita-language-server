@@ -7,6 +7,9 @@ import java.util.List;
 
 public class XmlSerializer {
 
+  public static final String LOC_NAMESPACE = "http://www.elovirta.com/dita/location";
+  public static final String LOC_PREFIX = "loc";
+
   private final XmlLexer lexer;
   private Writer writer;
   private boolean isFirstElement = true;
@@ -140,9 +143,25 @@ public class XmlSerializer {
 
     // Add loc namespace declaration to root element
     if (isFirstElement) {
-      writer.write(" xmlns:loc=\"http://www.elovirta.com/dita/location\"");
+      writer.write(" xmlns:");
+      writer.write(LOC_PREFIX);
+      writer.write("=\"");
+      writer.write(LOC_NAMESPACE);
+      writer.write("\"");
       isFirstElement = false;
     }
+
+    writer.write(" ");
+    writer.write(LOC_PREFIX);
+    writer.write(":elem=\"");
+    writer.write(String.valueOf(lexer.getLine()));
+    writer.write(":");
+    writer.write(String.valueOf(lexer.getColumn()));
+    writer.write("-");
+    writer.write(String.valueOf(lexer.getLine()));
+    writer.write(":");
+    writer.write(String.valueOf(lexer.getColumn() + lexer.getText().length));
+    writer.write("\"");
 
     // Collect attributes and their locations
     List<AttributeLocation> attrLocations = new ArrayList<>();
@@ -158,7 +177,9 @@ public class XmlSerializer {
 
         // Write location attributes
         for (AttributeLocation loc : attrLocations) {
-          writer.write(" loc:");
+          writer.write(" ");
+          writer.write(LOC_PREFIX);
+          writer.write(":attr-");
           writer.write(loc.name);
           writer.write("=\"");
           writer.write(String.valueOf(loc.startLine));

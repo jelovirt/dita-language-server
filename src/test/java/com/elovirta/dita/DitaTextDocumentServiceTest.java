@@ -97,7 +97,7 @@ class DitaTextDocumentServiceTest {
     assertEquals(
         List.of(
             new Diagnostic(
-                new Range(new Position(7, 20), new Position(7, 20)),
+                new Range(new Position(7, 12), new Position(7, 17)),
                 "Duplicate id attribute value 'second'",
                 DiagnosticSeverity.Warning,
                 "dita-validator")

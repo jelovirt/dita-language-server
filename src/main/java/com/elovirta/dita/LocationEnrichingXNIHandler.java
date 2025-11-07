@@ -12,7 +12,7 @@ import org.xml.sax.helpers.AttributesImpl;
 
 public class LocationEnrichingXNIHandler implements XMLDocumentHandler {
 
-  public static final String LOC_NAMESPACE = "http://xmlresolver.org/ns/location";
+  public static final String LOC_NAMESPACE = "http://www.elovirta.com/dita/location";
   public static final String LOC_PREFIX = "loc";
 
   private final ContentHandler contentHandler;
