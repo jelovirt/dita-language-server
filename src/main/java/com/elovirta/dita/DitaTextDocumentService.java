@@ -86,7 +86,6 @@ public class DitaTextDocumentService implements TextDocumentService {
     try {
       //        openDocuments.put(uri, text);
       XdmNode doc = parser.parse(text);
-      System.err.println(doc.toString());
       openDocuments.put(uri, doc);
 
       // Re-validate

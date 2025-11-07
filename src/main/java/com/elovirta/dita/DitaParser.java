@@ -65,11 +65,10 @@ public class DitaParser {
 
       //          var config = new XMLGrammarCachingConfiguration();
       var config = new XIncludeAwareParserConfiguration();
-      var xniHandler = new LocationEnrichingXNIHandler(builder);
-      config.setDocumentHandler(xniHandler);
+      var handler = new LocationEnrichingXNIHandler(builder);
+      config.setDocumentHandler(handler);
 
       XMLInputSource input = new XMLInputSource(null, null, null, in, null);
-
       config.parse(input);
 
       return builder.getDocumentNode();
