@@ -51,7 +51,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     }
 
     // This should do all slow validations
-    List<Diagnostic> diagnostics = doValidation(content);
+    List<Diagnostic> diagnostics = doSlowValidation(content);
 
     FullDocumentDiagnosticReport fullReport = new FullDocumentDiagnosticReport(diagnostics);
     RelatedFullDocumentDiagnosticReport report =
@@ -132,18 +132,23 @@ public class DitaTextDocumentService implements TextDocumentService {
     client.publishDiagnostics(publishParams);
   }
 
+  private List<Diagnostic> doSlowValidation(XdmNode content) {
+    List<Diagnostic> diagnostics = new ArrayList<>();
+    return diagnostics;
+  }
+
   private List<Diagnostic> doValidation(XdmNode content) {
     List<Diagnostic> diagnostics = new ArrayList<>();
 
     // Simple validation: check if it contains "topic" element
-    if (!content.select(Steps.child("topic")).exists()) {
-      diagnostics.add(
-          new Diagnostic(
-              new Range(new Position(0, 0), new Position(0, 1)),
-              "DITA topic element not found",
-              DiagnosticSeverity.Warning,
-              "dita-validator"));
-    }
+    //    if (!content.select(Steps.child("topic")).exists()) {
+    //      diagnostics.add(
+    //          new Diagnostic(
+    //              new Range(new Position(0, 0), new Position(0, 1)),
+    //              "DITA topic element not found",
+    //              DiagnosticSeverity.Warning,
+    //              "dita-validator"));
+    //    }
 
     var ids = content.select(Steps.descendant().then(Steps.attribute("id"))).toList();
     var idValues = ids.stream().map(XdmItem::getStringValue).toList();
