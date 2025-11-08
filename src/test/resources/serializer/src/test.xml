@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
 <root attr="value">
-  <child>text content</child>
+  <child id="foo"
+    >text
+    content</child>
   <!-- comment -->
 </root>

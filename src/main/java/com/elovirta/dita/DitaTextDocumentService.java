@@ -50,6 +50,7 @@ public class DitaTextDocumentService implements TextDocumentService {
               new RelatedFullDocumentDiagnosticReport(Collections.emptyList())));
     }
 
+    // This should do all slow validations
     List<Diagnostic> diagnostics = doValidation(content);
 
     FullDocumentDiagnosticReport fullReport = new FullDocumentDiagnosticReport(diagnostics);
@@ -151,14 +152,12 @@ public class DitaTextDocumentService implements TextDocumentService {
       for (XdmNode id : ids) {
         var idValue = id.getStringValue();
         if (encountered.contains(idValue)) {
-          var loc =
-              id.getParent().getAttributeValue(new QName(LOC_PREFIX, LOC_NAMESPACE, "attr-id"));
-          var range = parseRange(loc);
+          var range = getAttributeRange(id);
           diagnostics.add(
               new Diagnostic(
                   range,
                   "Duplicate id attribute value '" + id.getStringValue() + "'",
-                  DiagnosticSeverity.Warning,
+                  DiagnosticSeverity.Error,
                   "dita-validator"));
         } else {
           encountered.add(idValue);
@@ -188,12 +187,20 @@ public class DitaTextDocumentService implements TextDocumentService {
     return diagnostics;
   }
 
+  private Range getAttributeRange(XdmNode attr) {
+    var loc =
+        attr.getParent()
+            .getAttributeValue(
+                new QName(LOC_PREFIX, LOC_NAMESPACE, "attr-" + attr.getNodeName().getLocalName()));
+    return parseRange(loc);
+  }
+
   private Range parseRange(String loc) {
     var tokens = loc.split("[:\\-]");
 
     return new Range(
-        new Position(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[1])),
-        new Position(Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3])));
+        new Position(Integer.parseInt(tokens[0]) - 1, Integer.parseInt(tokens[1]) - 1),
+        new Position(Integer.parseInt(tokens[2]) - 1, Integer.parseInt(tokens[3])));
   }
 
   public void setRootMapUri(String uri) {
