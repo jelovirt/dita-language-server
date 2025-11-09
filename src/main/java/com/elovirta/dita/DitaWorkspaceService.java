@@ -1,5 +1,6 @@
 package com.elovirta.dita;
 
+import com.google.gson.JsonPrimitive;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.*;
@@ -23,15 +24,16 @@ public class DitaWorkspaceService implements WorkspaceService {
     if ("dita.setRootMap".equals(params.getCommand())) {
       List<Object> arguments = params.getArguments();
       if (!arguments.isEmpty()) {
-        String rootMapUri = arguments.get(0).toString();
+        if (arguments.get(0) instanceof JsonPrimitive json && json.isString()) {
+          String rootMapUri = json.getAsString();
+          server.setCurrentRootMapUri(rootMapUri);
 
-        server.setCurrentRootMapUri(rootMapUri);
-
-        // Notify user
-        server
-            .getClient()
-            .showMessage(
-                new MessageParams(MessageType.Info, "Root map set to: " + getFileName(rootMapUri)));
+          server
+              .getClient()
+              .showMessage(
+                  new MessageParams(
+                      MessageType.Info, "Root map set to: " + getFileName(rootMapUri)));
+        }
       }
     }
     return CompletableFuture.completedFuture(null);

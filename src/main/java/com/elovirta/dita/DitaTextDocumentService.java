@@ -3,9 +3,14 @@ package com.elovirta.dita;
 import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_NAMESPACE;
 import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_PREFIX;
 
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
@@ -134,6 +139,36 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   private List<Diagnostic> doSlowValidation(XdmNode content) {
     List<Diagnostic> diagnostics = new ArrayList<>();
+
+    // Get current root map from workspace service
+    // Access from server directly
+    //    String rootMapUri = server.getCurrentRootMapUri();
+    System.err.println("Root map " + rootMap);
+    if (rootMap != null) {
+      // Validate keyrefs against root map
+      var keyrefs = content.select(Steps.descendant().then(Steps.attribute("keyref"))).toList();
+      if (!keyrefs.isEmpty()) {
+        var keys =
+            rootMap
+                .select(Steps.descendant().then(Steps.attribute("keys")))
+                .map(XdmNode::getStringValue)
+                .flatMap(value -> Stream.of(value.trim().split("\\s+")))
+                .collect(Collectors.toSet());
+        for (XdmNode keyref : keyrefs) {
+          if (!keys.contains(keyref.getStringValue())) {
+            var range = getAttributeRange(keyref);
+            diagnostics.add(
+                new Diagnostic(
+                    range,
+                    "Cannot find definition for key '%s'".formatted(keyref.getStringValue()),
+                    DiagnosticSeverity.Warning,
+                    "dita-validator"));
+          }
+        }
+      }
+      //            validateKeyrefs(content, diagnostics, rootMapUri);
+    }
+
     return diagnostics;
   }
 
@@ -157,36 +192,16 @@ public class DitaTextDocumentService implements TextDocumentService {
       for (XdmNode id : ids) {
         var idValue = id.getStringValue();
         if (encountered.contains(idValue)) {
-          var range = getAttributeRange(id);
           diagnostics.add(
               new Diagnostic(
-                  range,
-                  "Duplicate id attribute value '" + id.getStringValue() + "'",
+                  getAttributeRange(id),
+                  "Duplicate id attribute value '%s'".formatted(id.getStringValue()),
                   DiagnosticSeverity.Error,
                   "dita-validator"));
         } else {
           encountered.add(idValue);
         }
       }
-    }
-    // Check for common DITA errors
-    //    if (content.contains("<p>") && !content.contains("</p>")) {
-    //      Diagnostic diagnostic = new Diagnostic();
-    //      diagnostic.setSeverity(DiagnosticSeverity.Error);
-    //      diagnostic.setRange(new Range(new Position(0, 0), new Position(0, 1)));
-    //      diagnostic.setMessage("Unclosed <p> element");
-    //      diagnostic.setSource("dita-validator");
-    //
-    //      diagnostics.add(diagnostic);
-    //    }
-
-    // Get current root map from workspace service
-    // Access from server directly
-    //    String rootMapUri = server.getCurrentRootMapUri();
-
-    if (rootMap != null) {
-      // Validate keyrefs against root map
-      //            validateKeyrefs(content, diagnostics, rootMapUri);
     }
 
     return diagnostics;
@@ -209,8 +224,13 @@ public class DitaTextDocumentService implements TextDocumentService {
   }
 
   public void setRootMapUri(String uri) {
+    System.err.println("Setting root map URI: '" + uri + "'");
     try {
-      rootMap = parser.parse(uri);
+      URI uri1 = URI.create(uri);
+      System.err.println("Parsed URI: " + uri1);
+      var content = Files.readString(Paths.get(uri1));
+      System.err.println("Parsed content: " + content);
+      rootMap = parser.parse(content);
     } catch (Exception e) {
       System.err.println("Failed to parse map document: " + e.getMessage());
     }
