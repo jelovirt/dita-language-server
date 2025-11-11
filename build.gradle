@@ -18,8 +18,8 @@ dependencies {
     implementation 'org.eclipse.lsp4j:org.eclipse.lsp4j:0.21.1'
     implementation 'org.slf4j:slf4j-api:2.0.9'
     implementation 'ch.qos.logback:logback-classic:1.5.18'
-    implementation group: 'xerces', name: 'xercesImpl', version:'2.12.2'
-    implementation group: 'xml-apis', name: 'xml-apis', version:'1.4.01'
+    implementation group: 'xerces', name: 'xercesImpl', version: '2.12.2'
+    implementation group: 'xml-apis', name: 'xml-apis', version: '1.4.01'
     implementation group: 'org.xmlresolver', name: 'xmlresolver', version: '6.0.19'
     implementation group: 'net.sf.saxon', name: 'Saxon-HE', version: '12.7'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
@@ -54,19 +54,6 @@ tasks.named('processResources') {
     dependsOn('generateVersionProperties')
 }
 
-//// Create a fat JAR with all dependencies
-//tasks.register('fatJar', Jar) {
-//    archiveClassifier = 'all'
-//    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-//    manifest {
-//        attributes 'Main-Class': 'com.elovirta.dita.DitaLanguageServer'
-//    }
-//    from {
-//        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-//    }
-//    with jar
-//}
-
 shadowJar {
     archiveBaseName.set('dita-language-server')
     archiveClassifier.set('all')
@@ -79,16 +66,7 @@ shadowJar {
 spotless {
     java {
         googleJavaFormat()
-        // Optional: specify version
-        // googleJavaFormat('1.18.1')
-
-        // Optional: specify AOSP style instead of Google style
-        // googleJavaFormat().aosp()
-
-        // Optional: target specific files
         target 'src/**/*.java'
-
-        // Optional: exclude generated files
         targetExclude 'build/**'
     }
 }
