@@ -2,6 +2,6 @@
 <concept id="test">
   <title>Test Topic</title>
   <conbody>
-    <p conkeyref="xfoo/bar"/>
+    <p conkeyref="foo/bar"/>
   </conbody>
 </concept>

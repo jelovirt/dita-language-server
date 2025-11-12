@@ -9,11 +9,13 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.streams.Steps;
 import org.eclipse.lsp4j.*;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.slf4j.Logger;
@@ -48,22 +50,46 @@ public class DitaTextDocumentService implements TextDocumentService {
     String uri = params.getTextDocument().getUri();
 
     // Get the content from storage
-    XdmNode content = openDocuments.get(uri);
-    if (content == null) {
-      // Document not opened yet, return empty diagnostics
-      return CompletableFuture.completedFuture(
-          new DocumentDiagnosticReport(
-              new RelatedFullDocumentDiagnosticReport(Collections.emptyList())));
+    //    XdmNode content = openDocuments.get(uri);
+    //    if (content == null) {
+    //      // Document not opened yet, return empty diagnostics
+    //      return CompletableFuture.completedFuture(
+    //          new DocumentDiagnosticReport(
+    //              new RelatedFullDocumentDiagnosticReport(Collections.emptyList())));
+    //    }
+
+    if (uri.equals(rootMapUri) && rootMap != null) {
+      System.err.println("Root map changed, do async validate");
+
+      FullDocumentDiagnosticReport fullReport = new FullDocumentDiagnosticReport();
+      RelatedFullDocumentDiagnosticReport report =
+          new RelatedFullDocumentDiagnosticReport(fullReport.getItems());
+
+      var diagnostics =
+          openDocuments.entrySet().stream()
+              .filter(entry -> !entry.getKey().equals(rootMap))
+              .map(
+                  entry ->
+                      Map.entry(
+                          entry.getKey(),
+                          Either
+                              .<FullDocumentDiagnosticReport, UnchangedDocumentDiagnosticReport>
+                                  forLeft(
+                                      new FullDocumentDiagnosticReport(
+                                          doSlowValidation(entry.getValue())
+                                          ))))
+              .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+System.err.println(diagnostics);
+      report.setRelatedDocuments(diagnostics);
+
+      return CompletableFuture.completedFuture(new DocumentDiagnosticReport(report));
+    } else {
+      System.err.printf("Async validate %s skipped%n", uri);
+      //          var fullReport = new FullDocumentDiagnosticReport();
+      // fullReport.getItems()
+      var report = new RelatedFullDocumentDiagnosticReport();
+      return CompletableFuture.completedFuture(new DocumentDiagnosticReport(report));
     }
-
-    // This should do all slow validations
-    List<Diagnostic> diagnostics = doSlowValidation(content);
-
-    FullDocumentDiagnosticReport fullReport = new FullDocumentDiagnosticReport(diagnostics);
-    RelatedFullDocumentDiagnosticReport report =
-        new RelatedFullDocumentDiagnosticReport(fullReport.getItems());
-
-    return CompletableFuture.completedFuture(new DocumentDiagnosticReport(report));
   }
 
   @Override
@@ -134,13 +160,15 @@ public class DitaTextDocumentService implements TextDocumentService {
     }
 
     var diagnostics = doValidation(content);
+    diagnostics.addAll(doSlowValidation(content));
+
     var publishParams = new PublishDiagnosticsParams(uri, diagnostics);
     client.publishDiagnostics(publishParams);
   }
 
   private List<Diagnostic> doSlowValidation(XdmNode content) {
     List<Diagnostic> diagnostics = new ArrayList<>();
-
+    System.err.println("Do slow validation");
     if (rootMap != null) {
       var keyrefs = content.select(Steps.descendant().then(Steps.attribute("keyref"))).toList();
       if (!keyrefs.isEmpty()) {

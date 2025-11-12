@@ -33,7 +33,7 @@ class DitaTextDocumentServiceTest {
   }
 
   @Test
-  void testValidDitaDocument() throws ExecutionException, InterruptedException {
+  void testValidDitaDocument() {
     String validDita = readResource("valid.dita");
 
     var params = createOpenParams("file:///valid.dita", validDita);
