@@ -9,8 +9,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
@@ -27,7 +25,9 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   private final DitaLanguageServer server;
   private final Map<String, XdmNode> openDocuments = new ConcurrentHashMap<>();
+  private String rootMapUri;
   private XdmNode rootMap;
+  private final Map<String, XdmNode> keyDefinitions = new ConcurrentHashMap<>();
   private final DitaParser parser;
 
   public DitaTextDocumentService(DitaLanguageServer server) {
@@ -95,6 +95,10 @@ public class DitaTextDocumentService implements TextDocumentService {
       XdmNode doc = parser.parse(text);
       openDocuments.put(uri, doc);
 
+      if (rootMapUri != null && !rootMapUri.equals(uri)) {
+        readRootMap(doc);
+      }
+
       // Re-validate
       validateDocument(uri, doc);
     } catch (Exception e) {
@@ -140,22 +144,11 @@ public class DitaTextDocumentService implements TextDocumentService {
   private List<Diagnostic> doSlowValidation(XdmNode content) {
     List<Diagnostic> diagnostics = new ArrayList<>();
 
-    // Get current root map from workspace service
-    // Access from server directly
-    //    String rootMapUri = server.getCurrentRootMapUri();
-    System.err.println("Root map " + rootMap);
     if (rootMap != null) {
-      // Validate keyrefs against root map
       var keyrefs = content.select(Steps.descendant().then(Steps.attribute("keyref"))).toList();
       if (!keyrefs.isEmpty()) {
-        var keys =
-            rootMap
-                .select(Steps.descendant().then(Steps.attribute("keys")))
-                .map(XdmNode::getStringValue)
-                .flatMap(value -> Stream.of(value.trim().split("\\s+")))
-                .collect(Collectors.toSet());
         for (XdmNode keyref : keyrefs) {
-          if (!keys.contains(keyref.getStringValue())) {
+          if (!keyDefinitions.containsKey(keyref.getStringValue())) {
             var range = getAttributeRange(keyref);
             diagnostics.add(
                 new Diagnostic(
@@ -166,7 +159,29 @@ public class DitaTextDocumentService implements TextDocumentService {
           }
         }
       }
-      //            validateKeyrefs(content, diagnostics, rootMapUri);
+
+      var conkeyrefs =
+          content.select(Steps.descendant().then(Steps.attribute("conkeyref"))).toList();
+      if (!conkeyrefs.isEmpty()) {
+        for (XdmNode conkeyref : conkeyrefs) {
+          var conkeyrefValue = conkeyref.getStringValue();
+          var keyref = conkeyrefValue;
+          var separator = conkeyrefValue.indexOf('/');
+          if (separator != -1) {
+            keyref = keyref.substring(0, separator);
+          }
+          if (!keyDefinitions.containsKey(keyref)) {
+            // FIXME range should match only the key name
+            var range = getAttributeRange(conkeyref);
+            diagnostics.add(
+                new Diagnostic(
+                    range,
+                    "Cannot find definition for key '%s'".formatted(conkeyrefValue),
+                    DiagnosticSeverity.Warning,
+                    "dita-validator"));
+          }
+        }
+      }
     }
 
     return diagnostics;
@@ -174,16 +189,6 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   private List<Diagnostic> doValidation(XdmNode content) {
     List<Diagnostic> diagnostics = new ArrayList<>();
-
-    // Simple validation: check if it contains "topic" element
-    //    if (!content.select(Steps.child("topic")).exists()) {
-    //      diagnostics.add(
-    //          new Diagnostic(
-    //              new Range(new Position(0, 0), new Position(0, 1)),
-    //              "DITA topic element not found",
-    //              DiagnosticSeverity.Warning,
-    //              "dita-validator"));
-    //    }
 
     var ids = content.select(Steps.descendant().then(Steps.attribute("id"))).toList();
     var idValues = ids.stream().map(XdmItem::getStringValue).toList();
@@ -224,15 +229,30 @@ public class DitaTextDocumentService implements TextDocumentService {
   }
 
   public void setRootMapUri(String uri) {
-    System.err.println("Setting root map URI: '" + uri + "'");
+    rootMapUri = uri;
+    System.err.println("Setting root map URI: " + uri);
     try {
-      URI uri1 = URI.create(uri);
-      System.err.println("Parsed URI: " + uri1);
-      var content = Files.readString(Paths.get(uri1));
-      System.err.println("Parsed content: " + content);
+      var content = Files.readString(Paths.get(URI.create(uri)));
       rootMap = parser.parse(content);
+      openDocuments.put(uri, rootMap);
+
     } catch (Exception e) {
       System.err.println("Failed to parse map document: " + e.getMessage());
+    }
+  }
+
+  private void readRootMap(XdmNode content) {
+    // Validate keyrefs against root map
+    var keyDefs = rootMap.select(Steps.descendant().then(Steps.attribute("keys"))).toList();
+    if (!keyDefs.isEmpty()) {
+      for (XdmNode keyDef : keyDefs) {
+        var keys = Set.of(keyDef.getStringValue().trim().split("\\s+"));
+        for (String key : keys) {
+          if (!keyDefinitions.containsKey(key)) {
+            keyDefinitions.put(key, keyDef);
+          }
+        }
+      }
     }
   }
 }
