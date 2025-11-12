@@ -42,6 +42,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     //        }
   }
 
+  // TODO: This should validate change in map that has key definitions
   @Override
   public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
     String uri = params.getTextDocument().getUri();
@@ -70,7 +71,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     String uri = params.getTextDocument().getUri();
     String text = params.getTextDocument().getText();
 
-    System.err.println("Document opened: " + uri);
+    //    System.err.println("Document opened: " + uri);
     try {
       //        openDocuments.put(uri, text);
       XdmNode doc = parser.parse(text);
@@ -89,7 +90,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     String uri = params.getTextDocument().getUri();
     String text = params.getContentChanges().get(0).getText();
 
-    System.err.println("Document changed: " + uri);
+    //    System.err.println("Document changed: " + uri);
     try {
       //        openDocuments.put(uri, text);
       XdmNode doc = parser.parse(text);
@@ -110,13 +111,13 @@ public class DitaTextDocumentService implements TextDocumentService {
   @Override
   public void didClose(DidCloseTextDocumentParams params) {
     String uri = params.getTextDocument().getUri();
-    System.err.println("Document closed: " + uri);
+    //    System.err.println("Document closed: " + uri);
     openDocuments.remove(uri);
   }
 
   @Override
   public void didSave(DidSaveTextDocumentParams params) {
-    System.err.println("Document saved: " + params.getTextDocument().getUri());
+    //    System.err.println("Document saved: " + params.getTextDocument().getUri());
   }
 
   public void revalidateAllOpenDocuments() {
@@ -132,12 +133,8 @@ public class DitaTextDocumentService implements TextDocumentService {
       return;
     }
 
-    List<Diagnostic> diagnostics = doValidation(content);
-
-    System.err.println("Publishing " + diagnostics.size() + " diagnostics for " + uri);
-
-    // Send diagnostics to client
-    PublishDiagnosticsParams publishParams = new PublishDiagnosticsParams(uri, diagnostics);
+    var diagnostics = doValidation(content);
+    var publishParams = new PublishDiagnosticsParams(uri, diagnostics);
     client.publishDiagnostics(publishParams);
   }
 

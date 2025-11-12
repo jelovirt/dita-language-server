@@ -2,6 +2,6 @@
 <concept id="test">
   <title>Test Topic</title>
   <conbody>
-    <p>Valid content</p>
+    <p conkeyref="foo"/>
   </conbody>
 </concept>

@@ -36,15 +36,13 @@ class DitaTextDocumentServiceTest {
   void testValidDitaDocument() throws ExecutionException, InterruptedException {
     String validDita = readResource("valid.dita");
 
-    DidOpenTextDocumentParams params = createOpenParams("file:///valid.dita", validDita);
+    var params = createOpenParams("file:///valid.dita", validDita);
     textDocumentService.didOpen(params);
 
-    // Capture the diagnostics
-    ArgumentCaptor<PublishDiagnosticsParams> captor =
-        ArgumentCaptor.forClass(PublishDiagnosticsParams.class);
+    var captor = ArgumentCaptor.forClass(PublishDiagnosticsParams.class);
     verify(mockClient).publishDiagnostics(captor.capture());
 
-    PublishDiagnosticsParams diagnostics = captor.getValue();
+    var diagnostics = captor.getValue();
 
     assertEquals("file:///valid.dita", diagnostics.getUri());
     assertTrue(diagnostics.getDiagnostics().isEmpty());
@@ -52,36 +50,30 @@ class DitaTextDocumentServiceTest {
 
   @Test
   void testInvalidDitaDocument() throws ExecutionException, InterruptedException {
-    String invalidDita = readResource("invalid.dita");
-
-    DidOpenTextDocumentParams params = createOpenParams("file:///invalid.dita", invalidDita);
+    textDocumentService.setRootMapUri(getClass().getResource("/keymap.ditamap").toString());
+    String invalidDita = readResource("invalid-conkeyref.dita");
+    var params = createOpenParams("file:///invalid-conkeyref.dita", invalidDita);
     textDocumentService.didOpen(params);
 
-    ArgumentCaptor<PublishDiagnosticsParams> captor =
-        ArgumentCaptor.forClass(PublishDiagnosticsParams.class);
-    verify(mockClient).publishDiagnostics(captor.capture());
+    var act =
+        textDocumentService.diagnostic(
+            new DocumentDiagnosticParams(
+                new TextDocumentIdentifier("file:///invalid-conkeyref.dita")));
 
-    PublishDiagnosticsParams diagnostics = captor.getValue();
+    var diagnostics = act.get().getRelatedFullDocumentDiagnosticReport();
 
-    assertEquals("file:///invalid.dita", diagnostics.getUri());
     assertEquals(
         List.of(
             new Diagnostic(
-                new Range(new Position(0, 0), new Position(0, 1)),
-                "DITA topic element not found",
+                new Range(new Position(4, 18), new Position(4, 21)),
+                "Cannot find definition for key 'foo'",
                 DiagnosticSeverity.Warning,
-                "dita-validator")
-            //            new Diagnostic(
-            //                new Range(new Position(0, 0), new Position(0, 1)),
-            //                "Unclosed <p> element",
-            //                DiagnosticSeverity.Error,
-            //                "dita-validator")
-            ),
-        diagnostics.getDiagnostics());
+                "dita-validator")),
+        diagnostics.getItems());
   }
 
   @Test
-  void testInvalidDitaDocumentId() throws ExecutionException, InterruptedException {
+  void testInvalidDitaDocumentId() {
     String invalidDita = readResource("invalid-id.dita");
 
     DidOpenTextDocumentParams params = createOpenParams("file:///invalid-id.dita", invalidDita);
@@ -97,16 +89,10 @@ class DitaTextDocumentServiceTest {
     assertEquals(
         List.of(
             new Diagnostic(
-                new Range(new Position(7, 12), new Position(7, 17)),
+                new Range(new Position(6, 11), new Position(6, 17)),
                 "Duplicate id attribute value 'second'",
-                DiagnosticSeverity.Warning,
-                "dita-validator")
-            //            new Diagnostic(
-            //                new Range(new Position(0, 0), new Position(0, 1)),
-            //                "Unclosed <p> element",
-            //                DiagnosticSeverity.Error,
-            //                "dita-validator")
-            ),
+                DiagnosticSeverity.Error,
+                "dita-validator")),
         diagnostics.getDiagnostics());
   }
 
