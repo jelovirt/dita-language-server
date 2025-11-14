@@ -9,13 +9,11 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.streams.Steps;
 import org.eclipse.lsp4j.*;
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.slf4j.Logger;
@@ -31,11 +29,13 @@ public class DitaTextDocumentService implements TextDocumentService {
   private XdmNode rootMap;
   private final DitaParser parser;
   private final KeyManager keyManager;
+  private final SmartDebouncer debouncer;
 
-  public DitaTextDocumentService(DitaLanguageServer server) {
+  public DitaTextDocumentService(DitaLanguageServer server, SmartDebouncer debouncer) {
     this.server = server;
     this.parser = new DitaParser();
     this.keyManager = new KeyManager();
+    this.debouncer = debouncer;
     //        var resolver = this.parser.getCatalogResolver();
     //        try {
     //            var res = resolver.resolveEntity("-//OASIS//DTD DITA 1.3 Base Map//EN", null);
@@ -52,6 +52,8 @@ public class DitaTextDocumentService implements TextDocumentService {
       var content = Files.readString(Paths.get(URI.create(uri)));
       rootMap = parser.parse(content);
       openDocuments.put(uri, rootMap);
+
+      revalidateAllOpenDocuments();
     } catch (Exception e) {
       System.err.println("Failed to parse map document: " + e.getMessage());
     }
@@ -59,48 +61,50 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   @Override
   public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
-    String uri = params.getTextDocument().getUri();
-
-    // Get the content from storage
-    //    XdmNode content = openDocuments.get(uri);
-    //    if (content == null) {
-    //      // Document not opened yet, return empty diagnostics
-    //      return CompletableFuture.completedFuture(
-    //          new DocumentDiagnosticReport(
-    //              new RelatedFullDocumentDiagnosticReport(Collections.emptyList())));
+    return CompletableFuture.completedFuture(null);
+    //    String uri = params.getTextDocument().getUri();
+    //
+    //    // Get the content from storage
+    //    //    XdmNode content = openDocuments.get(uri);
+    //    //    if (content == null) {
+    //    //      // Document not opened yet, return empty diagnostics
+    //    //      return CompletableFuture.completedFuture(
+    //    //          new DocumentDiagnosticReport(
+    //    //              new RelatedFullDocumentDiagnosticReport(Collections.emptyList())));
+    //    //    }
+    //
+    //    if (uri.equals(rootMapUri) && rootMap != null) {
+    //      System.err.println("Root map changed, do async validate");
+    //
+    //      FullDocumentDiagnosticReport fullReport = new FullDocumentDiagnosticReport();
+    //      RelatedFullDocumentDiagnosticReport report =
+    //          new RelatedFullDocumentDiagnosticReport(fullReport.getItems());
+    //
+    //      var diagnostics =
+    //          openDocuments.entrySet().stream()
+    //              .filter(entry -> !entry.getKey().equals(rootMap))
+    //              .map(
+    //                  entry ->
+    //                      Map.entry(
+    //                          entry.getKey(),
+    //                          Either
+    //                              .<FullDocumentDiagnosticReport,
+    // UnchangedDocumentDiagnosticReport>
+    //                                  forLeft(
+    //                                      new FullDocumentDiagnosticReport(
+    //                                          doSlowValidation(entry.getValue())))))
+    //              .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+    ////      System.err.println(diagnostics);
+    //      report.setRelatedDocuments(diagnostics);
+    //
+    //      return CompletableFuture.completedFuture(new DocumentDiagnosticReport(report));
+    //    } else {
+    //      System.err.printf("Async validate %s skipped%n", uri);
+    //      //          var fullReport = new FullDocumentDiagnosticReport();
+    //      // fullReport.getItems()
+    //      var report = new RelatedFullDocumentDiagnosticReport();
+    //      return CompletableFuture.completedFuture(new DocumentDiagnosticReport(report));
     //    }
-
-    if (uri.equals(rootMapUri) && rootMap != null) {
-      System.err.println("Root map changed, do async validate");
-
-      FullDocumentDiagnosticReport fullReport = new FullDocumentDiagnosticReport();
-      RelatedFullDocumentDiagnosticReport report =
-          new RelatedFullDocumentDiagnosticReport(fullReport.getItems());
-
-      var diagnostics =
-          openDocuments.entrySet().stream()
-              .filter(entry -> !entry.getKey().equals(rootMap))
-              .map(
-                  entry ->
-                      Map.entry(
-                          entry.getKey(),
-                          Either
-                              .<FullDocumentDiagnosticReport, UnchangedDocumentDiagnosticReport>
-                                  forLeft(
-                                      new FullDocumentDiagnosticReport(
-                                          doSlowValidation(entry.getValue())))))
-              .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
-      System.err.println(diagnostics);
-      report.setRelatedDocuments(diagnostics);
-
-      return CompletableFuture.completedFuture(new DocumentDiagnosticReport(report));
-    } else {
-      System.err.printf("Async validate %s skipped%n", uri);
-      //          var fullReport = new FullDocumentDiagnosticReport();
-      // fullReport.getItems()
-      var report = new RelatedFullDocumentDiagnosticReport();
-      return CompletableFuture.completedFuture(new DocumentDiagnosticReport(report));
-    }
   }
 
   @Override
@@ -136,7 +140,7 @@ public class DitaTextDocumentService implements TextDocumentService {
               openDocuments.put(uri, doc);
 
               if (Objects.equals(rootMapUri, uri)) {
-                  keyManager.read(doc);
+                keyManager.read(doc);
               }
 
               return doc;
@@ -145,6 +149,15 @@ public class DitaTextDocumentService implements TextDocumentService {
             doc -> {
               if (doc != null) {
                 validateDocument(uri, doc);
+                if (Objects.equals(rootMapUri, uri)) {
+                  System.err.println("Root map changed, do debounced validate");
+                  try {
+                    debouncer.debounce(uri, this::revalidateAllOpenDocuments, 5000);
+                  } catch (Exception e) {
+                    System.err.println("Failed to debounced validate: " + e.getMessage());
+                    e.printStackTrace(System.err);
+                  }
+                }
               }
             })
         .exceptionally(
@@ -167,29 +180,40 @@ public class DitaTextDocumentService implements TextDocumentService {
   }
 
   public void revalidateAllOpenDocuments() {
-    System.err.println("Revalidating all open documents");
-    openDocuments.forEach(this::validateDocument);
+    try {
+      System.err.println("Revalidating all open documents");
+      openDocuments.forEach(this::validateDocument);
+    } catch (Exception e) {
+      System.err.println("Failed to revalidate all open documents: " + e.getMessage());
+      e.printStackTrace(System.err);
+    }
   }
 
   private void validateDocument(String uri, XdmNode content) {
-    // Add null check
-    LanguageClient client = server.getClient();
-    if (client == null) {
-      System.err.println("Client not yet connected, skipping validation for " + uri);
-      return;
+    try {
+      // Add null check
+      LanguageClient client = server.getClient();
+      if (client == null) {
+        System.err.println("Client not yet connected, skipping validation for " + uri);
+        return;
+      }
+
+      var diagnostics = doValidation(content);
+      diagnostics.addAll(doSlowValidation(content));
+
+      var publishParams = new PublishDiagnosticsParams(uri, diagnostics);
+      client.publishDiagnostics(publishParams);
+    } catch (Exception e) {
+      System.err.println("Failed to validate document: " + e.getMessage());
+      e.printStackTrace(System.err);
     }
-
-    var diagnostics = doValidation(content);
-    diagnostics.addAll(doSlowValidation(content));
-
-    var publishParams = new PublishDiagnosticsParams(uri, diagnostics);
-    client.publishDiagnostics(publishParams);
   }
 
   private List<Diagnostic> doSlowValidation(XdmNode content) {
     List<Diagnostic> diagnostics = new ArrayList<>();
-    System.err.println("Do slow validation");
+    System.err.println("Do validation");
     if (rootMap != null) {
+      System.err.println("Validate keyref");
       var keyrefs = content.select(Steps.descendant().then(Steps.attribute("keyref"))).toList();
       if (!keyrefs.isEmpty()) {
         for (XdmNode keyref : keyrefs) {
@@ -205,6 +229,7 @@ public class DitaTextDocumentService implements TextDocumentService {
         }
       }
 
+      System.err.println("Validate conkeyref");
       var conkeyrefs =
           content.select(Steps.descendant().then(Steps.attribute("conkeyref"))).toList();
       if (!conkeyrefs.isEmpty()) {
@@ -228,7 +253,7 @@ public class DitaTextDocumentService implements TextDocumentService {
         }
       }
     }
-
+    System.err.println("Validation done");
     return diagnostics;
   }
 
@@ -272,5 +297,4 @@ public class DitaTextDocumentService implements TextDocumentService {
         new Position(Integer.parseInt(tokens[0]) - 1, Integer.parseInt(tokens[1]) - 1),
         new Position(Integer.parseInt(tokens[2]) - 1, Integer.parseInt(tokens[3])));
   }
-
 }

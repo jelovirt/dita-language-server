@@ -17,6 +17,7 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
 
   private static final Logger logger = LoggerFactory.getLogger(DitaWorkspaceService.class);
 
+  private final SmartDebouncer debouncer;
   private final DitaTextDocumentService textDocumentService;
   private final DitaWorkspaceService workspaceService;
   private final Properties properties;
@@ -25,7 +26,8 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
   private String currentRootMapUri = null;
 
   public DitaLanguageServer() {
-    textDocumentService = new DitaTextDocumentService(this);
+    debouncer = new SmartDebouncer();
+    textDocumentService = new DitaTextDocumentService(this, debouncer);
     workspaceService = new DitaWorkspaceService(this);
     properties = new Properties();
     try (InputStream input =
@@ -39,7 +41,7 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
   @Override
   public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
     System.err.println("DITA Language Server initializing...");
-    System.err.println("Root URI: " + params.getWorkspaceFolders());
+    //    System.err.println("Root URI: " + params.getWorkspaceFolders());
 
     // Declare server capabilities
     ServerCapabilities capabilities = new ServerCapabilities();
@@ -63,7 +65,11 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
   @Override
   public CompletableFuture<Object> shutdown() {
     System.err.println("DITA Language Server shutting down");
-    return CompletableFuture.completedFuture(null);
+    return CompletableFuture.supplyAsync(
+        () -> {
+          debouncer.shutdown();
+          return null;
+        });
   }
 
   @Override
