@@ -130,43 +130,28 @@ public class DitaTextDocumentService implements TextDocumentService {
     String uri = params.getTextDocument().getUri();
     String text = params.getContentChanges().get(0).getText();
 
-    CompletableFuture.runAsync(
-        () -> {
-          XdmNode doc = null;
-          try {
-            doc = parser.parse(text);
-            openDocuments.put(uri, doc);
+    CompletableFuture.supplyAsync(
+            () -> {
+              XdmNode doc = parser.parse(text);
+              openDocuments.put(uri, doc);
 
-            if (rootMapUri != null && !rootMapUri.equals(uri)) {
-              readRootMap(doc);
-            }
-          } catch (Exception e) {
-            System.err.println("Failed to parse document: " + e.getMessage());
-            e.printStackTrace(System.err);
-            return;
-          }
+              if (Objects.equals(rootMapUri, uri)) {
+                  keyManager.read(doc);
+              }
 
-          if (doc != null) {
-            validateDocument(uri, doc);
-          }
-        });
-
-    //    System.err.println("Document changed: " + uri);
-    //    try {
-    //      //        openDocuments.put(uri, text);
-    //      XdmNode doc = parser.parse(text);
-    //      openDocuments.put(uri, doc);
-    //
-    //      if (rootMapUri != null && !rootMapUri.equals(uri)) {
-    //        readRootMap(doc);
-    //      }
-    //
-    //      // Re-validate
-    //      validateDocument(uri, doc);
-    //    } catch (Exception e) {
-    //      System.err.println("Failed to parse document: " + e.getMessage());
-    //      e.printStackTrace(System.err);
-    //    }
+              return doc;
+            })
+        .thenAccept(
+            doc -> {
+              if (doc != null) {
+                validateDocument(uri, doc);
+              }
+            })
+        .exceptionally(
+            ex -> {
+              System.err.println("Failed to parse: " + ex.getMessage());
+              return null;
+            });
   }
 
   @Override
@@ -288,7 +273,4 @@ public class DitaTextDocumentService implements TextDocumentService {
         new Position(Integer.parseInt(tokens[2]) - 1, Integer.parseInt(tokens[3])));
   }
 
-  private void readRootMap(XdmNode content) {
-    keyManager.read(content);
-  }
 }
