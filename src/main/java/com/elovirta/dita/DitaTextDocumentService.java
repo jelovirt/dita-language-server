@@ -124,25 +124,49 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   @Override
   public void didChange(DidChangeTextDocumentParams params) {
+    if (params.getContentChanges().size() != 1) {
+      throw new RuntimeException("DidChange not supported for multiple changes: " + params);
+    }
     String uri = params.getTextDocument().getUri();
     String text = params.getContentChanges().get(0).getText();
 
+    CompletableFuture.runAsync(
+        () -> {
+          XdmNode doc = null;
+          try {
+            doc = parser.parse(text);
+            openDocuments.put(uri, doc);
+
+            if (rootMapUri != null && !rootMapUri.equals(uri)) {
+              readRootMap(doc);
+            }
+          } catch (Exception e) {
+            System.err.println("Failed to parse document: " + e.getMessage());
+            e.printStackTrace(System.err);
+            return;
+          }
+
+          if (doc != null) {
+            validateDocument(uri, doc);
+          }
+        });
+
     //    System.err.println("Document changed: " + uri);
-    try {
-      //        openDocuments.put(uri, text);
-      XdmNode doc = parser.parse(text);
-      openDocuments.put(uri, doc);
-
-      if (rootMapUri != null && !rootMapUri.equals(uri)) {
-        readRootMap(doc);
-      }
-
-      // Re-validate
-      validateDocument(uri, doc);
-    } catch (Exception e) {
-      System.err.println("Failed to parse document: " + e.getMessage());
-      e.printStackTrace(System.err);
-    }
+    //    try {
+    //      //        openDocuments.put(uri, text);
+    //      XdmNode doc = parser.parse(text);
+    //      openDocuments.put(uri, doc);
+    //
+    //      if (rootMapUri != null && !rootMapUri.equals(uri)) {
+    //        readRootMap(doc);
+    //      }
+    //
+    //      // Re-validate
+    //      validateDocument(uri, doc);
+    //    } catch (Exception e) {
+    //      System.err.println("Failed to parse document: " + e.getMessage());
+    //      e.printStackTrace(System.err);
+    //    }
   }
 
   @Override
