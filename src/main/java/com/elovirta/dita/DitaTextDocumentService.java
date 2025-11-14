@@ -29,12 +29,13 @@ public class DitaTextDocumentService implements TextDocumentService {
   private final Map<String, XdmNode> openDocuments = new ConcurrentHashMap<>();
   private String rootMapUri;
   private XdmNode rootMap;
-  private final Map<String, XdmNode> keyDefinitions = new ConcurrentHashMap<>();
   private final DitaParser parser;
+  private final KeyManager keyManager;
 
   public DitaTextDocumentService(DitaLanguageServer server) {
     this.server = server;
     this.parser = new DitaParser();
+    this.keyManager = new KeyManager();
     //        var resolver = this.parser.getCatalogResolver();
     //        try {
     //            var res = resolver.resolveEntity("-//OASIS//DTD DITA 1.3 Base Map//EN", null);
@@ -44,7 +45,18 @@ public class DitaTextDocumentService implements TextDocumentService {
     //        }
   }
 
-  // TODO: This should validate change in map that has key definitions
+  public void setRootMapUri(String uri) {
+    rootMapUri = uri;
+    System.err.println("Setting root map URI: " + uri);
+    try {
+      var content = Files.readString(Paths.get(URI.create(uri)));
+      rootMap = parser.parse(content);
+      openDocuments.put(uri, rootMap);
+    } catch (Exception e) {
+      System.err.println("Failed to parse map document: " + e.getMessage());
+    }
+  }
+
   @Override
   public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
     String uri = params.getTextDocument().getUri();
@@ -76,10 +88,9 @@ public class DitaTextDocumentService implements TextDocumentService {
                               .<FullDocumentDiagnosticReport, UnchangedDocumentDiagnosticReport>
                                   forLeft(
                                       new FullDocumentDiagnosticReport(
-                                          doSlowValidation(entry.getValue())
-                                          ))))
+                                          doSlowValidation(entry.getValue())))))
               .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
-System.err.println(diagnostics);
+      System.err.println(diagnostics);
       report.setRelatedDocuments(diagnostics);
 
       return CompletableFuture.completedFuture(new DocumentDiagnosticReport(report));
@@ -173,7 +184,7 @@ System.err.println(diagnostics);
       var keyrefs = content.select(Steps.descendant().then(Steps.attribute("keyref"))).toList();
       if (!keyrefs.isEmpty()) {
         for (XdmNode keyref : keyrefs) {
-          if (!keyDefinitions.containsKey(keyref.getStringValue())) {
+          if (!keyManager.containsKey(keyref.getStringValue())) {
             var range = getAttributeRange(keyref);
             diagnostics.add(
                 new Diagnostic(
@@ -195,7 +206,7 @@ System.err.println(diagnostics);
           if (separator != -1) {
             keyref = keyref.substring(0, separator);
           }
-          if (!keyDefinitions.containsKey(keyref)) {
+          if (!keyManager.containsKey(keyref)) {
             // FIXME range should match only the key name
             var range = getAttributeRange(conkeyref);
             diagnostics.add(
@@ -253,31 +264,7 @@ System.err.println(diagnostics);
         new Position(Integer.parseInt(tokens[2]) - 1, Integer.parseInt(tokens[3])));
   }
 
-  public void setRootMapUri(String uri) {
-    rootMapUri = uri;
-    System.err.println("Setting root map URI: " + uri);
-    try {
-      var content = Files.readString(Paths.get(URI.create(uri)));
-      rootMap = parser.parse(content);
-      openDocuments.put(uri, rootMap);
-
-    } catch (Exception e) {
-      System.err.println("Failed to parse map document: " + e.getMessage());
-    }
-  }
-
   private void readRootMap(XdmNode content) {
-    // Validate keyrefs against root map
-    var keyDefs = rootMap.select(Steps.descendant().then(Steps.attribute("keys"))).toList();
-    if (!keyDefs.isEmpty()) {
-      for (XdmNode keyDef : keyDefs) {
-        var keys = Set.of(keyDef.getStringValue().trim().split("\\s+"));
-        for (String key : keys) {
-          if (!keyDefinitions.containsKey(key)) {
-            keyDefinitions.put(key, keyDef);
-          }
-        }
-      }
-    }
+    keyManager.read(content);
   }
 }
