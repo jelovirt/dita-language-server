@@ -53,6 +53,8 @@ public class DitaTextDocumentService implements TextDocumentService {
       rootMap = parser.parse(content);
       openDocuments.put(uri, rootMap);
 
+      keyManager.read(rootMap);
+
       revalidateAllOpenDocuments();
     } catch (Exception e) {
       System.err.println("Failed to parse map document: " + e.getMessage());
@@ -152,7 +154,7 @@ public class DitaTextDocumentService implements TextDocumentService {
                 if (Objects.equals(rootMapUri, uri)) {
                   System.err.println("Root map changed, do debounced validate");
                   try {
-                    debouncer.debounce(uri, this::revalidateAllOpenDocuments, 5000);
+                    debouncer.debounce(uri, this::revalidateAllOpenDocuments, 500);
                   } catch (Exception e) {
                     System.err.println("Failed to debounced validate: " + e.getMessage());
                     e.printStackTrace(System.err);

@@ -1,5 +1,6 @@
 package com.elovirta.dita;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -7,19 +8,23 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.streams.Steps;
 
 public class KeyManager {
-  private Map<String, XdmNode> keyDefinitions = new ConcurrentHashMap<>();
+  private volatile Map<String, XdmNode> keyDefinitions = Collections.emptyMap();
 
   public void read(XdmNode map) {
+    System.err.println("Read key definitions");
     var keyDefs = map.select(Steps.descendant().then(Steps.attribute("keys"))).toList();
     if (!keyDefs.isEmpty()) {
+      Map<String, XdmNode> buf = new ConcurrentHashMap<>();
       for (XdmNode keyDef : keyDefs) {
         var keys = Set.of(keyDef.getStringValue().trim().split("\\s+"));
         for (String key : keys) {
-          if (!keyDefinitions.containsKey(key)) {
-            keyDefinitions.put(key, keyDef);
+          if (!buf.containsKey(key)) {
+            buf.put(key, keyDef);
           }
         }
       }
+      keyDefinitions = buf;
+      System.err.println("Keys: " + keyDefinitions.keySet());
     }
   }
 
