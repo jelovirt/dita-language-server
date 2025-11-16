@@ -35,4 +35,8 @@ public class KeyManager {
   public boolean containsKey(String key) {
     return keyDefinitions.containsKey(key);
   }
+
+  public Set<Map.Entry<String, XdmNode>> keys() {
+    return keyDefinitions.entrySet();
+  }
 }
