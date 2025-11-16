@@ -22,6 +22,9 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   private static final Logger logger = LoggerFactory.getLogger(DitaTextDocumentService.class);
 
+  private static final String KEYREF_ELEM = "keyref";
+  private static final String CONKEYREF_ELEM = "conkeyref";
+
   private final DitaLanguageServer server;
   private final Map<String, XdmNode> openDocuments = new ConcurrentHashMap<>();
   private String rootMapUri;
@@ -67,7 +70,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     //    System.err.println("Found attribute: " + attr);
     if (attr != null) {
       var localName = attr.getNodeName().getLocalName();
-      if (localName.equals("keyref")) {
+      if (localName.equals(KEYREF_ELEM)) {
         List<CompletionItem> items = new ArrayList<>();
         for (Map.Entry<String, XdmNode> keyDef : keyManager.keys()) {
           var key = keyDef.getKey();
@@ -79,7 +82,7 @@ public class DitaTextDocumentService implements TextDocumentService {
         }
         return CompletableFuture.completedFuture(Either.forLeft(items));
       }
-      if (localName.equals("conkeyref")) {
+      if (localName.equals(CONKEYREF_ELEM)) {
         List<CompletionItem> items = new ArrayList<>();
         var value = attr.getStringValue();
         if (value.contains("/")) {
@@ -287,7 +290,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     System.err.println("Do validation");
     if (rootMap != null) {
       System.err.println("Validate keyref");
-      var keyrefs = content.select(Steps.descendant().then(Steps.attribute("keyref"))).toList();
+      var keyrefs = content.select(Steps.descendant().then(Steps.attribute(KEYREF_ELEM))).toList();
       if (!keyrefs.isEmpty()) {
         for (XdmNode keyref : keyrefs) {
           if (!keyManager.containsKey(keyref.getStringValue())) {
@@ -304,7 +307,7 @@ public class DitaTextDocumentService implements TextDocumentService {
 
       System.err.println("Validate conkeyref");
       var conkeyrefs =
-          content.select(Steps.descendant().then(Steps.attribute("conkeyref"))).toList();
+          content.select(Steps.descendant().then(Steps.attribute(CONKEYREF_ELEM))).toList();
       if (!conkeyrefs.isEmpty()) {
         for (XdmNode conkeyref : conkeyrefs) {
           var conkeyrefValue = conkeyref.getStringValue();

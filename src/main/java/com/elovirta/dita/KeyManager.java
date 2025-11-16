@@ -8,11 +8,13 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.streams.Steps;
 
 public class KeyManager {
+  private static final String KEYS_ATTR = "keys";
+
   private volatile Map<String, XdmNode> keyDefinitions = Collections.emptyMap();
 
   public void read(XdmNode map) {
     System.err.println("Read key definitions");
-    var keyDefs = map.select(Steps.descendant().then(Steps.attribute("keys"))).toList();
+    var keyDefs = map.select(Steps.descendant().then(Steps.attribute(KEYS_ATTR))).toList();
     if (!keyDefs.isEmpty()) {
       Map<String, XdmNode> buf = new ConcurrentHashMap<>();
       for (XdmNode keyDef : keyDefs) {
