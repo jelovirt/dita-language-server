@@ -65,17 +65,43 @@ public class DitaTextDocumentService implements TextDocumentService {
       CompletionParams params) {
     var attr = findAttribute(params.getTextDocument().getUri(), params.getPosition());
     //    System.err.println("Found attribute: " + attr);
-    if (attr != null && attr.getNodeName().getLocalName().equals("keyref")) {
-      List<CompletionItem> items = new ArrayList<>();
-      for (Map.Entry<String, XdmNode> keyDef : keyManager.keys()) {
-        var key = keyDef.getKey();
-        CompletionItem item = new CompletionItem(key);
-        item.setKind(CompletionItemKind.Reference);
-        item.setDetail("DITA key from root map");
-        item.setDocumentation(keyDef.getValue().attribute("href"));
-        items.add(item);
+    if (attr != null) {
+      var localName = attr.getNodeName().getLocalName();
+      if (localName.equals("keyref")) {
+        List<CompletionItem> items = new ArrayList<>();
+        for (Map.Entry<String, XdmNode> keyDef : keyManager.keys()) {
+          var key = keyDef.getKey();
+          CompletionItem item = new CompletionItem(key);
+          item.setKind(CompletionItemKind.Reference);
+          item.setDetail("DITA key from root map");
+          item.setDocumentation(keyDef.getValue().attribute("href"));
+          items.add(item);
+        }
+        return CompletableFuture.completedFuture(Either.forLeft(items));
       }
-      return CompletableFuture.completedFuture(Either.forLeft(items));
+      if (localName.equals("conkeyref")) {
+        List<CompletionItem> items = new ArrayList<>();
+        var value = attr.getStringValue();
+        if (value.contains("/")) {
+          var key = value.substring(0, value.indexOf("/"));
+          // FIXME: read all IDs from target topic
+          CompletionItem item = new CompletionItem("id");
+          item.setKind(CompletionItemKind.Reference);
+          item.setDetail("ID from key " + key);
+          //                  item.setDocumentation(keyDef.getValue().attribute("href"));
+          items.add(item);
+        } else {
+          for (Map.Entry<String, XdmNode> keyDef : keyManager.keys()) {
+            var key = keyDef.getKey();
+            CompletionItem item = new CompletionItem(key);
+            item.setKind(CompletionItemKind.Reference);
+            item.setDetail("DITA key from root map");
+            item.setDocumentation(keyDef.getValue().attribute("href"));
+            items.add(item);
+          }
+        }
+        return CompletableFuture.completedFuture(Either.forLeft(items));
+      }
     }
     return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
   }
