@@ -1,7 +1,6 @@
 package com.elovirta.dita;
 
 import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_NAMESPACE;
-import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_PREFIX;
 
 import java.net.URI;
 import java.nio.file.Files;
@@ -9,11 +8,11 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.streams.Steps;
 import org.eclipse.lsp4j.*;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.slf4j.Logger;
@@ -59,6 +58,78 @@ public class DitaTextDocumentService implements TextDocumentService {
     } catch (Exception e) {
       System.err.println("Failed to parse map document: " + e.getMessage());
     }
+  }
+
+  @Override
+  public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(
+      CompletionParams params) {
+    var attr = findAttribute(params.getTextDocument().getUri(), params.getPosition());
+    //    System.err.println("Found attribute: " + attr);
+    if (attr != null) {
+      var localName = attr.getNodeName().getLocalName();
+      if (localName.equals("keyref")) {
+        List<CompletionItem> items = new ArrayList<>();
+        for (Map.Entry<String, XdmNode> keyDef : keyManager.keys()) {
+          var key = keyDef.getKey();
+          CompletionItem item = new CompletionItem(key);
+          item.setKind(CompletionItemKind.Reference);
+          item.setDetail("DITA key from root map");
+          item.setDocumentation(keyDef.getValue().attribute("href"));
+          items.add(item);
+        }
+        return CompletableFuture.completedFuture(Either.forLeft(items));
+      }
+      if (localName.equals("conkeyref")) {
+        List<CompletionItem> items = new ArrayList<>();
+        var value = attr.getStringValue();
+        if (value.contains("/")) {
+          var key = value.substring(0, value.indexOf("/"));
+          // FIXME: read all IDs from target topic
+          CompletionItem item = new CompletionItem("id");
+          item.setKind(CompletionItemKind.Reference);
+          item.setDetail("ID from key " + key);
+          //                  item.setDocumentation(keyDef.getValue().attribute("href"));
+          items.add(item);
+        } else {
+          for (Map.Entry<String, XdmNode> keyDef : keyManager.keys()) {
+            var key = keyDef.getKey();
+            CompletionItem item = new CompletionItem(key);
+            item.setKind(CompletionItemKind.Reference);
+            item.setDetail("DITA key from root map");
+            item.setDocumentation(keyDef.getValue().attribute("href"));
+            items.add(item);
+          }
+        }
+        return CompletableFuture.completedFuture(Either.forLeft(items));
+      }
+    }
+    return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
+  }
+
+  private XdmNode findAttribute(String uri, Position position) {
+    var doc = openDocuments.get(uri);
+    // TODO: extract this into a TreeMap or TreeSet
+    return doc.select(
+            Steps.descendant()
+                .then(
+                    Steps.attribute(
+                        attr ->
+                            attr.getNodeName().getNamespaceUri().toString().equals(LOC_NAMESPACE)
+                                && attr.getNodeName().getLocalName().startsWith("attr-"))))
+        .map(
+            attr ->
+                attr.getParent()
+                    .select(
+                        Steps.attribute(
+                            attr.getNodeName().getLocalName().substring("attr-".length())))
+                    .asOptionalNode()
+                    .map(a -> Map.entry(a, Utils.parseRange(attr.getStringValue())))
+                    .orElse(null))
+        .filter(Objects::nonNull)
+        .filter(loc -> Utils.contains(loc.getValue(), position))
+        .findFirst()
+        .map(Map.Entry::getKey)
+        .orElse(null);
   }
 
   @Override
@@ -220,7 +291,7 @@ public class DitaTextDocumentService implements TextDocumentService {
       if (!keyrefs.isEmpty()) {
         for (XdmNode keyref : keyrefs) {
           if (!keyManager.containsKey(keyref.getStringValue())) {
-            var range = getAttributeRange(keyref);
+            var range = Utils.getAttributeRange(keyref);
             diagnostics.add(
                 new Diagnostic(
                     range,
@@ -244,7 +315,7 @@ public class DitaTextDocumentService implements TextDocumentService {
           }
           if (!keyManager.containsKey(keyref)) {
             // FIXME range should match only the key name
-            var range = getAttributeRange(conkeyref);
+            var range = Utils.getAttributeRange(conkeyref);
             diagnostics.add(
                 new Diagnostic(
                     range,
@@ -271,7 +342,7 @@ public class DitaTextDocumentService implements TextDocumentService {
         if (encountered.contains(idValue)) {
           diagnostics.add(
               new Diagnostic(
-                  getAttributeRange(id),
+                  Utils.getAttributeRange(id),
                   "Duplicate id attribute value '%s'".formatted(id.getStringValue()),
                   DiagnosticSeverity.Error,
                   "dita-validator"));
@@ -282,21 +353,5 @@ public class DitaTextDocumentService implements TextDocumentService {
     }
 
     return diagnostics;
-  }
-
-  private Range getAttributeRange(XdmNode attr) {
-    var loc =
-        attr.getParent()
-            .getAttributeValue(
-                new QName(LOC_PREFIX, LOC_NAMESPACE, "attr-" + attr.getNodeName().getLocalName()));
-    return parseRange(loc);
-  }
-
-  private Range parseRange(String loc) {
-    var tokens = loc.split("[:\\-]");
-
-    return new Range(
-        new Position(Integer.parseInt(tokens[0]) - 1, Integer.parseInt(tokens[1]) - 1),
-        new Position(Integer.parseInt(tokens[2]) - 1, Integer.parseInt(tokens[3])));
   }
 }
