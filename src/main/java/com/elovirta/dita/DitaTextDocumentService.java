@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.streams.Steps;
@@ -27,16 +26,18 @@ public class DitaTextDocumentService implements TextDocumentService {
   private static final String CONKEYREF_ELEM = "conkeyref";
 
   private final DitaLanguageServer server;
-  private final Map<String, XdmNode> openDocuments = new ConcurrentHashMap<>();
+  //  private final Map<String, XdmNode> openDocuments = new ConcurrentHashMap<>();
   private String rootMapUri;
   private XdmNode rootMap;
   private final DitaParser parser;
+  private final DocumentManager documentManager;
   private final KeyManager keyManager;
   private final SmartDebouncer debouncer;
 
   public DitaTextDocumentService(DitaLanguageServer server, SmartDebouncer debouncer) {
     this.server = server;
     this.parser = new DitaParser();
+    this.documentManager = new DocumentManager();
     this.keyManager = new KeyManager();
     this.debouncer = debouncer;
     //        var resolver = this.parser.getCatalogResolver();
@@ -54,7 +55,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     try {
       var content = Files.readString(Paths.get(URI.create(uri)));
       rootMap = parser.parse(content);
-      openDocuments.put(uri, rootMap);
+      documentManager.put(uri, rootMap);
 
       keyManager.read(rootMap);
 
@@ -111,7 +112,7 @@ public class DitaTextDocumentService implements TextDocumentService {
   }
 
   private XdmNode findAttribute(String uri, Position position) {
-    var doc = openDocuments.get(uri);
+    var doc = documentManager.get(uri);
     // TODO: extract this into a TreeMap or TreeSet
     return doc.select(
             Steps.descendant()
@@ -193,7 +194,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     try {
       //        openDocuments.put(uri, text);
       XdmNode doc = parser.parse(text);
-      openDocuments.put(uri, doc);
+      documentManager.put(uri, doc);
 
       // Validate the document
       validateDocument(uri, doc);
@@ -214,7 +215,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     CompletableFuture.supplyAsync(
             () -> {
               XdmNode doc = parser.parse(text);
-              openDocuments.put(uri, doc);
+              documentManager.put(uri, doc);
 
               if (Objects.equals(rootMapUri, uri)) {
                 keyManager.read(doc);
@@ -248,7 +249,7 @@ public class DitaTextDocumentService implements TextDocumentService {
   public void didClose(DidCloseTextDocumentParams params) {
     String uri = params.getTextDocument().getUri();
     //    System.err.println("Document closed: " + uri);
-    openDocuments.remove(uri);
+    documentManager.remove(uri);
   }
 
   @Override
@@ -259,7 +260,7 @@ public class DitaTextDocumentService implements TextDocumentService {
   public void revalidateAllOpenDocuments() {
     try {
       System.err.println("Revalidating all open documents");
-      openDocuments.forEach(this::validateDocument);
+      documentManager.forEach(this::validateDocument);
     } catch (Exception e) {
       System.err.println("Failed to revalidate all open documents: " + e.getMessage());
       e.printStackTrace(System.err);
