@@ -1,5 +1,12 @@
 package com.elovirta.dita;
 
+import static net.sf.saxon.s9api.streams.Predicates.*;
+
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,30 +16,57 @@ import net.sf.saxon.s9api.streams.Steps;
 
 public class DocumentManager {
 
-  private final Map<String, XdmNode> openDocuments = new ConcurrentHashMap<>();
+  private final DitaParser ditaParser = new DitaParser();
+  private final Map<URI, XdmNode> openDocuments = new ConcurrentHashMap<>();
 
-  public XdmNode get(String uri) {
-    return openDocuments.get(uri);
+  public XdmNode get(URI uri) {
+    return openDocuments.computeIfAbsent(
+        uri,
+        u -> {
+          try {
+            System.err.println("Parsing " + u);
+            return ditaParser.parse(Files.readString(Paths.get(u)));
+          } catch (IOException e) {
+            return null;
+          }
+        });
   }
 
-  public void put(String uri, XdmNode node) {
+  public void put(URI uri, XdmNode node) {
     openDocuments.put(uri, node);
   }
 
-  public void remove(String uri) {
+  public void remove(URI uri) {
     openDocuments.remove(uri);
   }
 
-  public void forEach(BiConsumer<String, XdmNode> action) {
+  public void forEach(BiConsumer<URI, XdmNode> action) {
     openDocuments.forEach(action);
   }
 
-  public List<String> listIds(String uri) {
-    System.err.println("listIds " + uri);
-    return openDocuments
-        .get(uri)
-        .select(Steps.descendant("topic").then(Steps.attribute("id")))
+  public List<String> listIds(URI uri) {
+    var doc = get(uri);
+    if (doc == null) {
+      return Collections.emptyList();
+    }
+    return doc.select(Steps.descendant("topic").then(Steps.attribute("id")))
         .map(XdmNode::getStringValue)
         .toList();
+  }
+
+  public List<String> listElementIds(URI uri, String topicId) {
+    var doc = get(uri);
+    if (doc == null) {
+      return Collections.emptyList();
+    }
+    var topicSelector =
+        topicId != null
+            ? Steps.descendant("topic").where(attributeEq("id", topicId)).first()
+            : Steps.descendant("topic").first();
+    var isSelector =
+        topicSelector
+            .then(Steps.child(isElement()).where(not(hasLocalName("topic"))))
+            .then(Steps.descendantOrSelf().then(Steps.attribute("id")));
+    return doc.select(isSelector).map(XdmNode::getStringValue).toList();
   }
 }

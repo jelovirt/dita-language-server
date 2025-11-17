@@ -3,6 +3,7 @@ package com.elovirta.dita;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.net.URI;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
@@ -95,7 +96,7 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
 
   public void setCurrentRootMapUri(String uri) {
     this.currentRootMapUri = uri;
-    textDocumentService.setRootMapUri(uri);
+    textDocumentService.setRootMapUri(URI.create(uri));
     // Optionally trigger revalidation here
     textDocumentService.revalidateAllOpenDocuments();
   }

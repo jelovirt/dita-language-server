@@ -3,6 +3,8 @@ package com.elovirta.dita;
 import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_NAMESPACE;
 import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_PREFIX;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmNode;
 import org.eclipse.lsp4j.Position;
@@ -44,5 +46,23 @@ public class Utils {
       return 1;
     }
     return Integer.compare(a.getCharacter(), b.getCharacter());
+  }
+
+  public static URI stripFragment(URI uri) {
+    if (uri.getFragment() == null) {
+      return uri;
+    }
+    try {
+      return new URI(
+          uri.getScheme(),
+          uri.getUserInfo(),
+          uri.getHost(),
+          uri.getPort(),
+          uri.getPath(),
+          uri.getQuery(),
+          null);
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

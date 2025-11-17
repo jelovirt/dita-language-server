@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -51,8 +52,9 @@ class DitaTextDocumentServiceTest {
   }
 
   @Test
-  void testInvalidDitaDocument() throws ExecutionException, InterruptedException {
-    textDocumentService.setRootMapUri(getClass().getResource("/keymap.ditamap").toString());
+  void testInvalidDitaDocument()
+      throws ExecutionException, InterruptedException, URISyntaxException {
+    textDocumentService.setRootMapUri(getClass().getResource("/keymap.ditamap").toURI());
     var invalidDita = readResource("invalid-keyref.dita");
     textDocumentService.didOpen(createOpenParams("file:///invalid-keyref.dita", invalidDita));
     var params = createChangeParams("file:///invalid-keyref.dita", invalidDita);

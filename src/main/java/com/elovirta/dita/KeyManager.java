@@ -1,5 +1,6 @@
 package com.elovirta.dita;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -12,16 +13,19 @@ public class KeyManager {
 
   private volatile Map<String, KeyDefinition> keyDefinitions = Collections.emptyMap();
 
-  public void read(XdmNode map) {
-    System.err.println("Read key definitions");
+  public void read(URI uri, XdmNode map) {
+    System.err.println("Read key definitions " + uri);
     var keyDefs = map.select(Steps.descendant().then(Steps.attribute(KEYS_ATTR))).toList();
     if (!keyDefs.isEmpty()) {
       Map<String, KeyDefinition> buf = new ConcurrentHashMap<>();
-      for (XdmNode keyDef : keyDefs) {
-        var keys = Set.of(keyDef.getStringValue().trim().split("\\s+"));
+      for (XdmNode keyDefAttr : keyDefs) {
+        var keys = Set.of(keyDefAttr.getStringValue().trim().split("\\s+"));
+        var keyDef = keyDefAttr.getParent();
         for (String key : keys) {
           if (!buf.containsKey(key)) {
-            var keyDefinition = new KeyDefinition(key, keyDef, keyDef.attribute("href"));
+            var target =
+                keyDef.attribute("href") != null ? uri.resolve(keyDef.attribute("href")) : null;
+            var keyDefinition = new KeyDefinition(key, keyDef, target);
             buf.put(key, keyDefinition);
           }
         }
@@ -43,5 +47,5 @@ public class KeyManager {
     return keyDefinitions.entrySet();
   }
 
-  public record KeyDefinition(String key, XdmNode definition, String target) {}
+  public record KeyDefinition(String key, XdmNode definition, URI target) {}
 }

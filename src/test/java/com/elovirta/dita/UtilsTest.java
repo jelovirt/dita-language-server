@@ -2,6 +2,7 @@ package com.elovirta.dita;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.net.URI;
 import java.util.stream.Stream;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class UtilsTest {
 
@@ -48,5 +50,11 @@ class UtilsTest {
   @MethodSource("contains_falseArguments")
   void contains_outside(Range range, Position position) {
     assertFalse(Utils.contains(range, position));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"file:///Users/foo/test.dita", "file:///Users/foo/test.dita#fragment"})
+  void stripFragment(URI uri) {
+    assertEquals(URI.create("file:///Users/foo/test.dita"), Utils.stripFragment(uri));
   }
 }

@@ -1,6 +1,7 @@
 package com.elovirta.dita;
 
 import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_NAMESPACE;
+import static com.elovirta.dita.Utils.stripFragment;
 
 import com.elovirta.dita.KeyManager.KeyDefinition;
 import java.net.URI;
@@ -28,7 +29,7 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   private final DitaLanguageServer server;
   //  private final Map<String, XdmNode> openDocuments = new ConcurrentHashMap<>();
-  private String rootMapUri;
+  private URI rootMapUri;
   private XdmNode rootMap;
   private final DitaParser parser;
   private final DocumentManager documentManager;
@@ -50,15 +51,15 @@ public class DitaTextDocumentService implements TextDocumentService {
     //        }
   }
 
-  public void setRootMapUri(String uri) {
+  public void setRootMapUri(URI uri) {
     rootMapUri = uri;
     System.err.println("Setting root map URI: " + uri);
     try {
-      var content = Files.readString(Paths.get(URI.create(uri)));
+      var content = Files.readString(Paths.get(uri));
       rootMap = parser.parse(content);
       documentManager.put(uri, rootMap);
 
-      keyManager.read(rootMap);
+      keyManager.read(uri, rootMap);
 
       revalidateAllOpenDocuments();
     } catch (Exception e) {
@@ -69,7 +70,7 @@ public class DitaTextDocumentService implements TextDocumentService {
   @Override
   public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(
       CompletionParams params) {
-    var attr = findAttribute(params.getTextDocument().getUri(), params.getPosition());
+    var attr = findAttribute(URI.create(params.getTextDocument().getUri()), params.getPosition());
     //    System.err.println("Found attribute: " + attr);
     if (attr != null) {
       var localName = attr.getNodeName().getLocalName();
@@ -77,10 +78,12 @@ public class DitaTextDocumentService implements TextDocumentService {
         List<CompletionItem> items = new ArrayList<>();
         for (Map.Entry<String, KeyDefinition> keyDef : keyManager.keys()) {
           var key = keyDef.getKey();
+          var keyDefinition = keyDef.getValue();
           CompletionItem item = new CompletionItem(key);
           item.setKind(CompletionItemKind.Reference);
           item.setDetail("DITA key from root map");
-          item.setDocumentation(keyDef.getValue().target());
+          item.setDocumentation(
+              keyDefinition.target() != null ? keyDefinition.target().toString() : null);
           items.add(item);
         }
         return CompletableFuture.completedFuture(Either.forLeft(items));
@@ -90,9 +93,10 @@ public class DitaTextDocumentService implements TextDocumentService {
         var value = attr.getStringValue();
         if (value.contains("/")) {
           var key = value.substring(0, value.indexOf("/"));
-          // FIXME: get URI matching key
-          var uri = keyManager.get(key);
-          for (String listId : documentManager.listIds(key)) {
+          var uri = keyManager.get(key).target();
+          for (String listId :
+              documentManager.listElementIds(stripFragment(uri), uri.getFragment())) {
+            System.err.println("list @id = " + listId);
             CompletionItem item = new CompletionItem(listId);
             item.setKind(CompletionItemKind.Reference);
             item.setDetail("ID " + listId + " from key " + key);
@@ -101,20 +105,23 @@ public class DitaTextDocumentService implements TextDocumentService {
         } else {
           for (Map.Entry<String, KeyDefinition> keyDef : keyManager.keys()) {
             var key = keyDef.getKey();
+            var keyDefinition = keyDef.getValue();
             CompletionItem item = new CompletionItem(key);
             item.setKind(CompletionItemKind.Reference);
             item.setDetail("DITA key from root map");
-            item.setDocumentation(keyDef.getValue().target());
+            item.setDocumentation(
+                keyDefinition.target() != null ? keyDefinition.target().toString() : null);
             items.add(item);
           }
         }
+        System.err.println(items);
         return CompletableFuture.completedFuture(Either.forLeft(items));
       }
     }
     return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
   }
 
-  private XdmNode findAttribute(String uri, Position position) {
+  private XdmNode findAttribute(URI uri, Position position) {
     var doc = documentManager.get(uri);
     // TODO: extract this into a TreeMap or TreeSet
     return doc.select(
@@ -190,7 +197,7 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   @Override
   public void didOpen(DidOpenTextDocumentParams params) {
-    String uri = params.getTextDocument().getUri();
+    URI uri = URI.create(params.getTextDocument().getUri());
     String text = params.getTextDocument().getText();
 
     //    System.err.println("Document opened: " + uri);
@@ -212,7 +219,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     if (params.getContentChanges().size() != 1) {
       throw new RuntimeException("DidChange not supported for multiple changes: " + params);
     }
-    String uri = params.getTextDocument().getUri();
+    URI uri = URI.create(params.getTextDocument().getUri());
     String text = params.getContentChanges().get(0).getText();
 
     CompletableFuture.supplyAsync(
@@ -221,7 +228,7 @@ public class DitaTextDocumentService implements TextDocumentService {
               documentManager.put(uri, doc);
 
               if (Objects.equals(rootMapUri, uri)) {
-                keyManager.read(doc);
+                keyManager.read(uri, doc);
               }
 
               return doc;
@@ -233,7 +240,7 @@ public class DitaTextDocumentService implements TextDocumentService {
                 if (Objects.equals(rootMapUri, uri)) {
                   System.err.println("Root map changed, do debounced validate");
                   try {
-                    debouncer.debounce(uri, this::revalidateAllOpenDocuments, 500);
+                    debouncer.debounce(uri.toString(), this::revalidateAllOpenDocuments, 500);
                   } catch (Exception e) {
                     System.err.println("Failed to debounced validate: " + e.getMessage());
                     e.printStackTrace(System.err);
@@ -250,7 +257,7 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   @Override
   public void didClose(DidCloseTextDocumentParams params) {
-    String uri = params.getTextDocument().getUri();
+    URI uri = URI.create(params.getTextDocument().getUri());
     //    System.err.println("Document closed: " + uri);
     documentManager.remove(uri);
   }
@@ -270,7 +277,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     }
   }
 
-  private void validateDocument(String uri, XdmNode content) {
+  private void validateDocument(URI uri, XdmNode content) {
     try {
       // Add null check
       LanguageClient client = server.getClient();
@@ -282,7 +289,7 @@ public class DitaTextDocumentService implements TextDocumentService {
       var diagnostics = doValidation(content);
       diagnostics.addAll(doSlowValidation(content));
 
-      var publishParams = new PublishDiagnosticsParams(uri, diagnostics);
+      var publishParams = new PublishDiagnosticsParams(uri.toString(), diagnostics);
       client.publishDiagnostics(publishParams);
     } catch (Exception e) {
       System.err.println("Failed to validate document: " + e.getMessage());
