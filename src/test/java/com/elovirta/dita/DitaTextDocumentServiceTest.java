@@ -2,8 +2,7 @@ package com.elovirta.dita;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -12,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.services.LanguageClient;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -32,44 +32,46 @@ class DitaTextDocumentServiceTest {
     textDocumentService = new DitaTextDocumentService(server, new SmartDebouncer());
   }
 
+  @AfterEach
+  void tearDown() {
+    clearInvocations(mockClient);
+  }
+
   @Test
   void testValidDitaDocument() {
-    String validDita = readResource("valid.dita");
-
-    var params = createOpenParams("file:///valid.dita", validDita);
-    textDocumentService.didOpen(params);
+    var validDita = readResource("valid.dita");
+    textDocumentService.didOpen(createOpenParams("file:///valid.dita", validDita));
 
     var captor = ArgumentCaptor.forClass(PublishDiagnosticsParams.class);
     verify(mockClient).publishDiagnostics(captor.capture());
+    var act = captor.getValue();
 
-    var diagnostics = captor.getValue();
-
-    assertEquals("file:///valid.dita", diagnostics.getUri());
-    assertTrue(diagnostics.getDiagnostics().isEmpty());
+    assertEquals("file:///valid.dita", act.getUri());
+    assertTrue(act.getDiagnostics().isEmpty());
   }
 
   @Test
   void testInvalidDitaDocument() throws ExecutionException, InterruptedException {
     textDocumentService.setRootMapUri(getClass().getResource("/keymap.ditamap").toString());
-    String invalidDita = readResource("invalid-conkeyref.dita");
-    var params = createOpenParams("file:///invalid-conkeyref.dita", invalidDita);
-    textDocumentService.didOpen(params);
+    var invalidDita = readResource("invalid-keyref.dita");
+    textDocumentService.didOpen(createOpenParams("file:///invalid-keyref.dita", invalidDita));
+    var params = createChangeParams("file:///invalid-keyref.dita", invalidDita);
+    textDocumentService.didChange(params);
 
-    var act =
-        textDocumentService.diagnostic(
-            new DocumentDiagnosticParams(
-                new TextDocumentIdentifier("file:///invalid-conkeyref.dita")));
-
-    var diagnostics = act.get().getRelatedFullDocumentDiagnosticReport();
+    var captor = ArgumentCaptor.forClass(PublishDiagnosticsParams.class);
+    verify(mockClient, times(2)).publishDiagnostics(captor.capture());
+    var act = captor.getValue();
 
     assertEquals(
-        List.of(
-            new Diagnostic(
-                new Range(new Position(4, 18), new Position(4, 21)),
-                "Cannot find definition for key 'foo'",
-                DiagnosticSeverity.Warning,
-                "dita-validator")),
-        diagnostics.getItems());
+        new PublishDiagnosticsParams(
+            "file:///invalid-keyref.dita",
+            List.of(
+                new Diagnostic(
+                    new Range(new Position(4, 18), new Position(4, 22)),
+                    "Cannot find definition for key 'xfoo'",
+                    DiagnosticSeverity.Warning,
+                    "dita-validator"))),
+        act);
   }
 
   @Test
@@ -104,6 +106,16 @@ class DitaTextDocumentServiceTest {
     document.setVersion(1);
     document.setText(text);
     params.setTextDocument(document);
+    return params;
+  }
+
+  private DidChangeTextDocumentParams createChangeParams(String uri, String text) {
+    DidChangeTextDocumentParams params = new DidChangeTextDocumentParams();
+    VersionedTextDocumentIdentifier document = new VersionedTextDocumentIdentifier();
+    document.setUri(uri);
+    document.setVersion(1);
+    params.setTextDocument(document);
+    params.setContentChanges(List.of(new TextDocumentContentChangeEvent(text)));
     return params;
   }
 
