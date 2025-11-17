@@ -2,6 +2,7 @@ package com.elovirta.dita;
 
 import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_NAMESPACE;
 
+import com.elovirta.dita.KeyManager.KeyDefinition;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -74,12 +75,12 @@ public class DitaTextDocumentService implements TextDocumentService {
       var localName = attr.getNodeName().getLocalName();
       if (localName.equals(KEYREF_ELEM)) {
         List<CompletionItem> items = new ArrayList<>();
-        for (Map.Entry<String, XdmNode> keyDef : keyManager.keys()) {
+        for (Map.Entry<String, KeyDefinition> keyDef : keyManager.keys()) {
           var key = keyDef.getKey();
           CompletionItem item = new CompletionItem(key);
           item.setKind(CompletionItemKind.Reference);
           item.setDetail("DITA key from root map");
-          item.setDocumentation(keyDef.getValue().attribute("href"));
+          item.setDocumentation(keyDef.getValue().target());
           items.add(item);
         }
         return CompletableFuture.completedFuture(Either.forLeft(items));
@@ -89,19 +90,21 @@ public class DitaTextDocumentService implements TextDocumentService {
         var value = attr.getStringValue();
         if (value.contains("/")) {
           var key = value.substring(0, value.indexOf("/"));
-          // FIXME: read all IDs from target topic
-          CompletionItem item = new CompletionItem("id");
-          item.setKind(CompletionItemKind.Reference);
-          item.setDetail("ID from key " + key);
-          //                  item.setDocumentation(keyDef.getValue().attribute("href"));
-          items.add(item);
+          // FIXME: get URI matching key
+          var uri = keyManager.get(key);
+          for (String listId : documentManager.listIds(key)) {
+            CompletionItem item = new CompletionItem(listId);
+            item.setKind(CompletionItemKind.Reference);
+            item.setDetail("ID " + listId + " from key " + key);
+            items.add(item);
+          }
         } else {
-          for (Map.Entry<String, XdmNode> keyDef : keyManager.keys()) {
+          for (Map.Entry<String, KeyDefinition> keyDef : keyManager.keys()) {
             var key = keyDef.getKey();
             CompletionItem item = new CompletionItem(key);
             item.setKind(CompletionItemKind.Reference);
             item.setDetail("DITA key from root map");
-            item.setDocumentation(keyDef.getValue().attribute("href"));
+            item.setDocumentation(keyDef.getValue().target());
             items.add(item);
           }
         }

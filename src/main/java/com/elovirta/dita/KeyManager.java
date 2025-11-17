@@ -10,18 +10,19 @@ import net.sf.saxon.s9api.streams.Steps;
 public class KeyManager {
   private static final String KEYS_ATTR = "keys";
 
-  private volatile Map<String, XdmNode> keyDefinitions = Collections.emptyMap();
+  private volatile Map<String, KeyDefinition> keyDefinitions = Collections.emptyMap();
 
   public void read(XdmNode map) {
     System.err.println("Read key definitions");
     var keyDefs = map.select(Steps.descendant().then(Steps.attribute(KEYS_ATTR))).toList();
     if (!keyDefs.isEmpty()) {
-      Map<String, XdmNode> buf = new ConcurrentHashMap<>();
+      Map<String, KeyDefinition> buf = new ConcurrentHashMap<>();
       for (XdmNode keyDef : keyDefs) {
         var keys = Set.of(keyDef.getStringValue().trim().split("\\s+"));
         for (String key : keys) {
           if (!buf.containsKey(key)) {
-            buf.put(key, keyDef);
+            var keyDefinition = new KeyDefinition(key, keyDef, keyDef.attribute("href"));
+            buf.put(key, keyDefinition);
           }
         }
       }
@@ -30,7 +31,7 @@ public class KeyManager {
     }
   }
 
-  public XdmNode get(String key) {
+  public KeyDefinition get(String key) {
     return keyDefinitions.get(key);
   }
 
@@ -38,7 +39,9 @@ public class KeyManager {
     return keyDefinitions.containsKey(key);
   }
 
-  public Set<Map.Entry<String, XdmNode>> keys() {
+  public Set<Map.Entry<String, KeyDefinition>> keys() {
     return keyDefinitions.entrySet();
   }
+
+  public record KeyDefinition(String key, XdmNode definition, String target) {}
 }
