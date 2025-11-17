@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 public class DitaTextDocumentService implements TextDocumentService {
 
   private static final Logger logger = LoggerFactory.getLogger(DitaTextDocumentService.class);
+  private static final ResourceBundle LOCALE = ResourceBundle.getBundle("copy", Locale.ENGLISH);
 
   private static final String KEYREF_ELEM = "keyref";
   private static final String CONKEYREF_ELEM = "conkeyref";
@@ -298,7 +299,7 @@ public class DitaTextDocumentService implements TextDocumentService {
             diagnostics.add(
                 new Diagnostic(
                     range,
-                    "Cannot find definition for key '%s'".formatted(keyref.getStringValue()),
+                    LOCALE.getString("error.missing_key").formatted(keyref.getStringValue()),
                     DiagnosticSeverity.Warning,
                     "dita-validator"));
           }
@@ -322,7 +323,7 @@ public class DitaTextDocumentService implements TextDocumentService {
             diagnostics.add(
                 new Diagnostic(
                     range,
-                    "Cannot find definition for key '%s'".formatted(conkeyrefValue),
+                    LOCALE.getString("error.missing_key").formatted(conkeyrefValue),
                     DiagnosticSeverity.Warning,
                     "dita-validator"));
           }
@@ -346,7 +347,7 @@ public class DitaTextDocumentService implements TextDocumentService {
           diagnostics.add(
               new Diagnostic(
                   Utils.getAttributeRange(id),
-                  "Duplicate id attribute value '%s'".formatted(id.getStringValue()),
+                  LOCALE.getString("error.duplicate_id").formatted(id.getStringValue()),
                   DiagnosticSeverity.Error,
                   "dita-validator"));
         } else {
