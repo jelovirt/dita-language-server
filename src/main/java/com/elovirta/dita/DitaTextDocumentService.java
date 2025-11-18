@@ -71,7 +71,6 @@ public class DitaTextDocumentService implements TextDocumentService {
   public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(
       CompletionParams params) {
     var attr = findAttribute(URI.create(params.getTextDocument().getUri()), params.getPosition());
-    //    System.err.println("Found attribute: " + attr);
     if (attr != null) {
       var localName = attr.getNodeName().getLocalName();
       if (localName.equals(KEYREF_ELEM)) {
@@ -96,7 +95,6 @@ public class DitaTextDocumentService implements TextDocumentService {
           var uri = keyManager.get(key).target();
           for (String listId :
               documentManager.listElementIds(stripFragment(uri), uri.getFragment())) {
-            System.err.println("list @id = " + listId);
             CompletionItem item = new CompletionItem(listId);
             item.setKind(CompletionItemKind.Reference);
             item.setDetail("ID " + listId + " from key " + key);
@@ -323,12 +321,11 @@ public class DitaTextDocumentService implements TextDocumentService {
       if (!conkeyrefs.isEmpty()) {
         for (XdmNode conkeyref : conkeyrefs) {
           var conkeyrefValue = conkeyref.getStringValue();
-          var keyref = conkeyrefValue;
           var separator = conkeyrefValue.indexOf('/');
-          if (separator != -1) {
-            keyref = keyref.substring(0, separator);
-          }
-          if (!keyManager.containsKey(keyref)) {
+          var keyref = separator != -1 ? conkeyrefValue.substring(0, separator) : conkeyrefValue;
+          var id = separator != -1 ? conkeyrefValue.substring(separator + 1) : null;
+          var keyDefinition = keyManager.get(keyref);
+          if (keyDefinition == null) {
             // FIXME range should match only the key name
             var range = Utils.getAttributeRange(conkeyref);
             diagnostics.add(
@@ -337,6 +334,28 @@ public class DitaTextDocumentService implements TextDocumentService {
                     LOCALE.getString("error.missing_key").formatted(conkeyrefValue),
                     DiagnosticSeverity.Warning,
                     "dita-validator"));
+          } else {
+            var uri = keyDefinition.target();
+            if (uri == null) {
+              var range = Utils.getAttributeRange(conkeyref);
+              diagnostics.add(
+                  new Diagnostic(
+                      range,
+                      LOCALE.getString("error.conkeyref_target_undefined"),
+                      DiagnosticSeverity.Warning,
+                      "dita-validator"));
+            } else {
+              var ids = documentManager.listElementIds(stripFragment(uri), uri.getFragment());
+              if (!ids.contains(id)) {
+                var range = Utils.getAttributeRange(conkeyref);
+                diagnostics.add(
+                    new Diagnostic(
+                        range,
+                        LOCALE.getString("error.conkeyref_id_missing").formatted(id),
+                        DiagnosticSeverity.Warning,
+                        "dita-validator"));
+              }
+            }
           }
         }
       }
