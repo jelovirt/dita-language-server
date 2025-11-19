@@ -2,6 +2,9 @@ package com.elovirta.dita;
 
 import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_NAMESPACE;
 import static com.elovirta.dita.Utils.stripFragment;
+import static net.sf.saxon.s9api.streams.Predicates.isElement;
+import static net.sf.saxon.s9api.streams.Steps.attribute;
+import static net.sf.saxon.s9api.streams.Steps.descendant;
 
 import com.elovirta.dita.KeyManager.KeyDefinition;
 import java.net.URI;
@@ -11,7 +14,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.streams.Steps;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -73,21 +75,21 @@ public class DitaTextDocumentService implements TextDocumentService {
     var attr = findAttribute(URI.create(params.getTextDocument().getUri()), params.getPosition());
     if (attr != null) {
       var localName = attr.getNodeName().getLocalName();
-      if (localName.equals(KEYREF_ELEM)) {
-        List<CompletionItem> items = new ArrayList<>();
-        for (Map.Entry<String, KeyDefinition> keyDef : keyManager.keys()) {
-          var key = keyDef.getKey();
-          var keyDefinition = keyDef.getValue();
-          CompletionItem item = new CompletionItem(key);
-          item.setKind(CompletionItemKind.Reference);
-          item.setDetail("DITA key from root map");
-          item.setDocumentation(
-              keyDefinition.target() != null ? keyDefinition.target().toString() : null);
-          items.add(item);
-        }
-        return CompletableFuture.completedFuture(Either.forLeft(items));
-      }
-      if (localName.equals(CONKEYREF_ELEM)) {
+      //      if (localName.equals(KEYREF_ELEM)) {
+      //        List<CompletionItem> items = new ArrayList<>();
+      //        for (Map.Entry<String, KeyDefinition> keyDef : keyManager.keys()) {
+      //          var key = keyDef.getKey();
+      //          var keyDefinition = keyDef.getValue();
+      //          CompletionItem item = new CompletionItem(key);
+      //          item.setKind(CompletionItemKind.Reference);
+      //          item.setDetail("DITA key from root map");
+      //          item.setDocumentation(
+      //              keyDefinition.target() != null ? keyDefinition.target().toString() : null);
+      //          items.add(item);
+      //        }
+      //        return CompletableFuture.completedFuture(Either.forLeft(items));
+      //      }
+      if (localName.equals(KEYREF_ELEM) || localName.equals(CONKEYREF_ELEM)) {
         List<CompletionItem> items = new ArrayList<>();
         var value = attr.getStringValue();
         if (value.contains("/")) {
@@ -112,7 +114,6 @@ public class DitaTextDocumentService implements TextDocumentService {
             items.add(item);
           }
         }
-        System.err.println(items);
         return CompletableFuture.completedFuture(Either.forLeft(items));
       }
     }
@@ -123,9 +124,9 @@ public class DitaTextDocumentService implements TextDocumentService {
     var doc = documentManager.get(uri);
     // TODO: extract this into a TreeMap or TreeSet
     return doc.select(
-            Steps.descendant()
+            descendant()
                 .then(
-                    Steps.attribute(
+                    attribute(
                         attr ->
                             attr.getNodeName().getNamespaceUri().toString().equals(LOC_NAMESPACE)
                                 && attr.getNodeName().getLocalName().startsWith("attr-"))))
@@ -133,8 +134,7 @@ public class DitaTextDocumentService implements TextDocumentService {
             attr ->
                 attr.getParent()
                     .select(
-                        Steps.attribute(
-                            attr.getNodeName().getLocalName().substring("attr-".length())))
+                        attribute(attr.getNodeName().getLocalName().substring("attr-".length())))
                     .asOptionalNode()
                     .map(a -> Map.entry(a, Utils.parseRange(attr.getStringValue())))
                     .orElse(null))
@@ -297,27 +297,31 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   private List<Diagnostic> doSlowValidation(XdmNode content) {
     List<Diagnostic> diagnostics = new ArrayList<>();
-    System.err.println("Do validation");
     if (rootMap != null) {
-      System.err.println("Validate keyref");
-      var keyrefs = content.select(Steps.descendant().then(Steps.attribute(KEYREF_ELEM))).toList();
-      if (!keyrefs.isEmpty()) {
-        for (XdmNode keyref : keyrefs) {
-          if (!keyManager.containsKey(keyref.getStringValue())) {
-            var range = Utils.getAttributeRange(keyref);
-            diagnostics.add(
-                new Diagnostic(
-                    range,
-                    LOCALE.getString("error.missing_key").formatted(keyref.getStringValue()),
-                    DiagnosticSeverity.Warning,
-                    "dita-validator"));
-          }
-        }
-      }
+      //      var keyrefs =
+      // content.select(Steps.descendant().then(Steps.attribute(KEYREF_ELEM))).toList();
+      //      if (!keyrefs.isEmpty()) {
+      //        for (XdmNode keyref : keyrefs) {
+      //          if (!keyManager.containsKey(keyref.getStringValue())) {
+      //            var range = Utils.getAttributeRange(keyref);
+      //            diagnostics.add(
+      //                new Diagnostic(
+      //                    range,
+      //
+      // LOCALE.getString("error.missing_key").formatted(keyref.getStringValue()),
+      //                    DiagnosticSeverity.Warning,
+      //                    "dita-validator"));
+      //          }
+      //        }
+      //      }
 
-      System.err.println("Validate conkeyref");
       var conkeyrefs =
-          content.select(Steps.descendant().then(Steps.attribute(CONKEYREF_ELEM))).toList();
+          content
+              .select(
+                  descendant(isElement())
+                      .then(attribute(CONKEYREF_ELEM).cat(attribute(KEYREF_ELEM))))
+              .toList();
+      System.err.println(conkeyrefs);
       if (!conkeyrefs.isEmpty()) {
         for (XdmNode conkeyref : conkeyrefs) {
           var conkeyrefValue = conkeyref.getStringValue();
@@ -341,17 +345,17 @@ public class DitaTextDocumentService implements TextDocumentService {
               diagnostics.add(
                   new Diagnostic(
                       range,
-                      LOCALE.getString("error.conkeyref_target_undefined"),
+                      LOCALE.getString("error.keyref_target_undefined"),
                       DiagnosticSeverity.Warning,
                       "dita-validator"));
-            } else {
+            } else if (id != null) {
               var ids = documentManager.listElementIds(stripFragment(uri), uri.getFragment());
               if (!ids.contains(id)) {
                 var range = Utils.getAttributeRange(conkeyref);
                 diagnostics.add(
                     new Diagnostic(
                         range,
-                        LOCALE.getString("error.conkeyref_id_missing").formatted(id),
+                        LOCALE.getString("error.keyref_id_missing").formatted(id),
                         DiagnosticSeverity.Warning,
                         "dita-validator"));
               }
@@ -360,14 +364,13 @@ public class DitaTextDocumentService implements TextDocumentService {
         }
       }
     }
-    System.err.println("Validation done");
     return diagnostics;
   }
 
   private List<Diagnostic> doValidation(XdmNode content) {
     List<Diagnostic> diagnostics = new ArrayList<>();
 
-    var ids = content.select(Steps.descendant().then(Steps.attribute("id"))).toList();
+    var ids = content.select(descendant().then(attribute("id"))).toList();
     var idValues = ids.stream().map(XdmItem::getStringValue).toList();
     if (Set.copyOf(idValues).size() != idValues.size()) {
       Set<String> encountered = new HashSet<>();
