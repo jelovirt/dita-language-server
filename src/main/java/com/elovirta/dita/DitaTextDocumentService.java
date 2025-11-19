@@ -8,6 +8,7 @@ import static net.sf.saxon.s9api.streams.Steps.descendant;
 
 import com.elovirta.dita.KeyManager.KeyDefinition;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -26,8 +27,9 @@ public class DitaTextDocumentService implements TextDocumentService {
   private static final Logger logger = LoggerFactory.getLogger(DitaTextDocumentService.class);
   private static final ResourceBundle LOCALE = ResourceBundle.getBundle("copy", Locale.ENGLISH);
 
-  private static final String KEYREF_ELEM = "keyref";
-  private static final String CONKEYREF_ELEM = "conkeyref";
+  private static final String KEYREF_ATTR = "keyref";
+  private static final String CONKEYREF_ATTR = "conkeyref";
+  private static final String HREF_ATTR = "href";
 
   private final DitaLanguageServer server;
   //  private final Map<String, XdmNode> openDocuments = new ConcurrentHashMap<>();
@@ -89,7 +91,7 @@ public class DitaTextDocumentService implements TextDocumentService {
       //        }
       //        return CompletableFuture.completedFuture(Either.forLeft(items));
       //      }
-      if (localName.equals(KEYREF_ELEM) || localName.equals(CONKEYREF_ELEM)) {
+      if (localName.equals(KEYREF_ATTR) || localName.equals(CONKEYREF_ATTR)) {
         List<CompletionItem> items = new ArrayList<>();
         var value = attr.getStringValue();
         if (value.contains("/")) {
@@ -285,7 +287,7 @@ public class DitaTextDocumentService implements TextDocumentService {
       }
 
       var diagnostics = doValidation(content);
-      diagnostics.addAll(doSlowValidation(content));
+      diagnostics.addAll(doSlowValidation(content, uri));
 
       var publishParams = new PublishDiagnosticsParams(uri.toString(), diagnostics);
       client.publishDiagnostics(publishParams);
@@ -295,53 +297,35 @@ public class DitaTextDocumentService implements TextDocumentService {
     }
   }
 
-  private List<Diagnostic> doSlowValidation(XdmNode content) {
+  private List<Diagnostic> doSlowValidation(XdmNode content, URI documentUri) {
     List<Diagnostic> diagnostics = new ArrayList<>();
     if (rootMap != null) {
-      //      var keyrefs =
-      // content.select(Steps.descendant().then(Steps.attribute(KEYREF_ELEM))).toList();
-      //      if (!keyrefs.isEmpty()) {
-      //        for (XdmNode keyref : keyrefs) {
-      //          if (!keyManager.containsKey(keyref.getStringValue())) {
-      //            var range = Utils.getAttributeRange(keyref);
-      //            diagnostics.add(
-      //                new Diagnostic(
-      //                    range,
-      //
-      // LOCALE.getString("error.missing_key").formatted(keyref.getStringValue()),
-      //                    DiagnosticSeverity.Warning,
-      //                    "dita-validator"));
-      //          }
-      //        }
-      //      }
-
-      var conkeyrefs =
+      var keyrefs =
           content
               .select(
                   descendant(isElement())
-                      .then(attribute(CONKEYREF_ELEM).cat(attribute(KEYREF_ELEM))))
+                      .then(attribute(CONKEYREF_ATTR).cat(attribute(KEYREF_ATTR))))
               .toList();
-      System.err.println(conkeyrefs);
-      if (!conkeyrefs.isEmpty()) {
-        for (XdmNode conkeyref : conkeyrefs) {
-          var conkeyrefValue = conkeyref.getStringValue();
-          var separator = conkeyrefValue.indexOf('/');
-          var keyref = separator != -1 ? conkeyrefValue.substring(0, separator) : conkeyrefValue;
-          var id = separator != -1 ? conkeyrefValue.substring(separator + 1) : null;
-          var keyDefinition = keyManager.get(keyref);
+      if (!keyrefs.isEmpty()) {
+        for (XdmNode keyref : keyrefs) {
+          var keyrefValue = keyref.getStringValue();
+          var separator = keyrefValue.indexOf('/');
+          var keyName = separator != -1 ? keyrefValue.substring(0, separator) : keyrefValue;
+          var id = separator != -1 ? keyrefValue.substring(separator + 1) : null;
+          var keyDefinition = keyManager.get(keyName);
           if (keyDefinition == null) {
             // FIXME range should match only the key name
-            var range = Utils.getAttributeRange(conkeyref);
+            var range = Utils.getAttributeRange(keyref);
             diagnostics.add(
                 new Diagnostic(
                     range,
-                    LOCALE.getString("error.missing_key").formatted(conkeyrefValue),
+                    LOCALE.getString("error.missing_key").formatted(keyrefValue),
                     DiagnosticSeverity.Warning,
                     "dita-validator"));
           } else {
             var uri = keyDefinition.target();
             if (uri == null) {
-              var range = Utils.getAttributeRange(conkeyref);
+              var range = Utils.getAttributeRange(keyref);
               diagnostics.add(
                   new Diagnostic(
                       range,
@@ -351,7 +335,7 @@ public class DitaTextDocumentService implements TextDocumentService {
             } else if (id != null) {
               var ids = documentManager.listElementIds(stripFragment(uri), uri.getFragment());
               if (!ids.contains(id)) {
-                var range = Utils.getAttributeRange(conkeyref);
+                var range = Utils.getAttributeRange(keyref);
                 diagnostics.add(
                     new Diagnostic(
                         range,
@@ -364,6 +348,53 @@ public class DitaTextDocumentService implements TextDocumentService {
         }
       }
     }
+
+    var hrefs = content.select(descendant(isElement()).then(attribute(HREF_ATTR))).toList();
+    if (!hrefs.isEmpty()) {
+      for (XdmNode href : hrefs) {
+        try {
+          var hrefValue = new URI(href.getStringValue());
+          var uri = stripFragment(documentUri.resolve(hrefValue));
+          if (!documentManager.exists(uri)) {
+            var range = Utils.getAttributeRange(href);
+            diagnostics.add(
+                new Diagnostic(
+                    range,
+                    LOCALE.getString("error.href_target_missing"),
+                    DiagnosticSeverity.Warning,
+                    "dita-validator"));
+          } else {
+            var fragment = hrefValue.getFragment();
+            if (fragment != null) {
+              var separator = fragment.indexOf('/');
+              var topicId = separator != -1 ? fragment.substring(0, separator) : fragment;
+              var elementId = separator != -1 ? fragment.substring(separator + 1) : null;
+              var ids = documentManager.listElementIds(stripFragment(uri), topicId);
+              if (!ids.contains(topicId)) {
+                var range = Utils.getAttributeRange(href);
+                diagnostics.add(
+                    new Diagnostic(
+                        range,
+                        LOCALE.getString("error.keyref_id_missing").formatted(topicId),
+                        DiagnosticSeverity.Warning,
+                        "dita-validator"));
+              } else {
+                // TODO: validate elementId
+              }
+            }
+          }
+        } catch (URISyntaxException e) {
+          var range = Utils.getAttributeRange(href);
+          diagnostics.add(
+              new Diagnostic(
+                  range,
+                  LOCALE.getString("error.href_invalid_uri"),
+                  DiagnosticSeverity.Warning,
+                  "dita-validator"));
+        }
+      }
+    }
+
     return diagnostics;
   }
 

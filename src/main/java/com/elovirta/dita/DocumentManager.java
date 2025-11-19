@@ -63,10 +63,15 @@ public class DocumentManager {
         topicId != null
             ? Steps.descendant("topic").where(attributeEq("id", topicId)).first()
             : Steps.descendant("topic").first();
+    // FIXME: Return null if topic not found
     var isSelector =
         topicSelector
             .then(Steps.child(isElement()).where(not(hasLocalName("topic"))))
             .then(Steps.descendantOrSelf().then(Steps.attribute("id")));
     return doc.select(isSelector).map(XdmNode::getStringValue).toList();
+  }
+
+  public boolean exists(URI uri) {
+    return openDocuments.containsKey(uri) || Files.exists(Paths.get(uri));
   }
 }
