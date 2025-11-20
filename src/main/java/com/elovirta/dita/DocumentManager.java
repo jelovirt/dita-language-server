@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.streams.Steps;
+import org.jetbrains.annotations.Nullable;
 
 public class DocumentManager {
 
@@ -54,7 +55,8 @@ public class DocumentManager {
         .toList();
   }
 
-  public List<String> listElementIds(URI uri, String topicId) {
+  /** Return element IDs for a topic ID. */
+  public List<String> listElementIds(URI uri, @Nullable String topicId) {
     var doc = get(uri);
     if (doc == null) {
       return Collections.emptyList();
@@ -63,12 +65,33 @@ public class DocumentManager {
         topicId != null
             ? Steps.descendant("topic").where(attributeEq("id", topicId)).first()
             : Steps.descendant("topic").first();
-    // FIXME: Return null if topic not found
-    var isSelector =
+    var idSelector =
         topicSelector
             .then(Steps.child(isElement()).where(not(hasLocalName("topic"))))
             .then(Steps.descendantOrSelf().then(Steps.attribute("id")));
-    return doc.select(isSelector).map(XdmNode::getStringValue).toList();
+    return doc.select(idSelector).map(XdmNode::getStringValue).toList();
+  }
+
+  public boolean exists(URI uri, String topicId, String elementId) {
+    var doc = get(uri);
+    if (doc == null) {
+      return false;
+    }
+    var topicSelector = Steps.descendant("topic").where(attributeEq("id", topicId)).first();
+    var idSelector =
+        topicSelector
+            .then(Steps.child(isElement()).where(not(hasLocalName("topic"))))
+            .then(Steps.descendantOrSelf(isElement()).where(attributeEq("id", elementId)));
+    return doc.select(idSelector).exists();
+  }
+
+  public boolean exists(URI uri, String topicId) {
+    var doc = get(uri);
+    if (doc == null) {
+      return false;
+    }
+    var topicSelector = Steps.descendant("topic").where(attributeEq("id", topicId)).first();
+    return doc.select(topicSelector).exists();
   }
 
   public boolean exists(URI uri) {

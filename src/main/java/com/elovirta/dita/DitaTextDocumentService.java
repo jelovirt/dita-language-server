@@ -31,14 +31,16 @@ public class DitaTextDocumentService implements TextDocumentService {
   private static final String CONKEYREF_ATTR = "conkeyref";
   private static final String HREF_ATTR = "href";
 
+  public static final String SOURCE = "dita-validator";
+
   private final DitaLanguageServer server;
-  //  private final Map<String, XdmNode> openDocuments = new ConcurrentHashMap<>();
-  private URI rootMapUri;
-  private XdmNode rootMap;
   private final DitaParser parser;
   private final DocumentManager documentManager;
   private final KeyManager keyManager;
   private final SmartDebouncer debouncer;
+
+  private URI rootMapUri;
+  private XdmNode rootMap;
 
   public DitaTextDocumentService(DitaLanguageServer server, SmartDebouncer debouncer) {
     this.server = server;
@@ -96,13 +98,16 @@ public class DitaTextDocumentService implements TextDocumentService {
         var value = attr.getStringValue();
         if (value.contains("/")) {
           var key = value.substring(0, value.indexOf("/"));
-          var uri = keyManager.get(key).target();
-          for (String listId :
-              documentManager.listElementIds(stripFragment(uri), uri.getFragment())) {
-            CompletionItem item = new CompletionItem(listId);
-            item.setKind(CompletionItemKind.Reference);
-            item.setDetail("ID " + listId + " from key " + key);
-            items.add(item);
+          var keyDefinition = keyManager.get(key);
+          if (keyDefinition != null) {
+            var uri = keyDefinition.target();
+            for (String listId :
+                documentManager.listElementIds(stripFragment(uri), uri.getFragment())) {
+              CompletionItem item = new CompletionItem(listId);
+              item.setKind(CompletionItemKind.Reference);
+              item.setDetail("ID " + listId + " from key " + key);
+              items.add(item);
+            }
           }
         } else {
           for (Map.Entry<String, KeyDefinition> keyDef : keyManager.keys()) {
@@ -321,7 +326,7 @@ public class DitaTextDocumentService implements TextDocumentService {
                     range,
                     LOCALE.getString("error.missing_key").formatted(keyrefValue),
                     DiagnosticSeverity.Warning,
-                    "dita-validator"));
+                    SOURCE));
           } else {
             var uri = keyDefinition.target();
             if (uri == null) {
@@ -331,7 +336,7 @@ public class DitaTextDocumentService implements TextDocumentService {
                       range,
                       LOCALE.getString("error.keyref_target_undefined"),
                       DiagnosticSeverity.Warning,
-                      "dita-validator"));
+                      SOURCE));
             } else if (id != null) {
               var ids = documentManager.listElementIds(stripFragment(uri), uri.getFragment());
               if (!ids.contains(id)) {
@@ -341,7 +346,7 @@ public class DitaTextDocumentService implements TextDocumentService {
                         range,
                         LOCALE.getString("error.keyref_id_missing").formatted(id),
                         DiagnosticSeverity.Warning,
-                        "dita-validator"));
+                        SOURCE));
               }
             }
           }
@@ -362,24 +367,39 @@ public class DitaTextDocumentService implements TextDocumentService {
                     range,
                     LOCALE.getString("error.href_target_missing"),
                     DiagnosticSeverity.Warning,
-                    "dita-validator"));
+                    SOURCE));
           } else {
             var fragment = hrefValue.getFragment();
             if (fragment != null) {
               var separator = fragment.indexOf('/');
               var topicId = separator != -1 ? fragment.substring(0, separator) : fragment;
               var elementId = separator != -1 ? fragment.substring(separator + 1) : null;
-              var ids = documentManager.listElementIds(stripFragment(uri), topicId);
-              if (!ids.contains(topicId)) {
+              if (elementId != null) {
+                if (!documentManager.exists(stripFragment(uri), topicId)) {
+                  var range = Utils.getAttributeRange(href);
+                  diagnostics.add(
+                      new Diagnostic(
+                          range,
+                          LOCALE.getString("error.keyref_id_missing").formatted(topicId),
+                          DiagnosticSeverity.Warning,
+                          SOURCE));
+                } else if (!documentManager.exists(stripFragment(uri), topicId, elementId)) {
+                  var range = Utils.getAttributeRange(href);
+                  diagnostics.add(
+                      new Diagnostic(
+                          range,
+                          LOCALE.getString("error.keyref_id_missing").formatted(elementId),
+                          DiagnosticSeverity.Warning,
+                          SOURCE));
+                }
+              } else if (!documentManager.exists(stripFragment(uri), topicId)) {
                 var range = Utils.getAttributeRange(href);
                 diagnostics.add(
                     new Diagnostic(
                         range,
                         LOCALE.getString("error.keyref_id_missing").formatted(topicId),
                         DiagnosticSeverity.Warning,
-                        "dita-validator"));
-              } else {
-                // TODO: validate elementId
+                        SOURCE));
               }
             }
           }
@@ -390,7 +410,7 @@ public class DitaTextDocumentService implements TextDocumentService {
                   range,
                   LOCALE.getString("error.href_invalid_uri"),
                   DiagnosticSeverity.Warning,
-                  "dita-validator"));
+                  SOURCE));
         }
       }
     }
@@ -413,7 +433,7 @@ public class DitaTextDocumentService implements TextDocumentService {
                   Utils.getAttributeRange(id),
                   LOCALE.getString("error.duplicate_id").formatted(id.getStringValue()),
                   DiagnosticSeverity.Error,
-                  "dita-validator"));
+                  SOURCE));
         } else {
           encountered.add(idValue);
         }
