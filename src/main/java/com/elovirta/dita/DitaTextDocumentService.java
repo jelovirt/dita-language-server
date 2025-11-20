@@ -76,7 +76,8 @@ public class DitaTextDocumentService implements TextDocumentService {
   @Override
   public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(
       CompletionParams params) {
-    var attr = findAttribute(URI.create(params.getTextDocument().getUri()), params.getPosition());
+    var documentUri = URI.create(params.getTextDocument().getUri());
+    var attr = findAttribute(documentUri, params.getPosition());
     if (attr != null) {
       var localName = attr.getNodeName().getLocalName();
       //      if (localName.equals(KEYREF_ELEM)) {
@@ -93,7 +94,62 @@ public class DitaTextDocumentService implements TextDocumentService {
       //        }
       //        return CompletableFuture.completedFuture(Either.forLeft(items));
       //      }
-      if (localName.equals(KEYREF_ATTR) || localName.equals(CONKEYREF_ATTR)) {
+      if (localName.equals(HREF_ATTR)) {
+        try {
+          var hrefValue = new URI(attr.getStringValue());
+          var uri = stripFragment(documentUri.resolve(hrefValue));
+          var doc = documentManager.get(stripFragment(uri));
+          if (doc == null) {
+            var range = Utils.getAttributeRange(attr);
+            // TODO: suggest file
+          } else {
+            // TODO: suggest topic ID
+            // TODO: suggest element ID
+            var fragment = hrefValue.getFragment();
+            //                  if (fragment != null) {
+            //                      var separator = fragment.indexOf('/');
+            //                      var topicId = separator != -1 ? fragment.substring(0, separator)
+            // : fragment;
+            //                      var elementId = separator != -1 ? fragment.substring(separator +
+            // 1) : null;
+            //                      if (elementId != null) {
+            //                          if (!documentManager.exists(stripFragment(uri), topicId)) {
+            //                              var range = Utils.getAttributeRange(href);
+            //                              diagnostics.add(
+            //                                      new Diagnostic(
+            //                                              range,
+            //
+            // LOCALE.getString("error.keyref_id_missing").formatted(topicId),
+            //                                              DiagnosticSeverity.Warning,
+            //                                              SOURCE));
+            //                          } else if (!documentManager.exists(stripFragment(uri),
+            // topicId, elementId)) {
+            //                              var range = Utils.getAttributeRange(href);
+            //                              diagnostics.add(
+            //                                      new Diagnostic(
+            //                                              range,
+            //
+            // LOCALE.getString("error.keyref_id_missing").formatted(elementId),
+            //                                              DiagnosticSeverity.Warning,
+            //                                              SOURCE));
+            //                          }
+            //                      } else if (!documentManager.exists(stripFragment(uri), topicId))
+            // {
+            //                          var range = Utils.getAttributeRange(href);
+            //                          diagnostics.add(
+            //                                  new Diagnostic(
+            //                                          range,
+            //
+            // LOCALE.getString("error.keyref_id_missing").formatted(topicId),
+            //                                          DiagnosticSeverity.Warning,
+            //                                          SOURCE));
+            //                      }
+            //                  }
+          }
+        } catch (URISyntaxException e) {
+          // TODO: attempt to fix invalid URI
+        }
+      } else if (localName.equals(KEYREF_ATTR) || localName.equals(CONKEYREF_ATTR)) {
         List<CompletionItem> items = new ArrayList<>();
         var value = attr.getStringValue();
         if (value.contains("/")) {
