@@ -51,6 +51,7 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
     // We provide diagnostics (validation)
     capabilities.setDiagnosticProvider(new DiagnosticRegistrationOptions());
     capabilities.setCompletionProvider(new CompletionOptions());
+    capabilities.setDefinitionProvider(new DefinitionOptions());
     // Advertise custom command
     ExecuteCommandOptions commandOptions = new ExecuteCommandOptions(List.of("dita.setRootMap"));
     capabilities.setExecuteCommandProvider(commandOptions);

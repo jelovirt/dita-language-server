@@ -1,12 +1,16 @@
 package com.elovirta.dita;
 
+import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_NAMESPACE;
+
 import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.streams.Steps;
+import org.eclipse.lsp4j.Location;
 
 public class KeyManager {
   private static final String KEYS_ATTR = "keys";
@@ -25,7 +29,7 @@ public class KeyManager {
           if (!buf.containsKey(key)) {
             var target =
                 keyDef.attribute("href") != null ? uri.resolve(keyDef.attribute("href")) : null;
-            var keyDefinition = new KeyDefinition(key, keyDef, target);
+            var keyDefinition = new KeyDefinition(uri, key, keyDef, target);
             buf.put(key, keyDefinition);
           }
         }
@@ -47,5 +51,11 @@ public class KeyManager {
     return keyDefinitions.entrySet();
   }
 
-  public record KeyDefinition(String key, XdmNode definition, URI target) {}
+  public record KeyDefinition(URI mapUri, String key, XdmNode definition, URI target) {
+    public Location location() {
+      return new Location(
+          mapUri().toString(),
+          Utils.parseRange(this.definition().getAttributeValue(new QName(LOC_NAMESPACE, "elem"))));
+    }
+  }
 }

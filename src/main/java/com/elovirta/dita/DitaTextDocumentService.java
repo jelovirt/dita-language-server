@@ -206,6 +206,33 @@ public class DitaTextDocumentService implements TextDocumentService {
     return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
   }
 
+  @Override
+  public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>>
+      definition(DefinitionParams params) {
+    var documentUri = URI.create(params.getTextDocument().getUri());
+    var attr = findAttribute(documentUri, params.getPosition());
+    if (attr != null) {
+      var localName = attr.getNodeName().getLocalName();
+      if (localName.equals(KEYREF_ATTR) || localName.equals(CONKEYREF_ATTR)) {
+        if (rootMapUri != null) {
+          var keyName = attr.getStringValue();
+          var separator = keyName.indexOf('/');
+          if (separator != -1) {
+            keyName = keyName.substring(0, separator);
+          }
+          var keyDefinition = keyManager.get(keyName);
+          if (keyDefinition != null) {
+            return CompletableFuture.completedFuture(
+                Either.forLeft(List.of(keyDefinition.location())));
+          }
+        } else {
+          System.err.println("Cannot goto key definition because no root map defined");
+        }
+      }
+    }
+    return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
+  }
+
   private XdmNode findAttribute(URI uri, Position position) {
     var doc = documentManager.get(uri).document();
     // TODO: extract this into a TreeMap or TreeSet
