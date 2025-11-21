@@ -2,6 +2,14 @@
 <topic id="test">
   <title>Test Topic</title>
   <body>
-    <p>Valid content</p>
+    <p id="para">Valid content</p>
+    <pre id="pre">Valid content</pre>
   </body>
+  <topic id="nested">
+    <title>Test Topic</title>
+    <body>
+      <p id="nested-para">Valid content</p>
+      <pre id="nested-pre">Valid content</pre>
+    </body>
+  </topic>
 </topic>

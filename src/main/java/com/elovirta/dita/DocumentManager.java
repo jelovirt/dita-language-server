@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.streams.Steps;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +21,7 @@ public class DocumentManager {
 
   private final DitaParser ditaParser = new DitaParser();
   private final Map<URI, XdmNode> openDocuments = new ConcurrentHashMap<>();
+  private final Map<URI, Map<String, List<String>>> ids = new ConcurrentHashMap<>();
 
   public XdmNode get(URI uri) {
     return openDocuments.computeIfAbsent(
@@ -35,66 +38,74 @@ public class DocumentManager {
 
   public void put(URI uri, XdmNode node) {
     openDocuments.put(uri, node);
+    ids.put(uri, readIds(node));
   }
 
   public void remove(URI uri) {
     openDocuments.remove(uri);
+    ids.remove(uri);
   }
 
   public void forEach(BiConsumer<URI, XdmNode> action) {
     openDocuments.forEach(action);
   }
 
-  public List<String> listIds(URI uri) {
-    var doc = get(uri);
-    if (doc == null) {
-      return Collections.emptyList();
-    }
-    return doc.select(Steps.descendant("topic").then(Steps.attribute("id")))
-        .map(XdmNode::getStringValue)
-        .toList();
+  public Collection<String> listIds(URI uri) {
+    return ids.getOrDefault(uri, Collections.emptyMap()).keySet();
   }
 
   /** Return element IDs for a topic ID. */
-  public List<String> listElementIds(URI uri, @Nullable String topicId) {
-    var doc = get(uri);
-    if (doc == null) {
-      return Collections.emptyList();
+  public Collection<String> listElementIds(URI uri, @Nullable String topicId) {
+    var id = topicId;
+    // FIXME: cache root ID
+    if (id == null) {
+      var doc = get(uri);
+      if (doc == null) {
+        return Collections.emptyList();
+      }
+      id =
+          doc.select(Steps.descendant("topic").first().then(Steps.attribute("id")))
+              .map(XdmNode::getStringValue)
+              .findFirst()
+              .orElse(null);
+      if (id == null) {
+        return Collections.emptyList();
+      }
     }
-    var topicSelector =
-        topicId != null
-            ? Steps.descendant("topic").where(attributeEq("id", topicId)).first()
-            : Steps.descendant("topic").first();
-    var idSelector =
-        topicSelector
-            .then(Steps.child(isElement()).where(not(hasLocalName("topic"))))
-            .then(Steps.descendantOrSelf().then(Steps.attribute("id")));
-    return doc.select(idSelector).map(XdmNode::getStringValue).toList();
+    return ids.getOrDefault(uri, Collections.emptyMap()).getOrDefault(id, Collections.emptyList());
   }
 
   public boolean exists(URI uri, String topicId, String elementId) {
-    var doc = get(uri);
-    if (doc == null) {
-      return false;
-    }
-    var topicSelector = Steps.descendant("topic").where(attributeEq("id", topicId)).first();
-    var idSelector =
-        topicSelector
-            .then(Steps.child(isElement()).where(not(hasLocalName("topic"))))
-            .then(Steps.descendantOrSelf(isElement()).where(attributeEq("id", elementId)));
-    return doc.select(idSelector).exists();
+    return ids.getOrDefault(uri, Collections.emptyMap())
+        .getOrDefault(topicId, Collections.emptyList())
+        .contains(elementId);
   }
 
   public boolean exists(URI uri, String topicId) {
-    var doc = get(uri);
-    if (doc == null) {
-      return false;
-    }
-    var topicSelector = Steps.descendant("topic").where(attributeEq("id", topicId)).first();
-    return doc.select(topicSelector).exists();
+    return ids.getOrDefault(uri, Collections.emptyMap()).containsKey(topicId);
   }
 
   public boolean exists(URI uri) {
     return openDocuments.containsKey(uri) || Files.exists(Paths.get(uri));
+  }
+
+  private Map<String, List<String>> readIds(XdmNode doc) {
+    var res =
+        doc.select(Steps.descendant("topic"))
+            .flatMap(
+                topic -> {
+                  var topicId = topic.attribute("id");
+                  return topic
+                      .select(
+                          Steps.child(isElement())
+                              .where(not(hasLocalName("topic")))
+                              .then(Steps.descendantOrSelf().then(Steps.attribute("id"))))
+                      .map(elementId -> Map.entry(topicId, elementId.getStringValue()));
+                })
+            .toList();
+    return res.stream()
+        .collect(
+            Collectors.groupingBy(
+                Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
   }
 }
