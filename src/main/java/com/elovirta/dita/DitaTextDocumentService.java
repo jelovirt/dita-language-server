@@ -100,24 +100,27 @@ public class DitaTextDocumentService implements TextDocumentService {
           var hrefValue = new URI(attr.getStringValue());
           var uri = stripFragment(documentUri.resolve(hrefValue));
           if (!documentManager.exists(stripFragment(uri))) {
-            // TODO: suggest file
+            System.err.println("Don't suggest files, this is better left to editor");
           } else {
-            var fragment = uri.getFragment();
-            var separator = Objects.requireNonNullElse(fragment, "").indexOf('/');
+            var fragment = Objects.requireNonNullElse(hrefValue.getFragment(), "");
+            var separator = fragment.indexOf('/');
             var topicId = separator != -1 ? fragment.substring(0, separator) : fragment;
             var elementId = separator != -1 ? fragment.substring(separator + 1) : null;
+            System.err.println(
+                "Suggest based on " + fragment + " = " + topicId + " / " + elementId);
             if (elementId != null) {
               var elementIds = documentManager.listElementIds(uri, topicId);
               for (String id : elementIds) {
-                CompletionItem item = new CompletionItem("/" + id);
+                CompletionItem item = new CompletionItem(id);
                 item.setKind(CompletionItemKind.Reference);
                 item.setDetail("ID " + id + " from href " + hrefValue);
                 items.add(item);
               }
             } else {
               var elementIds = documentManager.listIds(uri);
+              System.err.println("Suggest topic ID " + elementIds);
               for (String id : elementIds) {
-                CompletionItem item = new CompletionItem("#" + id);
+                CompletionItem item = new CompletionItem(id);
                 item.setKind(CompletionItemKind.Reference);
                 item.setDetail("ID " + id + " from href " + hrefValue);
                 items.add(item);
@@ -204,7 +207,7 @@ public class DitaTextDocumentService implements TextDocumentService {
   }
 
   private XdmNode findAttribute(URI uri, Position position) {
-    var doc = documentManager.get(uri);
+    var doc = documentManager.get(uri).document();
     // TODO: extract this into a TreeMap or TreeSet
     return doc.select(
             descendant()

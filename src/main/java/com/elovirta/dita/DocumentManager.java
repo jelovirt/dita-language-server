@@ -6,10 +6,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -20,51 +17,77 @@ import org.jetbrains.annotations.Nullable;
 public class DocumentManager {
 
   private final DitaParser ditaParser = new DitaParser();
-  private final Map<URI, XdmNode> openDocuments = new ConcurrentHashMap<>();
-  private final Map<URI, Map<String, List<String>>> ids = new ConcurrentHashMap<>();
+  private final Map<URI, DocumentCache> openDocuments = new ConcurrentHashMap<>();
 
-  public XdmNode get(URI uri) {
-    return openDocuments.computeIfAbsent(
-        uri,
-        u -> {
-          try {
-            System.err.println("Parsing " + u);
-            return ditaParser.parse(Files.readString(Paths.get(u)));
-          } catch (IOException e) {
-            return null;
-          }
-        });
+  //  private final Map<URI, XdmNode> openDocuments = new ConcurrentHashMap<>();
+  //  private final Map<URI, Map<String, List<String>>> ids = new ConcurrentHashMap<>();
+
+  public record DocumentCache(XdmNode document, Map<String, List<String>> ids) {
+    public DocumentCache {
+      Objects.requireNonNull(document);
+      Objects.requireNonNull(ids);
+    }
+  }
+
+  public DocumentCache get(URI uri) {
+    var documentCache =
+        openDocuments.computeIfAbsent(
+            uri,
+            u -> {
+              try {
+                System.err.println("Parsing " + u);
+                var doc = ditaParser.parse(Files.readString(Paths.get(u)));
+                return new DocumentCache(doc, readIds(doc));
+              } catch (IOException e) {
+                return null;
+              }
+            });
+    if (documentCache == null) {
+      return null;
+    }
+    return documentCache;
   }
 
   public void put(URI uri, XdmNode node) {
-    openDocuments.put(uri, node);
-    ids.put(uri, readIds(node));
+    openDocuments.put(uri, new DocumentCache(node, readIds(node)));
+    //    ids.put(uri, readIds(node));
   }
 
   public void remove(URI uri) {
     openDocuments.remove(uri);
-    ids.remove(uri);
+    //    ids.remove(uri);
   }
 
   public void forEach(BiConsumer<URI, XdmNode> action) {
-    openDocuments.forEach(action);
+    openDocuments.forEach(
+        (uri, cache) -> {
+          action.accept(uri, cache.document());
+        });
   }
 
   public Collection<String> listIds(URI uri) {
-    return ids.getOrDefault(uri, Collections.emptyMap()).keySet();
+    var cache = get(uri);
+    return cache != null ? cache.ids().keySet() : Collections.emptyList();
+  }
+
+  private Map<String, List<String>> getIds(URI uri) {
+    var cache = get(uri);
+    return cache != null ? cache.ids() : Collections.emptyMap();
   }
 
   /** Return element IDs for a topic ID. */
   public Collection<String> listElementIds(URI uri, @Nullable String topicId) {
     var id = topicId;
+    var cache = get(uri);
+    if (cache == null) {
+      return Collections.emptyList();
+    }
     // FIXME: cache root ID
     if (id == null) {
-      var doc = get(uri);
-      if (doc == null) {
-        return Collections.emptyList();
-      }
       id =
-          doc.select(Steps.descendant("topic").first().then(Steps.attribute("id")))
+          cache
+              .document()
+              .select(Steps.descendant("topic").first().then(Steps.attribute("id")))
               .map(XdmNode::getStringValue)
               .findFirst()
               .orElse(null);
@@ -72,17 +95,23 @@ public class DocumentManager {
         return Collections.emptyList();
       }
     }
-    return ids.getOrDefault(uri, Collections.emptyMap()).getOrDefault(id, Collections.emptyList());
+    return cache.ids().getOrDefault(id, Collections.emptyList());
   }
 
   public boolean exists(URI uri, String topicId, String elementId) {
-    return ids.getOrDefault(uri, Collections.emptyMap())
-        .getOrDefault(topicId, Collections.emptyList())
-        .contains(elementId);
+    var cache = get(uri);
+    if (cache == null) {
+      return false;
+    }
+    return cache.ids().getOrDefault(topicId, Collections.emptyList()).contains(elementId);
   }
 
   public boolean exists(URI uri, String topicId) {
-    return ids.getOrDefault(uri, Collections.emptyMap()).containsKey(topicId);
+    var cache = get(uri);
+    if (cache == null) {
+      return false;
+    }
+    return cache.ids().containsKey(topicId);
   }
 
   public boolean exists(URI uri) {
