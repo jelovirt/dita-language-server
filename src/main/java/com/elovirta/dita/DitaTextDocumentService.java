@@ -95,17 +95,36 @@ public class DitaTextDocumentService implements TextDocumentService {
       //        return CompletableFuture.completedFuture(Either.forLeft(items));
       //      }
       if (localName.equals(HREF_ATTR)) {
+        List<CompletionItem> items = new ArrayList<>();
         try {
           var hrefValue = new URI(attr.getStringValue());
           var uri = stripFragment(documentUri.resolve(hrefValue));
-          var doc = documentManager.get(stripFragment(uri));
-          if (doc == null) {
-            var range = Utils.getAttributeRange(attr);
+          if (!documentManager.exists(stripFragment(uri))) {
             // TODO: suggest file
           } else {
+            var fragment = uri.getFragment();
+            var separator = Objects.requireNonNullElse(fragment, "").indexOf('/');
+            var topicId = separator != -1 ? fragment.substring(0, separator) : fragment;
+            var elementId = separator != -1 ? fragment.substring(separator + 1) : null;
+            if (elementId != null) {
+              var elementIds = documentManager.listElementIds(uri, topicId);
+              for (String id : elementIds) {
+                CompletionItem item = new CompletionItem("/" + id);
+                item.setKind(CompletionItemKind.Reference);
+                item.setDetail("ID " + id + " from href " + hrefValue);
+                items.add(item);
+              }
+            } else {
+              var elementIds = documentManager.listIds(uri);
+              for (String id : elementIds) {
+                CompletionItem item = new CompletionItem("#" + id);
+                item.setKind(CompletionItemKind.Reference);
+                item.setDetail("ID " + id + " from href " + hrefValue);
+                items.add(item);
+              }
+            }
             // TODO: suggest topic ID
             // TODO: suggest element ID
-            var fragment = hrefValue.getFragment();
             //                  if (fragment != null) {
             //                      var separator = fragment.indexOf('/');
             //                      var topicId = separator != -1 ? fragment.substring(0, separator)
@@ -149,6 +168,7 @@ public class DitaTextDocumentService implements TextDocumentService {
         } catch (URISyntaxException e) {
           // TODO: attempt to fix invalid URI
         }
+        return CompletableFuture.completedFuture(Either.forLeft(items));
       } else if (localName.equals(KEYREF_ATTR) || localName.equals(CONKEYREF_ATTR)) {
         List<CompletionItem> items = new ArrayList<>();
         var value = attr.getStringValue();
