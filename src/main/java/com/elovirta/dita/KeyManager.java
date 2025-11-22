@@ -1,6 +1,7 @@
 package com.elovirta.dita;
 
 import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_NAMESPACE;
+import static net.sf.saxon.s9api.streams.Steps.*;
 
 import java.net.URI;
 import java.util.Collections;
@@ -9,7 +10,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.streams.Steps;
 import org.eclipse.lsp4j.Location;
 
 public class KeyManager {
@@ -19,7 +19,7 @@ public class KeyManager {
 
   public void read(URI uri, XdmNode map) {
     System.err.println("Read key definitions " + uri);
-    var keyDefs = map.select(Steps.descendant().then(Steps.attribute(KEYS_ATTR))).toList();
+    var keyDefs = map.select(descendant().then(attribute(KEYS_ATTR))).toList();
     if (!keyDefs.isEmpty()) {
       Map<String, KeyDefinition> buf = new ConcurrentHashMap<>();
       for (XdmNode keyDefAttr : keyDefs) {
@@ -29,7 +29,18 @@ public class KeyManager {
           if (!buf.containsKey(key)) {
             var target =
                 keyDef.attribute("href") != null ? uri.resolve(keyDef.attribute("href")) : null;
-            var keyDefinition = new KeyDefinition(uri, key, keyDef, target);
+            var text =
+                keyDef
+                    .select(
+                        child("topicmeta").then(child("keywords").then(child("keyword").first())))
+                    .asOptionalString()
+                    .orElse(null);
+            var navtitle =
+                keyDef
+                    .select(child("topicmeta").then(child("navtitle").first()))
+                    .asOptionalString()
+                    .orElse(null);
+            var keyDefinition = new KeyDefinition(uri, key, keyDef, target, text, navtitle);
             buf.put(key, keyDefinition);
           }
         }
@@ -51,7 +62,8 @@ public class KeyManager {
     return keyDefinitions.entrySet();
   }
 
-  public record KeyDefinition(URI mapUri, String key, XdmNode definition, URI target) {
+  public record KeyDefinition(
+      URI mapUri, String key, XdmNode definition, URI target, String text, String navtitle) {
     public Location location() {
       return new Location(
           mapUri().toString(),
