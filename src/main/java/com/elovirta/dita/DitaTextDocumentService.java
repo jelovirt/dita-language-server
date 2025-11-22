@@ -201,6 +201,61 @@ public class DitaTextDocumentService implements TextDocumentService {
   }
 
   @Override
+  public CompletableFuture<Hover> hover(HoverParams params) {
+    var documentUri = URI.create(params.getTextDocument().getUri());
+    var attr = findAttribute(documentUri, params.getPosition());
+    if (attr != null) {
+      var localName = attr.getNodeName().getLocalName();
+      if (localName.equals(KEYREF_ATTR) || localName.equals(CONKEYREF_ATTR)) {
+        if (rootMapUri != null) {
+          var keyName = attr.getStringValue();
+          var separator = keyName.indexOf('/');
+          if (separator != -1) {
+            keyName = keyName.substring(0, separator);
+          }
+          var keyDefinition = keyManager.get(keyName);
+          if (keyDefinition != null) {
+            MarkupContent content =
+                switch (attr.getParent().getNodeName().getLocalName()) {
+                  case "xref", "link" -> {
+                    if (keyDefinition.navtitle() != null) {
+                      yield new MarkupContent(MarkupKind.PLAINTEXT, keyDefinition.navtitle());
+                    }
+                    if (keyDefinition.target() != null) {
+                      yield new MarkupContent(
+                          MarkupKind.PLAINTEXT, keyDefinition.target().toString());
+                    }
+                    yield null;
+                  }
+                  case "image" -> {
+                    if (keyDefinition.target() != null) {
+                      yield new MarkupContent(
+                          MarkupKind.MARKDOWN, "![](" + keyDefinition.target() + ")");
+                    }
+                    yield null;
+                  }
+                  default -> {
+                    if (keyDefinition.text() != null) {
+                      yield new MarkupContent(MarkupKind.PLAINTEXT, keyDefinition.text());
+                    }
+                    if (keyDefinition.target() != null) {
+                      yield new MarkupContent(
+                          MarkupKind.PLAINTEXT, keyDefinition.target().toString());
+                    }
+                    yield null;
+                  }
+                };
+            if (content != null) {
+              return CompletableFuture.completedFuture(new Hover(content));
+            }
+          }
+        }
+      }
+    }
+    return CompletableFuture.completedFuture(null);
+  }
+
+  @Override
   public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
     return CompletableFuture.completedFuture(null);
     //    String uri = params.getTextDocument().getUri();
