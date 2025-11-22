@@ -80,20 +80,6 @@ public class DitaTextDocumentService implements TextDocumentService {
     var attr = findAttribute(documentUri, params.getPosition());
     if (attr != null) {
       var localName = attr.getNodeName().getLocalName();
-      //      if (localName.equals(KEYREF_ELEM)) {
-      //        List<CompletionItem> items = new ArrayList<>();
-      //        for (Map.Entry<String, KeyDefinition> keyDef : keyManager.keys()) {
-      //          var key = keyDef.getKey();
-      //          var keyDefinition = keyDef.getValue();
-      //          CompletionItem item = new CompletionItem(key);
-      //          item.setKind(CompletionItemKind.Reference);
-      //          item.setDetail("DITA key from root map");
-      //          item.setDocumentation(
-      //              keyDefinition.target() != null ? keyDefinition.target().toString() : null);
-      //          items.add(item);
-      //        }
-      //        return CompletableFuture.completedFuture(Either.forLeft(items));
-      //      }
       if (localName.equals(HREF_ATTR)) {
         List<CompletionItem> items = new ArrayList<>();
         try {
@@ -106,8 +92,6 @@ public class DitaTextDocumentService implements TextDocumentService {
             var separator = fragment.indexOf('/');
             var topicId = separator != -1 ? fragment.substring(0, separator) : fragment;
             var elementId = separator != -1 ? fragment.substring(separator + 1) : null;
-            System.err.println(
-                "Suggest based on " + fragment + " = " + topicId + " / " + elementId);
             if (elementId != null) {
               var elementIds = documentManager.listElementIds(uri, topicId);
               for (String id : elementIds) {
@@ -118,7 +102,6 @@ public class DitaTextDocumentService implements TextDocumentService {
               }
             } else {
               var elementIds = documentManager.listIds(uri);
-              System.err.println("Suggest topic ID " + elementIds);
               for (String id : elementIds) {
                 CompletionItem item = new CompletionItem(id);
                 item.setKind(CompletionItemKind.Reference);
@@ -126,47 +109,6 @@ public class DitaTextDocumentService implements TextDocumentService {
                 items.add(item);
               }
             }
-            // TODO: suggest topic ID
-            // TODO: suggest element ID
-            //                  if (fragment != null) {
-            //                      var separator = fragment.indexOf('/');
-            //                      var topicId = separator != -1 ? fragment.substring(0, separator)
-            // : fragment;
-            //                      var elementId = separator != -1 ? fragment.substring(separator +
-            // 1) : null;
-            //                      if (elementId != null) {
-            //                          if (!documentManager.exists(stripFragment(uri), topicId)) {
-            //                              var range = Utils.getAttributeRange(href);
-            //                              diagnostics.add(
-            //                                      new Diagnostic(
-            //                                              range,
-            //
-            // LOCALE.getString("error.keyref_id_missing").formatted(topicId),
-            //                                              DiagnosticSeverity.Warning,
-            //                                              SOURCE));
-            //                          } else if (!documentManager.exists(stripFragment(uri),
-            // topicId, elementId)) {
-            //                              var range = Utils.getAttributeRange(href);
-            //                              diagnostics.add(
-            //                                      new Diagnostic(
-            //                                              range,
-            //
-            // LOCALE.getString("error.keyref_id_missing").formatted(elementId),
-            //                                              DiagnosticSeverity.Warning,
-            //                                              SOURCE));
-            //                          }
-            //                      } else if (!documentManager.exists(stripFragment(uri), topicId))
-            // {
-            //                          var range = Utils.getAttributeRange(href);
-            //                          diagnostics.add(
-            //                                  new Diagnostic(
-            //                                          range,
-            //
-            // LOCALE.getString("error.keyref_id_missing").formatted(topicId),
-            //                                          DiagnosticSeverity.Warning,
-            //                                          SOURCE));
-            //                      }
-            //                  }
           }
         } catch (URISyntaxException e) {
           // TODO: attempt to fix invalid URI
@@ -310,14 +252,10 @@ public class DitaTextDocumentService implements TextDocumentService {
   public void didOpen(DidOpenTextDocumentParams params) {
     URI uri = URI.create(params.getTextDocument().getUri());
     String text = params.getTextDocument().getText();
-
-    //    System.err.println("Document opened: " + uri);
     try {
-      //        openDocuments.put(uri, text);
       XdmNode doc = parser.parse(text);
       documentManager.put(uri, doc);
 
-      // Validate the document
       validateDocument(uri, doc);
     } catch (Exception e) {
       System.err.println("Failed to parse document: " + e.getMessage());
@@ -369,14 +307,11 @@ public class DitaTextDocumentService implements TextDocumentService {
   @Override
   public void didClose(DidCloseTextDocumentParams params) {
     URI uri = URI.create(params.getTextDocument().getUri());
-    //    System.err.println("Document closed: " + uri);
     documentManager.remove(uri);
   }
 
   @Override
-  public void didSave(DidSaveTextDocumentParams params) {
-    //    System.err.println("Document saved: " + params.getTextDocument().getUri());
-  }
+  public void didSave(DidSaveTextDocumentParams params) {}
 
   public void revalidateAllOpenDocuments() {
     try {
@@ -390,7 +325,6 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   private void validateDocument(URI uri, XdmNode content) {
     try {
-      // Add null check
       LanguageClient client = server.getClient();
       if (client == null) {
         System.err.println("Client not yet connected, skipping validation for " + uri);
