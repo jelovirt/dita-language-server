@@ -230,7 +230,8 @@ public class DitaTextDocumentService implements TextDocumentService {
                   case "image" -> {
                     if (keyDefinition.target() != null) {
                       yield new MarkupContent(
-                          MarkupKind.MARKDOWN, "![](" + keyDefinition.target() + ")");
+                          // MarkupKind.MARKDOWN, "![](" + keyDefinition.target() + ")");
+                          MarkupKind.PLAINTEXT, keyDefinition.target().toString());
                     }
                     yield null;
                   }
