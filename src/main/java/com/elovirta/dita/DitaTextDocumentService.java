@@ -30,6 +30,7 @@ public class DitaTextDocumentService implements TextDocumentService {
   private static final String KEYREF_ATTR = "keyref";
   private static final String CONKEYREF_ATTR = "conkeyref";
   private static final String HREF_ATTR = "href";
+  private static final String ID_ATTR = "id";
 
   public static final String SOURCE = "dita-validator";
 
@@ -510,7 +511,7 @@ public class DitaTextDocumentService implements TextDocumentService {
   private List<Diagnostic> doValidation(XdmNode content) {
     List<Diagnostic> diagnostics = new ArrayList<>();
 
-    var ids = content.select(descendant().then(attribute("id"))).toList();
+    var ids = content.select(descendant().then(attribute(ID_ATTR))).toList();
     var idValues = ids.stream().map(XdmItem::getStringValue).toList();
     if (Set.copyOf(idValues).size() != idValues.size()) {
       Set<String> encountered = new HashSet<>();

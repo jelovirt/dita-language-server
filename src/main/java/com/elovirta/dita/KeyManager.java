@@ -15,6 +15,7 @@ import org.eclipse.lsp4j.Location;
 
 public class KeyManager {
   private static final String KEYS_ATTR = "keys";
+  private static final String HREF_ATTR = "href";
 
   private volatile Map<String, KeyDefinition> keyDefinitions = Collections.emptyMap();
 
@@ -29,7 +30,9 @@ public class KeyManager {
         for (String key : keys) {
           if (!buf.containsKey(key)) {
             var target =
-                keyDef.attribute("href") != null ? uri.resolve(keyDef.attribute("href")) : null;
+                keyDef.attribute(HREF_ATTR) != null
+                    ? uri.resolve(keyDef.attribute(HREF_ATTR))
+                    : null;
             var text =
                 keyDef
                     .select(
