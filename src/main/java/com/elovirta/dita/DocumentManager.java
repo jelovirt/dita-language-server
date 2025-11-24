@@ -1,5 +1,6 @@
 package com.elovirta.dita;
 
+import static com.elovirta.dita.Utils.TOPIC_TOPIC;
 import static net.sf.saxon.s9api.streams.Predicates.*;
 
 import java.io.IOException;
@@ -88,7 +89,7 @@ public class DocumentManager {
       id =
           cache
               .document()
-              .select(Steps.descendant("topic").first().then(Steps.attribute("id")))
+              .select(Steps.descendant(TOPIC_TOPIC).first().then(Steps.attribute("id")))
               .map(XdmNode::getStringValue)
               .findFirst()
               .orElse(null);
@@ -121,14 +122,14 @@ public class DocumentManager {
 
   private Map<String, List<String>> readIds(XdmNode doc) {
     var res =
-        doc.select(Steps.descendant("topic"))
+        doc.select(Steps.descendant(TOPIC_TOPIC))
             .flatMap(
                 topic -> {
                   var topicId = topic.attribute("id");
                   return topic
                       .select(
                           Steps.child(isElement())
-                              .where(not(hasLocalName("topic")))
+                              .where(not(TOPIC_TOPIC))
                               .then(Steps.descendantOrSelf().then(Steps.attribute("id"))))
                       .map(elementId -> Map.entry(topicId, elementId.getStringValue()));
                 })

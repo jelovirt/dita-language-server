@@ -1,7 +1,7 @@
 package com.elovirta.dita;
 
 import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_NAMESPACE;
-import static com.elovirta.dita.Utils.stripFragment;
+import static com.elovirta.dita.Utils.*;
 import static net.sf.saxon.s9api.streams.Predicates.isElement;
 import static net.sf.saxon.s9api.streams.Steps.attribute;
 import static net.sf.saxon.s9api.streams.Steps.descendant;
@@ -215,37 +215,30 @@ public class DitaTextDocumentService implements TextDocumentService {
           }
           var keyDefinition = keyManager.get(keyName);
           if (keyDefinition != null) {
-            MarkupContent content =
-                switch (attr.getParent().getNodeName().getLocalName()) {
-                  case "xref", "link" -> {
-                    if (keyDefinition.navtitle() != null) {
-                      yield new MarkupContent(MarkupKind.PLAINTEXT, keyDefinition.navtitle());
-                    }
-                    if (keyDefinition.target() != null) {
-                      yield new MarkupContent(
-                          MarkupKind.PLAINTEXT, keyDefinition.target().toString());
-                    }
-                    yield null;
-                  }
-                  case "image" -> {
-                    if (keyDefinition.target() != null) {
-                      yield new MarkupContent(
-                          // MarkupKind.MARKDOWN, "![](" + keyDefinition.target() + ")");
-                          MarkupKind.PLAINTEXT, keyDefinition.target().toString());
-                    }
-                    yield null;
-                  }
-                  default -> {
-                    if (keyDefinition.text() != null) {
-                      yield new MarkupContent(MarkupKind.PLAINTEXT, keyDefinition.text());
-                    }
-                    if (keyDefinition.target() != null) {
-                      yield new MarkupContent(
-                          MarkupKind.PLAINTEXT, keyDefinition.target().toString());
-                    }
-                    yield null;
-                  }
-                };
+            MarkupContent content = null;
+            XdmNode parent = attr.getParent();
+            if (TOPIC_XREF.test(parent) || TOPIC_LINK.test(parent)) {
+              if (keyDefinition.navtitle() != null) {
+                content = new MarkupContent(MarkupKind.PLAINTEXT, keyDefinition.navtitle());
+              } else if (keyDefinition.target() != null) {
+                content =
+                    new MarkupContent(MarkupKind.PLAINTEXT, keyDefinition.target().toString());
+              }
+            } else if (TOPIC_IMAGE.test(parent)) {
+              if (keyDefinition.target() != null) {
+                content =
+                    new MarkupContent(
+                        // MarkupKind.MARKDOWN, "![](" + keyDefinition.target() + ")");
+                        MarkupKind.PLAINTEXT, keyDefinition.target().toString());
+              }
+            } else {
+              if (keyDefinition.text() != null) {
+                content = new MarkupContent(MarkupKind.PLAINTEXT, keyDefinition.text());
+              } else if (keyDefinition.target() != null) {
+                content =
+                    new MarkupContent(MarkupKind.PLAINTEXT, keyDefinition.target().toString());
+              }
+            }
             if (content != null) {
               return CompletableFuture.completedFuture(new Hover(content));
             }

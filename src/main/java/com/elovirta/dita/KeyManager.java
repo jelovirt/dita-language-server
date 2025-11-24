@@ -1,6 +1,7 @@
 package com.elovirta.dita;
 
 import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_NAMESPACE;
+import static com.elovirta.dita.Utils.*;
 import static net.sf.saxon.s9api.streams.Steps.*;
 
 import java.net.URI;
@@ -32,12 +33,13 @@ public class KeyManager {
             var text =
                 keyDef
                     .select(
-                        child("topicmeta").then(child("keywords").then(child("keyword").first())))
+                        child(MAP_TOPICMETA)
+                            .then(child(TOPIC_KEYWORDS).then(child(TOPIC_KEYWORD).first())))
                     .asOptionalString()
                     .orElse(null);
             var navtitle =
                 keyDef
-                    .select(child("topicmeta").then(child("navtitle").first()))
+                    .select(child(MAP_TOPICMETA).then(child(TOPIC_NAVTITLE).first()))
                     .asOptionalString()
                     .orElse(null);
             var keyDefinition = new KeyDefinition(uri, key, keyDef, target, text, navtitle);
@@ -46,7 +48,7 @@ public class KeyManager {
         }
       }
       keyDefinitions = buf;
-      System.err.println("Keys: " + keyDefinitions.keySet());
+      //      System.err.println("Keys: " + keyDefinitions.keySet());
     }
   }
 

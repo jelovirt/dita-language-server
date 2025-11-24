@@ -2,17 +2,43 @@ package com.elovirta.dita;
 
 import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_NAMESPACE;
 import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_PREFIX;
+import static javax.xml.XMLConstants.NULL_NS_URI;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.function.Predicate;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.type.Type;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 
 public class Utils {
 
   private Utils() {}
+
+  private static Predicate<? super XdmNode> cls(String cls) {
+    return item -> {
+      var node = item.getUnderlyingNode();
+      if (node.getNodeKind() != Type.ELEMENT) {
+        return false;
+      }
+      var classValue = node.getAttributeValue(NULL_NS_URI, "class");
+      if (classValue == null) {
+        return false;
+      }
+      return classValue.contains(cls);
+    };
+  }
+
+  public static final Predicate<? super XdmNode> TOPIC_TOPIC = cls(" topic/topic ");
+  public static final Predicate<? super XdmNode> MAP_TOPICMETA = cls(" map/topicmeta ");
+  public static final Predicate<? super XdmNode> TOPIC_KEYWORDS = cls(" topic/keywords ");
+  public static final Predicate<? super XdmNode> TOPIC_KEYWORD = cls(" topic/keyword ");
+  public static final Predicate<? super XdmNode> TOPIC_NAVTITLE = cls(" topic/navtitle ");
+  public static final Predicate<? super XdmNode> TOPIC_IMAGE = cls(" topic/image ");
+  public static final Predicate<? super XdmNode> TOPIC_XREF = cls(" topic/xref ");
+  public static final Predicate<? super XdmNode> TOPIC_LINK = cls(" topic/link ");
 
   public static Range getAttributeRange(XdmNode attr) {
     var loc =
