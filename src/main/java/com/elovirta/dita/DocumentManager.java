@@ -39,6 +39,7 @@ public class DocumentManager {
                 var doc = ditaParser.parse(Files.readString(Paths.get(u)));
                 return new DocumentCache(doc, readIds(doc));
               } catch (IOException e) {
+                e.printStackTrace();
                 return null;
               }
             });

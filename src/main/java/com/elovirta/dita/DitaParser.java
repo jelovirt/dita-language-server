@@ -3,19 +3,13 @@ package com.elovirta.dita;
 import com.elovirta.dita.xml.XmlSerializer;
 import java.io.*;
 import java.util.List;
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.Configuration;
-import net.sf.saxon.lib.ResourceRequest;
-import net.sf.saxon.lib.ResourceResolver;
+import net.sf.saxon.lib.*;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.trans.XPathException;
-import org.xmlresolver.Resolver;
-import org.xmlresolver.ResolverFeature;
-import org.xmlresolver.XMLResolverConfiguration;
+import org.xmlresolver.*;
 
 public class DitaParser {
 
@@ -29,7 +23,7 @@ public class DitaParser {
     //            config.setFeature(ResolverFeature.CACHE_UNDER_HOME, false);
     config.setFeature(
         ResolverFeature.RESOLVER_LOGGER_CLASS, "org.xmlresolver.logging.DefaultLogger");
-    config.setFeature(ResolverFeature.DEFAULT_LOGGER_LOG_LEVEL, "debug");
+    config.setFeature(ResolverFeature.DEFAULT_LOGGER_LOG_LEVEL, "info");
     //            config.setFeature(ResolverFeature.CLASSPATH_CATALOGS, true);
 
     config.setFeature(ResolverFeature.CATALOG_FILES, List.of("classpath:/schemas/catalog.xml"));
@@ -40,18 +34,7 @@ public class DitaParser {
     this.catalogResolver = new Resolver(config);
 
     Configuration configuration = Configuration.newConfiguration();
-    //        configuration.setResourceResolver(new CatalogResourceResolver(catalogResolver));
-    configuration.setResourceResolver(
-        new ResourceResolver() {
-          @Override
-          public Source resolve(ResourceRequest request) throws XPathException {
-            try {
-              return catalogResolver.resolve(request.uri, request.baseUri);
-            } catch (TransformerException e) {
-              throw new RuntimeException(e);
-            }
-          }
-        });
+    configuration.setResourceResolver(new CatalogResourceResolver(catalogResolver));
     //        configureSaxonExtensions(config);
     //        configureSaxonCollationResolvers(config);;
     this.processor = new Processor(configuration);
