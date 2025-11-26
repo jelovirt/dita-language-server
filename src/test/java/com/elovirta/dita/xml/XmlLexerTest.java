@@ -8,18 +8,28 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class XmlLexerTest {
 
   private final XmlLexer lexer = new XmlLexer();
   Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-  @Test
-  void tokenize() {
-    lexer.setInput(readResource("/serializer/src/test.xml"));
+  @ParameterizedTest
+  @ValueSource(
+      strings = {
+        "test.xml",
+        "attribute-missing-end-quote.xml",
+        "attribute-missing-quotes.xml",
+        "attribute-missing-start-quote.xml"
+      })
+  void tokenize(String file) {
+    lexer.setInput(readResource("/serializer/src/" + file));
 
     var act = new ArrayList<Event>();
     lexer.forEachRemaining(
@@ -31,13 +41,22 @@ public class XmlLexerTest {
                     lexer.getLine(),
                     lexer.getColumn(),
                     lexer.getOffset())));
+    try {
+      var exp =
+          gson.fromJson(
+              readResource("/serializer/exp/" + file + ".json"),
+              new TypeToken<List<Event>>() {}.getType());
 
-    var exp =
-        gson.fromJson(
-            readResource("/serializer/exp/test.xml.json"),
-            new TypeToken<List<Event>>() {}.getType());
-
-    assertEquals(exp, act);
+      assertEquals(exp, act);
+    } catch (Throwable e) {
+      try (var out =
+          Files.newBufferedWriter(Paths.get("src/test/resources/serializer/exp", file + ".json"))) {
+        gson.toJson(act, out);
+      } catch (IOException ex) {
+        throw new RuntimeException(ex);
+      }
+      throw e;
+    }
   }
 
   private record Event(XmlLexer.TokenType type, String text, int line, int column, int offset) {}
