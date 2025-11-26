@@ -15,9 +15,9 @@ import java.util.List;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class XmlLexerTest {
+public class XmlFilterTest {
 
-  private final XmlLexer lexer = new XmlLexer();
+  private final XmlFilter lexer = new XmlFilter(new XmlLexer());
   Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
   @ParameterizedTest
@@ -45,14 +45,14 @@ public class XmlLexerTest {
     try {
       var exp =
           gson.fromJson(
-              readResource("/serializer/exp/lexer/" + file + ".json"),
+              readResource("/serializer/exp/filter/" + file + ".json"),
               new TypeToken<List<Event>>() {}.getType());
 
       assertEquals(exp, act);
     } catch (Throwable e) {
       try (var out =
           Files.newBufferedWriter(
-              Paths.get("src/test/resources/serializer/exp/lexer", file + ".json"))) {
+              Paths.get("src/test/resources/serializer/exp/filter", file + ".json"))) {
         gson.toJson(act, out);
       } catch (IOException ex) {
         throw new RuntimeException(ex);
