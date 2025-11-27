@@ -1,0 +1,142 @@
+[
+  {
+    "type": "ELEMENT_START",
+    "text": "<",
+    "line": 1,
+    "column": 1,
+    "offset": 0
+  },
+  {
+    "type": "NAME",
+    "text": "p",
+    "line": 1,
+    "column": 2,
+    "offset": 1
+  },
+  {
+    "type": "ELEMENT_END",
+    "text": ">",
+    "line": 1,
+    "column": 3,
+    "offset": 2
+  },
+  {
+    "type": "ELEMENT_CLOSE",
+    "text": "</",
+    "line": 1,
+    "column": 4,
+    "offset": 3
+  },
+  {
+    "type": "NAME",
+    "text": "p",
+    "line": 1,
+    "column": 6,
+    "offset": 5
+  },
+  {
+    "type": "ELEMENT_END",
+    "text": ">",
+    "line": 1,
+    "column": 7,
+    "offset": 6
+  },
+  {
+    "type": "WHITESPACE",
+    "text": "\n",
+    "line": 1,
+    "column": 8,
+    "offset": 7
+  },
+  {
+    "type": "ELEMENT_START",
+    "text": "<",
+    "line": 2,
+    "column": 1,
+    "offset": 8
+  },
+  {
+    "type": "NAME",
+    "text": "p",
+    "line": 2,
+    "column": 2,
+    "offset": 9
+  },
+  {
+    "type": "EMPTY_ELEMENT_END",
+    "text": "/>",
+    "line": 2,
+    "column": 3,
+    "offset": 10
+  },
+  {
+    "type": "WHITESPACE",
+    "text": "\n",
+    "line": 2,
+    "column": 5,
+    "offset": 12
+  },
+  {
+    "type": "ELEMENT_START",
+    "text": "<",
+    "line": 3,
+    "column": 1,
+    "offset": 13
+  },
+  {
+    "type": "NAME",
+    "text": "p",
+    "line": 3,
+    "column": 2,
+    "offset": 14
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 3,
+    "column": 3,
+    "offset": 15
+  },
+  {
+    "type": "ELEMENT_END",
+    "text": ">",
+    "line": 3,
+    "column": 4,
+    "offset": 16
+  },
+  {
+    "type": "ELEMENT_CLOSE",
+    "text": "</",
+    "line": 3,
+    "column": 5,
+    "offset": 17
+  },
+  {
+    "type": "NAME",
+    "text": "p",
+    "line": 3,
+    "column": 7,
+    "offset": 19
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 3,
+    "column": 8,
+    "offset": 20
+  },
+  {
+    "type": "ELEMENT_END",
+    "text": ">",
+    "line": 3,
+    "column": 9,
+    "offset": 21
+  },
+  {
+    "type": "EOF",
+    "text": "",
+    "line": 3,
+    "column": 10,
+    "offset": 22
+  }
+]

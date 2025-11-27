@@ -24,6 +24,7 @@ public class XmlFilterTest {
   @ValueSource(
       strings = {
         "test.xml",
+        "element.xml",
         "attribute.xml",
         "attribute-missing-end-quote.xml",
         "attribute-missing-quotes.xml",
