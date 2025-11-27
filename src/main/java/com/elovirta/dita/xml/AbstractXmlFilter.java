@@ -20,6 +20,12 @@ public abstract class AbstractXmlFilter implements Iterator<XmlLexer.TokenType> 
   private int currentColumn;
   private int currentOffset;
 
+  private XmlLexer.TokenType peekType;
+  private char[] peekText;
+  private int peekLine;
+  private int peekColumn;
+  private int peekOffset;
+
   public AbstractXmlFilter(XmlLexer parent) {
     this.parent = parent;
   }
@@ -109,15 +115,46 @@ public abstract class AbstractXmlFilter implements Iterator<XmlLexer.TokenType> 
   //    columnBuffer.addLast(currentColumn);
   //    offsetBuffer.addLast(currentOffset);
   //  }
+  void pushToBuffer(XmlLexer.TokenType type, char[] text, int line, int column, int offset) {
+    typeBuffer.addLast(type);
+    textBuffer.addLast(text);
+    lineBuffer.addLast(line);
+    columnBuffer.addLast(column);
+    offsetBuffer.addLast(offset);
+  }
+
+  void pushPeekToBuffer() {
+    typeBuffer.addLast(peekType);
+    textBuffer.addLast(peekText);
+    lineBuffer.addLast(peekLine);
+    columnBuffer.addLast(peekColumn);
+    offsetBuffer.addLast(peekOffset);
+    clearPeek();
+  }
+
+  void clearPeek() {
+    peekType = null;
+    peekText = null;
+    peekLine = -1;
+    peekColumn = -1;
+    peekOffset = -1;
+  }
 
   XmlLexer.TokenType peek() {
     parent.next();
     var type = parent.getType();
-    typeBuffer.addLast(type);
-    textBuffer.addLast(parent.getText());
-    lineBuffer.addLast(parent.getLine());
-    columnBuffer.addLast(parent.getColumn());
-    offsetBuffer.addLast(parent.getOffset());
+
+    //    typeBuffer.addLast(type);
+    //    textBuffer.addLast(parent.getText());
+    //    lineBuffer.addLast(parent.getLine());
+    //    columnBuffer.addLast(parent.getColumn());
+    //    offsetBuffer.addLast(parent.getOffset());
+    peekType = type;
+    peekText = parent.getText();
+    peekLine = parent.getLine();
+    peekColumn = parent.getColumn();
+    peekOffset = parent.getOffset();
+
     return type;
   }
 

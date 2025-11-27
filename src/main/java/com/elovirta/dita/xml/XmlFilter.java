@@ -9,8 +9,26 @@ public class XmlFilter extends AbstractXmlFilter {
   @Override
   void filter() {
     if (getType() == XmlLexer.TokenType.EQUALS) {
-      if (peek() == XmlLexer.TokenType.WHITESPACE) {
-        popLast();
+      switch (peek()) {
+        case WHITESPACE -> {
+          clearPeek();
+        }
+        case NAME -> {
+          pushToBuffer(XmlLexer.TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
+          pushPeekToBuffer();
+          switch (peek()) {
+            case ATTR_QUOTE -> {
+              pushPeekToBuffer();
+            }
+            default -> {
+              pushToBuffer(XmlLexer.TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
+              pushPeekToBuffer();
+            }
+          }
+        }
+        default -> {
+          pushPeekToBuffer();
+        }
       }
     }
   }
