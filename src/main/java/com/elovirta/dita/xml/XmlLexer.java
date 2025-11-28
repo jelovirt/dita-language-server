@@ -147,6 +147,16 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
         } else {
           return scanCommentBody();
         }
+      case PI:
+        if (ch == '?' && peek(1) == '>') {
+          return scanPiEnd();
+        } else if (isWhitespace(ch)) {
+          return scanWhitespace();
+        } else if (isNameStartChar(ch)) {
+          return scanName();
+        } else {
+          return scanCharData();
+        }
       case XML_DECL:
         if (ch == '?' && peek(1) == '>') {
           return scanXmlDeclEnd();
@@ -154,10 +164,6 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
       case DOCTYPE:
         if (ch == '>') {
           return scanDocTypeEnd();
-        }
-      case PI:
-        if (ch == '?' && peek(1) == '>') {
-          return scanPiEnd();
         }
       default:
         // Check if we're inside an attribute value
