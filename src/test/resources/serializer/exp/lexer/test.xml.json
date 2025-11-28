@@ -35,7 +35,7 @@
     "offset": 19
   },
   {
-    "type": "WHITESPACE",
+    "type": "CHAR_DATA",
     "text": "\n",
     "line": 1,
     "column": 22,
@@ -140,7 +140,7 @@
     "offset": 87
   },
   {
-    "type": "WHITESPACE",
+    "type": "CHAR_DATA",
     "text": "\n",
     "line": 2,
     "column": 67,
@@ -210,7 +210,7 @@
     "offset": 107
   },
   {
-    "type": "WHITESPACE",
+    "type": "CHAR_DATA",
     "text": "\n  ",
     "line": 3,
     "column": 20,
@@ -287,25 +287,11 @@
     "offset": 131
   },
   {
-    "type": "NAME",
-    "text": "text",
+    "type": "CHAR_DATA",
+    "text": "text\n    content",
     "line": 5,
     "column": 6,
     "offset": 132
-  },
-  {
-    "type": "WHITESPACE",
-    "text": "\n    ",
-    "line": 5,
-    "column": 10,
-    "offset": 136
-  },
-  {
-    "type": "NAME",
-    "text": "content",
-    "line": 6,
-    "column": 5,
-    "offset": 141
   },
   {
     "type": "ELEMENT_CLOSE",
@@ -329,7 +315,7 @@
     "offset": 155
   },
   {
-    "type": "WHITESPACE",
+    "type": "CHAR_DATA",
     "text": "\n  ",
     "line": 6,
     "column": 20,
@@ -357,7 +343,7 @@
     "offset": 172
   },
   {
-    "type": "WHITESPACE",
+    "type": "CHAR_DATA",
     "text": "\n",
     "line": 7,
     "column": 19,
@@ -385,7 +371,7 @@
     "offset": 182
   },
   {
-    "type": "WHITESPACE",
+    "type": "CHAR_DATA",
     "text": "\n",
     "line": 8,
     "column": 8,

@@ -35,7 +35,7 @@
     "offset": 19
   },
   {
-    "type": "WHITESPACE",
+    "type": "CHAR_DATA",
     "text": "\n",
     "line": 1,
     "column": 22,

@@ -21,7 +21,7 @@
     "offset": 8
   },
   {
-    "type": "WHITESPACE",
+    "type": "CHAR_DATA",
     "text": "\n",
     "line": 1,
     "column": 12,
@@ -49,7 +49,7 @@
     "offset": 22
   },
   {
-    "type": "WHITESPACE",
+    "type": "CHAR_DATA",
     "text": "\n",
     "line": 2,
     "column": 14,

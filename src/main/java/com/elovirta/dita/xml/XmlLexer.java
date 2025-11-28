@@ -251,16 +251,16 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
           } else {
             return scanElementStart();
           }
-        } else if (isWhitespace(ch)) {
-          return scanWhitespace();
-        } else if (ch == '=') {
-          return scanEquals();
-        } else if (ch == '"' || ch == '\'') {
-          return scanAttrValueOpen();
+          //        } else if (isWhitespace(ch)) {
+          //          return scanWhitespace();
+          //        } else if (ch == '=') {
+          //          return scanEquals();
+          //        } else if (ch == '"' || ch == '\'') {
+          //          return scanAttrValueOpen();
         } else if (ch == '&') {
           return scanReference();
-        } else if (isNameStartChar(ch)) {
-          return scanName();
+          //        } else if (isNameStartChar(ch)) {
+          //          return scanName();
         } else {
           return scanCharData();
         }

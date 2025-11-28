@@ -42,7 +42,7 @@
     "offset": 6
   },
   {
-    "type": "WHITESPACE",
+    "type": "CHAR_DATA",
     "text": "\n",
     "line": 1,
     "column": 8,
@@ -105,7 +105,7 @@
     "offset": 16
   },
   {
-    "type": "WHITESPACE",
+    "type": "CHAR_DATA",
     "text": "\n",
     "line": 2,
     "column": 10,
@@ -133,7 +133,7 @@
     "offset": 20
   },
   {
-    "type": "WHITESPACE",
+    "type": "CHAR_DATA",
     "text": "\n",
     "line": 3,
     "column": 5,
@@ -168,7 +168,7 @@
     "offset": 26
   },
   {
-    "type": "WHITESPACE",
+    "type": "CHAR_DATA",
     "text": "\n",
     "line": 4,
     "column": 6,
