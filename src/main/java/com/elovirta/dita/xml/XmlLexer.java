@@ -57,7 +57,8 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     ROOT,
     DOCTYPE,
     COMMENT,
-    XML_DECL
+    XML_DECL,
+    PI,
   }
 
   private char[] input;
@@ -183,7 +184,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
             if (peekString(2, 3).equals("xml") && isWhitespaceOrEnd(5)) {
               return scanXmlDeclStart();
             } else {
-              return scanPI();
+              return scanPiStart();
             }
           } else if (ch == '<' && peek(1) == '/') {
             return scanElementClose();
@@ -229,17 +230,6 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
         // Handle character data
         return scanCharData();
     }
-  }
-
-  private TokenType scanPiEnd() {
-    int startPos = pos;
-    int startLine = line;
-    int startCol = column;
-
-    advance(); // consume '?'
-    advance(); // consume '>'
-
-    return setCurrentToken(TokenType.PI_END, new char[] {'?', '>'}, startLine, startCol, startPos);
   }
 
   private TokenType scanWhitespace() {
@@ -448,7 +438,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
         startPos);
   }
 
-  private TokenType scanPI() {
+  private TokenType scanPiStart() {
     int startPos = pos;
     int startLine = line;
     int startCol = column;
@@ -456,8 +446,21 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     advance(); // '<'
     advance(); // '?'
 
+    state = State.PI;
     return setCurrentToken(
         TokenType.PI_START, new char[] {'<', '?'}, startLine, startCol, startPos);
+  }
+
+  private TokenType scanPiEnd() {
+    int startPos = pos;
+    int startLine = line;
+    int startCol = column;
+
+    advance(); // consume '?'
+    advance(); // consume '>'
+
+    state = State.ROOT;
+    return setCurrentToken(TokenType.PI_END, new char[] {'?', '>'}, startLine, startCol, startPos);
   }
 
   private TokenType scanXmlDeclStart() {
