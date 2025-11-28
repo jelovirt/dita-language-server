@@ -54,7 +54,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
   }
 
   private enum State {
-    ROOT,
+    CONTENT,
     DOCTYPE,
     COMMENT,
     XML_DECL,
@@ -79,7 +79,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
   private boolean hasNext = true;
 
   // State tracking for multi-token constructs
-  private State state = State.ROOT;
+  private State state = State.CONTENT;
   private boolean inAttrValue = false;
   private char attrValueQuote = '\0';
 
@@ -89,7 +89,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     this.line = 1;
     this.column = 1;
     this.hasNext = true;
-    this.state = State.ROOT;
+    this.state = State.CONTENT;
     this.inAttrValue = false;
     this.attrValueQuote = '\0';
   }
@@ -170,7 +170,6 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
         } else {
           return scanCharData();
         }
-        // Partial processing
       case DOCTYPE:
         if (ch == '>') {
           return scanDocTypeEnd();
@@ -184,7 +183,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
           return scanWhitespace();
         } else if (ch == '/' && peek(1) == '>') {
           return scanEmptyElementEnd();
-        } else if (state != State.XML_DECL && ch == '=') {
+        } else if (ch == '=') {
           return scanEquals();
         } else if (ch == '"' || ch == '\'') {
           return scanAttrValueOpen();
@@ -202,7 +201,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
           return scanElementEnd();
         } else if (ch == '/' && peek(1) == '>') {
           return scanEmptyElementEnd();
-        } else if (state != State.XML_DECL && ch == '=') {
+        } else if (ch == '=') {
           return scanEquals();
         } else if (ch == '"' || ch == '\'') {
           state = State.ATTR_VALUE;
@@ -231,7 +230,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
         } else {
           throw new IllegalStateException();
         }
-      case ROOT:
+      case CONTENT:
         if (ch == '<') {
           if (peek(1) == '!') {
             if (peek(2) == '-' && peek(3) == '-') {
@@ -254,11 +253,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
           }
         } else if (isWhitespace(ch)) {
           return scanWhitespace();
-        } else if (ch == '>') {
-          return scanElementEnd();
-        } else if (ch == '/' && peek(1) == '>') {
-          return scanEmptyElementEnd();
-        } else if (state != State.XML_DECL && ch == '=') {
+        } else if (ch == '=') {
           return scanEquals();
         } else if (ch == '"' || ch == '\'') {
           return scanAttrValueOpen();
@@ -270,23 +265,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
           return scanCharData();
         }
       default:
-        if (isWhitespace(ch)) {
-          return scanWhitespace();
-        } else if (ch == '>') {
-          return scanElementEnd();
-        } else if (ch == '/' && peek(1) == '>') {
-          return scanEmptyElementEnd();
-        } else if (state != State.XML_DECL && ch == '=') {
-          return scanEquals();
-        } else if (ch == '"' || ch == '\'') {
-          return scanAttrValueOpen();
-        } else if (ch == '&') {
-          return scanReference();
-        } else if (isNameStartChar(ch)) {
-          return scanName();
-        } else {
-          return scanCharData();
-        }
+        throw new IllegalStateException();
     }
   }
 
@@ -335,7 +314,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
 
     advance(); // consume '>'
 
-    state = State.ROOT;
+    state = State.CONTENT;
     return setCurrentToken(TokenType.ELEMENT_END, new char[] {'>'}, startLine, startCol, startPos);
   }
 
@@ -347,7 +326,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     advance(); // consume '/'
     advance(); // consume '>'
 
-    state = State.ROOT;
+    state = State.CONTENT;
     return setCurrentToken(
         TokenType.EMPTY_ELEMENT_END, new char[] {'/', '>'}, startLine, startCol, startPos);
   }
@@ -483,7 +462,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     advance();
     advance();
 
-    state = State.ROOT;
+    state = State.CONTENT;
     return setCurrentToken(
         TokenType.COMMENT_END, new char[] {'-', '-', '>'}, startLine, startCol, startPos);
   }
@@ -525,7 +504,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     advance(); // consume '?'
     advance(); // consume '>'
 
-    state = State.ROOT;
+    state = State.CONTENT;
     return setCurrentToken(TokenType.PI_END, new char[] {'?', '>'}, startLine, startCol, startPos);
   }
 
@@ -559,7 +538,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     advance();
     advance();
 
-    state = State.ROOT;
+    state = State.CONTENT;
     return setCurrentToken(
         TokenType.XML_DECL_END, new char[] {'?', '>'}, startLine, startCol, startPos);
   }
@@ -588,7 +567,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
 
     advance(); // consume '>'
 
-    state = State.ROOT;
+    state = State.CONTENT;
     return setCurrentToken(TokenType.DOCTYPE_END, new char[] {'>'}, startLine, startCol, startPos);
   }
 
