@@ -167,26 +167,12 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
         } else {
           return scanCharData();
         }
+      // Partial processing
       case DOCTYPE:
         if (ch == '>') {
           return scanDocTypeEnd();
         }
-      default:
-        // Check if we're inside an attribute value
-        if (inAttrValue) {
-          if (ch == attrValueQuote) {
-            return scanAttrValueClose();
-          } else {
-            return scanAttrValue();
-          }
-        }
-
-        // Handle whitespace
-        if (isWhitespace(ch)) {
-          return scanWhitespace();
-        }
-
-        // Handle '<' based tokens
+      case ROOT:
         if (ch == '<') {
           if (peek(1) == '!') {
             if (peek(2) == '-' && peek(3) == '-') {
@@ -208,38 +194,31 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
             return scanElementStart();
           }
         }
-
-        // Handle '>' and '/>'
-        if (ch == '>') {
+      default:
+        // Check if we're inside an attribute value
+        if (inAttrValue) {
+          if (ch == attrValueQuote) {
+            return scanAttrValueClose();
+          } else {
+            return scanAttrValue();
+          }
+        } else if (isWhitespace(ch)) {
+          return scanWhitespace();
+        } else if (ch == '>') {
           return scanElementEnd();
-        }
-
-        if (ch == '/' && peek(1) == '>') {
+        } else if (ch == '/' && peek(1) == '>') {
           return scanEmptyElementEnd();
-        }
-
-        // Handle '=' for attributes
-        if (state != State.XML_DECL && ch == '=') {
+        } else if (state != State.XML_DECL && ch == '=') {
           return scanEquals();
-        }
-
-        // Handle quoted strings (attribute values)
-        if (ch == '"' || ch == '\'') {
+        } else if (ch == '"' || ch == '\'') {
           return scanAttrValueOpen();
-        }
-
-        // Handle '&' references
-        if (ch == '&') {
+        } else if (ch == '&') {
           return scanReference();
-        }
-
-        // Handle names (element names, attribute names)
-        if (isNameStartChar(ch)) {
+        } else if (isNameStartChar(ch)) {
           return scanName();
+        } else {
+          return scanCharData();
         }
-
-        // Handle character data
-        return scanCharData();
     }
   }
 
