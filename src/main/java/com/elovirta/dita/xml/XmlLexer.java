@@ -137,9 +137,11 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
       return setCurrentToken(TokenType.EOF, new char[0], line, column, pos);
     }
 
+    char ch = peek();
+
     // Check if we're inside a comment
     if (state == State.COMMENT) {
-      if (peek() == '-' && peek(1) == '-' && peek(2) == '>') {
+      if (ch == '-' && peek(1) == '-' && peek(2) == '>') {
         return scanCommentEnd();
       } else {
         return scanCommentBody();
@@ -148,7 +150,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
 
     // Check if we're inside an attribute value
     if (inAttrValue) {
-      if (peek() == attrValueQuote) {
+      if (ch == attrValueQuote) {
         return scanAttrValueClose();
       } else {
         return scanAttrValue();
@@ -156,16 +158,14 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     }
 
     // Check if we're inside an XML declaration and see '?>'
-    if (state == State.XML_DECL && peek() == '?' && peek(1) == '>') {
+    if (state == State.XML_DECL && ch == '?' && peek(1) == '>') {
       return scanXmlDeclEnd();
     }
 
     // Check if we're inside a DOCTYPE and see closing '>'
-    if (state == State.DOCTYPE && peek() == '>') {
+    if (state == State.DOCTYPE && ch == '>') {
       return scanDocTypeEnd();
     }
-
-    char ch = peek();
 
     // Handle whitespace
     if (isWhitespace(ch)) {
@@ -205,7 +205,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     }
 
     // Handle '=' for attributes
-    if (ch == '=') {
+    if (state != State.XML_DECL && ch == '=') {
       return scanEquals();
     }
 
@@ -221,13 +221,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
 
     // Handle '?' and '?>' for PI/XML decl end
     if (ch == '?' && peek(1) == '>') {
-      int startPos = pos;
-      int startLine = line;
-      int startCol = column;
-      advance();
-      advance();
-      return setCurrentToken(
-          TokenType.PI_END, new char[] {'?', '>'}, startLine, startCol, startPos);
+      return scanPiEnd();
     }
 
     // Handle names (element names, attribute names)
@@ -237,6 +231,17 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
 
     // Handle character data
     return scanCharData();
+  }
+
+  private TokenType scanPiEnd() {
+    int startPos = pos;
+    int startLine = line;
+    int startCol = column;
+
+    advance(); // consume '?'
+    advance(); // consume '>'
+
+    return setCurrentToken(TokenType.PI_END, new char[] {'?', '>'}, startLine, startCol, startPos);
   }
 
   private TokenType scanWhitespace() {
@@ -573,6 +578,9 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
       }
       // Check for ']]>' which is not allowed
       if (ch == ']' && peek(1) == ']' && peek(2) == '>') {
+        break;
+      }
+      if (ch == '?' && peek(1) == '>') {
         break;
       }
       advance();

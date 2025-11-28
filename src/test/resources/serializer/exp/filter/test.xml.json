@@ -21,32 +21,11 @@
     "offset": 6
   },
   {
-    "type": "EQUALS",
-    "text": "=",
+    "type": "CHAR_DATA",
+    "text": "=\"1.0\"",
     "line": 1,
     "column": 14,
     "offset": 13
-  },
-  {
-    "type": "ATTR_QUOTE",
-    "text": "\"",
-    "line": 1,
-    "column": 15,
-    "offset": 14
-  },
-  {
-    "type": "ATTR_VALUE",
-    "text": "1.0",
-    "line": 1,
-    "column": 16,
-    "offset": 15
-  },
-  {
-    "type": "ATTR_QUOTE",
-    "text": "\"",
-    "line": 1,
-    "column": 19,
-    "offset": 18
   },
   {
     "type": "XML_DECL_END",
