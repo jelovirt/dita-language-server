@@ -29,6 +29,7 @@ public class XmlFilterTest {
         "attribute-missing-end-quote.xml",
         "attribute-missing-quotes.xml",
         "attribute-missing-start-quote.xml",
+        "comment.xml",
         "doctype.xml",
         "xml-declaration.xml"
       })

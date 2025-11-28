@@ -1,0 +1,79 @@
+[
+  {
+    "type": "COMMENT_START",
+    "text": "<!--",
+    "line": 1,
+    "column": 1,
+    "offset": 0
+  },
+  {
+    "type": "COMMENT_BODY",
+    "text": "body",
+    "line": 1,
+    "column": 5,
+    "offset": 4
+  },
+  {
+    "type": "COMMENT_END",
+    "text": "-->",
+    "line": 1,
+    "column": 9,
+    "offset": 8
+  },
+  {
+    "type": "WHITESPACE",
+    "text": "\n",
+    "line": 1,
+    "column": 12,
+    "offset": 11
+  },
+  {
+    "type": "COMMENT_START",
+    "text": "<!--",
+    "line": 2,
+    "column": 1,
+    "offset": 12
+  },
+  {
+    "type": "COMMENT_BODY",
+    "text": " body ",
+    "line": 2,
+    "column": 5,
+    "offset": 16
+  },
+  {
+    "type": "COMMENT_END",
+    "text": "-->",
+    "line": 2,
+    "column": 11,
+    "offset": 22
+  },
+  {
+    "type": "WHITESPACE",
+    "text": "\n",
+    "line": 2,
+    "column": 14,
+    "offset": 25
+  },
+  {
+    "type": "COMMENT_START",
+    "text": "<!--",
+    "line": 3,
+    "column": 1,
+    "offset": 26
+  },
+  {
+    "type": "COMMENT_END",
+    "text": "-->",
+    "line": 3,
+    "column": 5,
+    "offset": 30
+  },
+  {
+    "type": "EOF",
+    "text": "",
+    "line": 3,
+    "column": 8,
+    "offset": 33
+  }
+]

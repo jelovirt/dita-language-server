@@ -30,6 +30,7 @@ public class XmlLexerTest {
         "attribute-missing-quotes.xml",
         "attribute-missing-start-quote.xml",
         "doctype.xml",
+        "comment.xml",
         "xml-declaration.xml"
       })
   void tokenize(String file) {
