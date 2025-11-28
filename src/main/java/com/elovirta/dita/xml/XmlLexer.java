@@ -139,98 +139,98 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
 
     char ch = peek();
 
-    // Check if we're inside a comment
-    if (state == State.COMMENT) {
-      if (ch == '-' && peek(1) == '-' && peek(2) == '>') {
-        return scanCommentEnd();
-      } else {
-        return scanCommentBody();
-      }
-    }
-
-    // Check if we're inside an attribute value
-    if (inAttrValue) {
-      if (ch == attrValueQuote) {
-        return scanAttrValueClose();
-      } else {
-        return scanAttrValue();
-      }
-    }
-
-    // Check if we're inside an XML declaration and see '?>'
-    if (state == State.XML_DECL && ch == '?' && peek(1) == '>') {
-      return scanXmlDeclEnd();
-    }
-
-    // Check if we're inside a DOCTYPE and see closing '>'
-    if (state == State.DOCTYPE && ch == '>') {
-      return scanDocTypeEnd();
-    }
-
-    // Handle whitespace
-    if (isWhitespace(ch)) {
-      return scanWhitespace();
-    }
-
-    // Handle '<' based tokens
-    if (ch == '<') {
-      if (peek(1) == '!') {
-        if (peek(2) == '-' && peek(3) == '-') {
-          return scanCommentStart();
-        } else if (peek(2) == '[' && peekString(3, 6).equals("CDATA[")) {
-          return scanCData();
-        } else if (peekString(2, 7).equals("DOCTYPE")) {
-          return scanDocTypeStart();
-        }
-      } else if (ch == '<' && peek(1) == '?') {
-        if (peekString(2, 3).equals("xml") && isWhitespaceOrEnd(5)) {
-          return scanXmlDeclStart();
+    switch (state) {
+      case COMMENT:
+        if (ch == '-' && peek(1) == '-' && peek(2) == '>') {
+          return scanCommentEnd();
         } else {
-          return scanPI();
+          return scanCommentBody();
         }
-      } else if (ch == '<' && peek(1) == '/') {
-        return scanElementClose();
-      } else {
-        return scanElementStart();
-      }
-    }
+      default:
+        // Check if we're inside an attribute value
+        if (inAttrValue) {
+          if (ch == attrValueQuote) {
+            return scanAttrValueClose();
+          } else {
+            return scanAttrValue();
+          }
+        }
 
-    // Handle '>' and '/>'
-    if (ch == '>') {
-      return scanElementEnd();
-    }
+        // Check if we're inside an XML declaration and see '?>'
+        if (state == State.XML_DECL && ch == '?' && peek(1) == '>') {
+          return scanXmlDeclEnd();
+        }
 
-    if (ch == '/' && peek(1) == '>') {
-      return scanEmptyElementEnd();
-    }
+        // Check if we're inside a DOCTYPE and see closing '>'
+        if (state == State.DOCTYPE && ch == '>') {
+          return scanDocTypeEnd();
+        }
 
-    // Handle '=' for attributes
-    if (state != State.XML_DECL && ch == '=') {
-      return scanEquals();
-    }
+        // Handle whitespace
+        if (isWhitespace(ch)) {
+          return scanWhitespace();
+        }
 
-    // Handle quoted strings (attribute values)
-    if (ch == '"' || ch == '\'') {
-      return scanAttrValueOpen();
-    }
+        // Handle '<' based tokens
+        if (ch == '<') {
+          if (peek(1) == '!') {
+            if (peek(2) == '-' && peek(3) == '-') {
+              return scanCommentStart();
+            } else if (peek(2) == '[' && peekString(3, 6).equals("CDATA[")) {
+              return scanCData();
+            } else if (peekString(2, 7).equals("DOCTYPE")) {
+              return scanDocTypeStart();
+            }
+          } else if (ch == '<' && peek(1) == '?') {
+            if (peekString(2, 3).equals("xml") && isWhitespaceOrEnd(5)) {
+              return scanXmlDeclStart();
+            } else {
+              return scanPI();
+            }
+          } else if (ch == '<' && peek(1) == '/') {
+            return scanElementClose();
+          } else {
+            return scanElementStart();
+          }
+        }
 
-    // Handle '&' references
-    if (ch == '&') {
-      return scanReference();
-    }
+        // Handle '>' and '/>'
+        if (ch == '>') {
+          return scanElementEnd();
+        }
 
-    // Handle '?' and '?>' for PI/XML decl end
-    if (ch == '?' && peek(1) == '>') {
-      return scanPiEnd();
-    }
+        if (ch == '/' && peek(1) == '>') {
+          return scanEmptyElementEnd();
+        }
 
-    // Handle names (element names, attribute names)
-    if (isNameStartChar(ch)) {
-      return scanName();
-    }
+        // Handle '=' for attributes
+        if (state != State.XML_DECL && ch == '=') {
+          return scanEquals();
+        }
 
-    // Handle character data
-    return scanCharData();
+        // Handle quoted strings (attribute values)
+        if (ch == '"' || ch == '\'') {
+          return scanAttrValueOpen();
+        }
+
+        // Handle '&' references
+        if (ch == '&') {
+          return scanReference();
+        }
+
+        // Handle '?' and '?>' for PI/XML decl end
+        if (ch == '?' && peek(1) == '>') {
+          return scanPiEnd();
+        }
+
+        // Handle names (element names, attribute names)
+        if (isNameStartChar(ch)) {
+          return scanName();
+        }
+
+        // Handle character data
+        return scanCharData();
+    }
   }
 
   private TokenType scanPiEnd() {
