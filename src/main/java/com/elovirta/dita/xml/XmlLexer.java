@@ -53,6 +53,11 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     ERROR
   }
 
+  private enum State {
+    ROOT,
+    DOCTYPE
+  }
+
   private char[] input;
   private int pos;
   private int line;
@@ -69,7 +74,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
 
   // State tracking for multi-token constructs
   private boolean inComment = false;
-  private boolean inDocType = false;
+  private State state = State.ROOT;
   private boolean inXmlDecl = false;
   private boolean inAttrValue = false;
   private char attrValueQuote = '\0';
@@ -81,7 +86,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     this.column = 1;
     this.hasNext = true;
     this.inComment = false;
-    this.inDocType = false;
+    this.state = State.ROOT;
     this.inXmlDecl = false;
     this.inAttrValue = false;
     this.attrValueQuote = '\0';
@@ -158,7 +163,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     }
 
     // Check if we're inside a DOCTYPE and see closing '>'
-    if (inDocType && peek() == '>') {
+    if (state == State.DOCTYPE && peek() == '>') {
       return scanDocTypeEnd();
     }
 
@@ -497,7 +502,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     // Consume '<!DOCTYPE'
     for (int i = 0; i < 9; i++) advance();
 
-    inDocType = true;
+    state = State.DOCTYPE;
     return setCurrentToken(
         TokenType.DOCTYPE_START,
         new char[] {'<', '!', 'D', 'O', 'C', 'T', 'Y', 'P', 'E'},
@@ -513,7 +518,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
 
     advance(); // consume '>'
 
-    inDocType = false;
+    state = State.ROOT;
     return setCurrentToken(TokenType.DOCTYPE_END, new char[] {'>'}, startLine, startCol, startPos);
   }
 
