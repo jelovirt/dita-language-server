@@ -55,7 +55,8 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
 
   private enum State {
     ROOT,
-    DOCTYPE
+    DOCTYPE,
+    XML_DECL,
   }
 
   private char[] input;
@@ -75,7 +76,6 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
   // State tracking for multi-token constructs
   private boolean inComment = false;
   private State state = State.ROOT;
-  private boolean inXmlDecl = false;
   private boolean inAttrValue = false;
   private char attrValueQuote = '\0';
 
@@ -87,7 +87,6 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     this.hasNext = true;
     this.inComment = false;
     this.state = State.ROOT;
-    this.inXmlDecl = false;
     this.inAttrValue = false;
     this.attrValueQuote = '\0';
   }
@@ -158,7 +157,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     }
 
     // Check if we're inside an XML declaration and see '?>'
-    if (inXmlDecl && peek() == '?' && peek(1) == '>') {
+    if (state == State.XML_DECL && peek() == '?' && peek(1) == '>') {
       return scanXmlDeclEnd();
     }
 
@@ -471,7 +470,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     advance();
     advance();
 
-    inXmlDecl = true;
+    state = State.XML_DECL;
     return setCurrentToken(
         TokenType.XML_DECL_START,
         new char[] {'<', '?', 'x', 'm', 'l'},
@@ -489,7 +488,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     advance();
     advance();
 
-    inXmlDecl = false;
+    state = State.ROOT;
     return setCurrentToken(
         TokenType.XML_DECL_END, new char[] {'?', '>'}, startLine, startCol, startPos);
   }
