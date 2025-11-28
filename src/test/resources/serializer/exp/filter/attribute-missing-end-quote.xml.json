@@ -42,17 +42,10 @@
     "offset": 9
   },
   {
-    "type": "ATTR_VALUE",
-    "text": "foo/>",
+    "type": "ERROR",
+    "text": "< not allowed in attribute value",
     "line": 1,
     "column": 11,
     "offset": 10
-  },
-  {
-    "type": "EOF",
-    "text": "",
-    "line": 1,
-    "column": 16,
-    "offset": 15
   }
 ]
