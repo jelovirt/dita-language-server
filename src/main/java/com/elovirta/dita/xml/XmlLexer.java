@@ -184,13 +184,13 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
             } else if (peekString(2, 7).equals("DOCTYPE")) {
               return scanDocTypeStart();
             }
-          } else if (ch == '<' && peek(1) == '?') {
+          } else if (peek(1) == '?') {
             if (peekString(2, 3).equals("xml") && isWhitespaceOrEnd(5)) {
               return scanXmlDeclStart();
             } else {
               return scanPiStart();
             }
-          } else if (ch == '<' && peek(1) == '/') {
+          } else if (peek(1) == '/') {
             return scanElementClose();
           } else {
             return scanElementStart();
