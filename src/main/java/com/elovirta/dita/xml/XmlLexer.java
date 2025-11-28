@@ -215,6 +215,10 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
         if (ch == attrValueQuote) {
           state = State.START_ELEM;
           return scanAttrValueClose();
+        } else if (ch == '<') {
+          pos--;
+          state = State.START_ELEM;
+          return scanAttrValueClose();
         } else if (ch == '&') {
           return scanReference();
         } else {
@@ -251,16 +255,8 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
           } else {
             return scanElementStart();
           }
-          //        } else if (isWhitespace(ch)) {
-          //          return scanWhitespace();
-          //        } else if (ch == '=') {
-          //          return scanEquals();
-          //        } else if (ch == '"' || ch == '\'') {
-          //          return scanAttrValueOpen();
         } else if (ch == '&') {
           return scanReference();
-          //        } else if (isNameStartChar(ch)) {
-          //          return scanName();
         } else {
           return scanCharData();
         }
