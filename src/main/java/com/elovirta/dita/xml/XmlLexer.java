@@ -59,6 +59,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     COMMENT,
     XML_DECL,
     PI,
+    START_ELEM,
     END_ELEM
   }
 
@@ -193,6 +194,32 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
         } else {
           return scanCharData();
         }
+      case START_ELEM:
+        if (inAttrValue) {
+          if (ch == attrValueQuote) {
+            return scanAttrValueClose();
+          } else if (ch == '&') {
+            return scanReference();
+          } else {
+            return scanAttrValue();
+          }
+        } else {
+          if (isWhitespace(ch)) {
+            return scanWhitespace();
+          } else if (ch == '>') {
+            return scanElementEnd();
+          } else if (ch == '/' && peek(1) == '>') {
+            return scanEmptyElementEnd();
+          } else if (state != State.XML_DECL && ch == '=') {
+            return scanEquals();
+          } else if (ch == '"' || ch == '\'') {
+            return scanAttrValueOpen();
+          } else if (isNameStartChar(ch)) {
+            return scanName();
+          } else {
+            throw new IllegalStateException();
+          }
+        }
       case END_ELEM:
         if (isWhitespace(ch)) {
           return scanWhitespace();
@@ -224,14 +251,6 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
           } else {
             return scanElementStart();
           }
-        } else if (inAttrValue) {
-          if (ch == attrValueQuote) {
-            return scanAttrValueClose();
-          } else if (ch == '&') {
-            return scanReference();
-          } else {
-            return scanAttrValue();
-          }
         } else if (isWhitespace(ch)) {
           return scanWhitespace();
         } else if (ch == '>') {
@@ -250,15 +269,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
           return scanCharData();
         }
       default:
-        if (inAttrValue) {
-          if (ch == attrValueQuote) {
-            return scanAttrValueClose();
-          } else if (ch == '&') {
-            return scanReference();
-          } else {
-            return scanAttrValue();
-          }
-        } else if (isWhitespace(ch)) {
+        if (isWhitespace(ch)) {
           return scanWhitespace();
         } else if (ch == '>') {
           return scanElementEnd();
@@ -297,6 +308,8 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     int startCol = column;
 
     advance(); // consume '<'
+
+    state = State.START_ELEM;
     return setCurrentToken(
         TokenType.ELEMENT_START, new char[] {'<'}, startLine, startCol, startPos);
   }
@@ -332,6 +345,8 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
 
     advance(); // consume '/'
     advance(); // consume '>'
+
+    state = State.ROOT;
     return setCurrentToken(
         TokenType.EMPTY_ELEMENT_END, new char[] {'/', '>'}, startLine, startCol, startPos);
   }
