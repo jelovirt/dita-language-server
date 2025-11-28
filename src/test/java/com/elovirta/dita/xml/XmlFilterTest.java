@@ -28,7 +28,8 @@ public class XmlFilterTest {
         "attribute.xml",
         "attribute-missing-end-quote.xml",
         "attribute-missing-quotes.xml",
-        "attribute-missing-start-quote.xml"
+        "attribute-missing-start-quote.xml",
+        "xml-declaration.xml"
       })
   void tokenize(String file) {
     lexer.setInput(readResource("/serializer/src/" + file));
