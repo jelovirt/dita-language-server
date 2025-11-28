@@ -167,10 +167,32 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
         } else {
           return scanCharData();
         }
-      // Partial processing
+        // Partial processing
       case DOCTYPE:
         if (ch == '>') {
           return scanDocTypeEnd();
+        } else if (inAttrValue) {
+          if (ch == attrValueQuote) {
+            return scanAttrValueClose();
+          } else {
+            return scanAttrValue();
+          }
+        } else if (isWhitespace(ch)) {
+          return scanWhitespace();
+        } else if (ch == '>') {
+          return scanElementEnd();
+        } else if (ch == '/' && peek(1) == '>') {
+          return scanEmptyElementEnd();
+        } else if (state != State.XML_DECL && ch == '=') {
+          return scanEquals();
+        } else if (ch == '"' || ch == '\'') {
+          return scanAttrValueOpen();
+        } else if (ch == '&') {
+          return scanReference();
+        } else if (isNameStartChar(ch)) {
+          return scanName();
+        } else {
+          return scanCharData();
         }
       case ROOT:
         if (ch == '<') {
@@ -193,9 +215,30 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
           } else {
             return scanElementStart();
           }
+        } else if (inAttrValue) {
+          if (ch == attrValueQuote) {
+            return scanAttrValueClose();
+          } else {
+            return scanAttrValue();
+          }
+        } else if (isWhitespace(ch)) {
+          return scanWhitespace();
+        } else if (ch == '>') {
+          return scanElementEnd();
+        } else if (ch == '/' && peek(1) == '>') {
+          return scanEmptyElementEnd();
+        } else if (state != State.XML_DECL && ch == '=') {
+          return scanEquals();
+        } else if (ch == '"' || ch == '\'') {
+          return scanAttrValueOpen();
+        } else if (ch == '&') {
+          return scanReference();
+        } else if (isNameStartChar(ch)) {
+          return scanName();
+        } else {
+          return scanCharData();
         }
       default:
-        // Check if we're inside an attribute value
         if (inAttrValue) {
           if (ch == attrValueQuote) {
             return scanAttrValueClose();
