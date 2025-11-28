@@ -155,6 +155,10 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
         if (ch == '>') {
           return scanDocTypeEnd();
         }
+      case PI:
+        if (ch == '?' && peek(1) == '>') {
+          return scanPiEnd();
+        }
       default:
         // Check if we're inside an attribute value
         if (inAttrValue) {
@@ -215,11 +219,6 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
         // Handle '&' references
         if (ch == '&') {
           return scanReference();
-        }
-
-        // Handle '?' and '?>' for PI/XML decl end
-        if (ch == '?' && peek(1) == '>') {
-          return scanPiEnd();
         }
 
         // Handle names (element names, attribute names)
