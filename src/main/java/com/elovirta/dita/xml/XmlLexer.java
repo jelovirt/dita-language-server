@@ -216,6 +216,8 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
         } else if (inAttrValue) {
           if (ch == attrValueQuote) {
             return scanAttrValueClose();
+          } else if (ch == '&') {
+            return scanReference();
           } else {
             return scanAttrValue();
           }

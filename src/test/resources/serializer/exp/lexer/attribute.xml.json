@@ -525,10 +525,150 @@
     "offset": 116
   },
   {
-    "type": "EOF",
-    "text": "",
+    "type": "WHITESPACE",
+    "text": "\n",
     "line": 7,
     "column": 15,
     "offset": 118
+  },
+  {
+    "type": "ELEMENT_START",
+    "text": "<",
+    "line": 8,
+    "column": 1,
+    "offset": 119
+  },
+  {
+    "type": "NAME",
+    "text": "foo",
+    "line": 8,
+    "column": 2,
+    "offset": 120
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 8,
+    "column": 5,
+    "offset": 123
+  },
+  {
+    "type": "NAME",
+    "text": "bar",
+    "line": 8,
+    "column": 6,
+    "offset": 124
+  },
+  {
+    "type": "EQUALS",
+    "text": "=",
+    "line": 8,
+    "column": 9,
+    "offset": 127
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 8,
+    "column": 10,
+    "offset": 128
+  },
+  {
+    "type": "ATTR_VALUE",
+    "text": "=",
+    "line": 8,
+    "column": 11,
+    "offset": 129
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 8,
+    "column": 12,
+    "offset": 130
+  },
+  {
+    "type": "EMPTY_ELEMENT_END",
+    "text": "/>",
+    "line": 8,
+    "column": 13,
+    "offset": 131
+  },
+  {
+    "type": "WHITESPACE",
+    "text": "\n",
+    "line": 8,
+    "column": 15,
+    "offset": 133
+  },
+  {
+    "type": "ELEMENT_START",
+    "text": "<",
+    "line": 9,
+    "column": 1,
+    "offset": 134
+  },
+  {
+    "type": "NAME",
+    "text": "foo",
+    "line": 9,
+    "column": 2,
+    "offset": 135
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 9,
+    "column": 5,
+    "offset": 138
+  },
+  {
+    "type": "NAME",
+    "text": "bar",
+    "line": 9,
+    "column": 6,
+    "offset": 139
+  },
+  {
+    "type": "EQUALS",
+    "text": "=",
+    "line": 9,
+    "column": 9,
+    "offset": 142
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 9,
+    "column": 10,
+    "offset": 143
+  },
+  {
+    "type": "ENTITY_REF",
+    "text": "&lt;",
+    "line": 9,
+    "column": 11,
+    "offset": 144
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 9,
+    "column": 15,
+    "offset": 148
+  },
+  {
+    "type": "EMPTY_ELEMENT_END",
+    "text": "/>",
+    "line": 9,
+    "column": 16,
+    "offset": 149
+  },
+  {
+    "type": "EOF",
+    "text": "",
+    "line": 9,
+    "column": 18,
+    "offset": 151
   }
 ]
