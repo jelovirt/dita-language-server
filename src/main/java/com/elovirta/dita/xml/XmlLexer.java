@@ -179,8 +179,6 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
           }
         } else if (isWhitespace(ch)) {
           return scanWhitespace();
-        } else if (ch == '>') {
-          return scanElementEnd();
         } else if (ch == '/' && peek(1) == '>') {
           return scanEmptyElementEnd();
         } else if (state != State.XML_DECL && ch == '=') {
@@ -242,6 +240,8 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
         if (inAttrValue) {
           if (ch == attrValueQuote) {
             return scanAttrValueClose();
+          } else if (ch == '&') {
+            return scanReference();
           } else {
             return scanAttrValue();
           }
