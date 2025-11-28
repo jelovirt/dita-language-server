@@ -160,6 +160,12 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
       case XML_DECL:
         if (ch == '?' && peek(1) == '>') {
           return scanXmlDeclEnd();
+        } else if (isWhitespace(ch)) {
+          return scanWhitespace();
+        } else if (isNameStartChar(ch)) {
+          return scanName();
+        } else {
+          return scanCharData();
         }
       case DOCTYPE:
         if (ch == '>') {
