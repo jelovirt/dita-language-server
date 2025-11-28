@@ -146,6 +146,14 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
         } else {
           return scanCommentBody();
         }
+      case XML_DECL:
+        if (ch == '?' && peek(1) == '>') {
+          return scanXmlDeclEnd();
+        }
+      case DOCTYPE:
+        if (ch == '>') {
+          return scanDocTypeEnd();
+        }
       default:
         // Check if we're inside an attribute value
         if (inAttrValue) {
@@ -154,16 +162,6 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
           } else {
             return scanAttrValue();
           }
-        }
-
-        // Check if we're inside an XML declaration and see '?>'
-        if (state == State.XML_DECL && ch == '?' && peek(1) == '>') {
-          return scanXmlDeclEnd();
-        }
-
-        // Check if we're inside a DOCTYPE and see closing '>'
-        if (state == State.DOCTYPE && ch == '>') {
-          return scanDocTypeEnd();
         }
 
         // Handle whitespace
