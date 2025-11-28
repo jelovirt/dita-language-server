@@ -56,7 +56,8 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
   private enum State {
     ROOT,
     DOCTYPE,
-    XML_DECL,
+    COMMENT,
+    XML_DECL
   }
 
   private char[] input;
@@ -74,7 +75,6 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
   private boolean hasNext = true;
 
   // State tracking for multi-token constructs
-  private boolean inComment = false;
   private State state = State.ROOT;
   private boolean inAttrValue = false;
   private char attrValueQuote = '\0';
@@ -85,7 +85,6 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     this.line = 1;
     this.column = 1;
     this.hasNext = true;
-    this.inComment = false;
     this.state = State.ROOT;
     this.inAttrValue = false;
     this.attrValueQuote = '\0';
@@ -139,7 +138,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     }
 
     // Check if we're inside a comment
-    if (inComment) {
+    if (state == State.COMMENT) {
       if (peek() == '-' && peek(1) == '-' && peek(2) == '>') {
         return scanCommentEnd();
       } else {
@@ -394,7 +393,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     advance();
     advance();
 
-    inComment = true;
+    state = State.COMMENT;
     return setCurrentToken(
         TokenType.COMMENT_START, new char[] {'<', '!', '-', '-'}, startLine, startCol, startPos);
   }
@@ -425,7 +424,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     advance();
     advance();
 
-    inComment = false;
+    state = State.ROOT;
     return setCurrentToken(
         TokenType.COMMENT_END, new char[] {'-', '-', '>'}, startLine, startCol, startPos);
   }
