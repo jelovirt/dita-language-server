@@ -31,6 +31,7 @@ public class XmlFilterTest {
         "attribute-missing-start-quote.xml",
         "comment.xml",
         "doctype.xml",
+        "processing-instruction.xml",
         "xml-declaration.xml"
       })
   void tokenize(String file) {
