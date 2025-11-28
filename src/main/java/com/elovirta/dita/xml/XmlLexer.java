@@ -59,6 +59,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     COMMENT,
     XML_DECL,
     PI,
+    END_ELEM
   }
 
   private char[] input;
@@ -192,6 +193,16 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
         } else {
           return scanCharData();
         }
+      case END_ELEM:
+        if (isWhitespace(ch)) {
+          return scanWhitespace();
+        } else if (ch == '>') {
+          return scanElementEnd();
+        } else if (isNameStartChar(ch)) {
+          return scanName();
+        } else {
+          throw new IllegalStateException();
+        }
       case ROOT:
         if (ch == '<') {
           if (peek(1) == '!') {
@@ -297,6 +308,8 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
 
     advance(); // consume '<'
     advance(); // consume '/'
+
+    state = State.END_ELEM;
     return setCurrentToken(
         TokenType.ELEMENT_CLOSE, new char[] {'<', '/'}, startLine, startCol, startPos);
   }
@@ -307,6 +320,8 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     int startCol = column;
 
     advance(); // consume '>'
+
+    state = State.ROOT;
     return setCurrentToken(TokenType.ELEMENT_END, new char[] {'>'}, startLine, startCol, startPos);
   }
 
