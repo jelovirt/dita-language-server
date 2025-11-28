@@ -60,7 +60,8 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     XML_DECL,
     PI,
     START_ELEM,
-    END_ELEM
+    END_ELEM,
+    ATTR_VALUE
   }
 
   private char[] input;
@@ -195,30 +196,30 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
           return scanCharData();
         }
       case START_ELEM:
-        if (inAttrValue) {
-          if (ch == attrValueQuote) {
-            return scanAttrValueClose();
-          } else if (ch == '&') {
-            return scanReference();
-          } else {
-            return scanAttrValue();
-          }
+        if (isWhitespace(ch)) {
+          return scanWhitespace();
+        } else if (ch == '>') {
+          return scanElementEnd();
+        } else if (ch == '/' && peek(1) == '>') {
+          return scanEmptyElementEnd();
+        } else if (state != State.XML_DECL && ch == '=') {
+          return scanEquals();
+        } else if (ch == '"' || ch == '\'') {
+          state = State.ATTR_VALUE;
+          return scanAttrValueOpen();
+        } else if (isNameStartChar(ch)) {
+          return scanName();
         } else {
-          if (isWhitespace(ch)) {
-            return scanWhitespace();
-          } else if (ch == '>') {
-            return scanElementEnd();
-          } else if (ch == '/' && peek(1) == '>') {
-            return scanEmptyElementEnd();
-          } else if (state != State.XML_DECL && ch == '=') {
-            return scanEquals();
-          } else if (ch == '"' || ch == '\'') {
-            return scanAttrValueOpen();
-          } else if (isNameStartChar(ch)) {
-            return scanName();
-          } else {
-            throw new IllegalStateException();
-          }
+          throw new IllegalStateException();
+        }
+      case ATTR_VALUE:
+        if (ch == attrValueQuote) {
+          state = State.START_ELEM;
+          return scanAttrValueClose();
+        } else if (ch == '&') {
+          return scanReference();
+        } else {
+          return scanAttrValue();
         }
       case END_ELEM:
         if (isWhitespace(ch)) {
