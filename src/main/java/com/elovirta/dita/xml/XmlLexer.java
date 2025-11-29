@@ -209,16 +209,32 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
         } else if (isNameStartChar(ch)) {
           return scanName();
         } else {
-          throw new IllegalStateException();
+          pos--;
+          return scanElementEnd();
+          //          throw new IllegalStateException();
         }
       case ATTR_VALUE:
         if (ch == attrValueQuote) {
           state = State.START_ELEM;
           return scanAttrValueClose();
+          //        } else if (ch == '>') {
+          ////          pos--;
+          ////          state = State.START_ELEM;
+          //          return attrValueEnd();
         } else if (ch == '<') {
-          pos--;
-          state = State.START_ELEM;
-          return scanAttrValueClose();
+
+          //            state = State.START_ELEM;
+          //            return attrValueEnd();
+          //            pos--;
+          int startPos = pos;
+          int startLine = line;
+          int startCol = column;
+
+          //            advance(); // consume '>'
+
+          state = State.CONTENT;
+          return setCurrentToken(
+              TokenType.ELEMENT_END, new char[] {'>'}, startLine, startCol, startPos);
         } else if (ch == '&') {
           return scanReference();
         } else {
@@ -384,13 +400,25 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
       if (ch == attrValueQuote) {
         // Found closing quote
         break;
+      } else if (ch == '>') {
+        var next = peek(1);
+        if (next == '\n' || next == '<') {
+          break;
+        }
       } else if (ch == '<') {
-        return setCurrentToken(
-            TokenType.ERROR,
-            "< not allowed in attribute value".toCharArray(),
-            startLine,
-            startCol,
-            startPos);
+        var next = peek(1);
+        if (isNameStartChar(next) || next == '!' || next == '?' || next == '/') {
+          break;
+        } else {
+          return setCurrentToken(
+              TokenType.ERROR,
+              "< not allowed in attribute value".toCharArray(),
+              startLine,
+              startCol,
+              startPos);
+        }
+        //      } else if (ch == '>') {
+        //          break;
       } else if (ch == '&') {
         // References are allowed in attribute values but we'll let them be separate tokens
         break;
@@ -409,6 +437,20 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
 
     char quote = peek();
     advance(); // consume quote
+
+    inAttrValue = false;
+    attrValueQuote = '\0';
+
+    return setCurrentToken(TokenType.ATTR_QUOTE, new char[] {quote}, startLine, startCol, startPos);
+  }
+
+  private TokenType attrValueEnd() {
+    int startPos = pos;
+    int startLine = line;
+    int startCol = column;
+
+    char quote = attrValueQuote;
+    //          advance(); // consume quote
 
     inAttrValue = false;
     attrValueQuote = '\0';
