@@ -217,24 +217,12 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
         if (ch == attrValueQuote) {
           state = State.START_ELEM;
           return scanAttrValueClose();
-          //        } else if (ch == '>') {
-          ////          pos--;
-          ////          state = State.START_ELEM;
-          //          return attrValueEnd();
+        } else if (ch == '>' && peek(1) == '<' || peek(1) == '\n') {
+          return attrValueEnd();
+        } else if (ch == '/' && peek(1) == '>') {
+          return attrValueEnd();
         } else if (ch == '<') {
-
-          //            state = State.START_ELEM;
-          //            return attrValueEnd();
-          //            pos--;
-          int startPos = pos;
-          int startLine = line;
-          int startCol = column;
-
-          //            advance(); // consume '>'
-
-          state = State.CONTENT;
-          return setCurrentToken(
-              TokenType.ELEMENT_END, new char[] {'>'}, startLine, startCol, startPos);
+          return elementEnd();
         } else if (ch == '&') {
           return scanReference();
         } else {
@@ -325,6 +313,17 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     int startCol = column;
 
     advance(); // consume '>'
+
+    state = State.CONTENT;
+    return setCurrentToken(TokenType.ELEMENT_END, new char[] {'>'}, startLine, startCol, startPos);
+  }
+
+  private TokenType elementEnd() {
+    int startPos = pos;
+    int startLine = line;
+    int startCol = column;
+
+    //        advance(); // consume '>'
 
     state = State.CONTENT;
     return setCurrentToken(TokenType.ELEMENT_END, new char[] {'>'}, startLine, startCol, startPos);
@@ -455,6 +454,7 @@ public class XmlLexer implements Iterator<XmlLexer.TokenType> {
     inAttrValue = false;
     attrValueQuote = '\0';
 
+    state = State.START_ELEM;
     return setCurrentToken(TokenType.ATTR_QUOTE, new char[] {quote}, startLine, startCol, startPos);
   }
 

@@ -33,11 +33,11 @@ public class XmlFilter extends AbstractXmlFilter {
     } else if (getType() == XmlLexer.TokenType.ATTR_VALUE) {
       switch (peek()) {
         case ATTR_QUOTE -> {
-            pushPeekToBuffer();
+          pushPeekToBuffer();
         }
         default -> {
           pushToBuffer(XmlLexer.TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
-            pushPeekToBuffer();
+          pushPeekToBuffer();
         }
       }
     }

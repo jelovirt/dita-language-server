@@ -56,7 +56,14 @@
     "offset": 12
   },
   {
-    "type": "ATTR_VALUE",
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 1,
+    "column": 14,
+    "offset": 13
+  },
+  {
+    "type": "EMPTY_ELEMENT_END",
     "text": "/>",
     "line": 1,
     "column": 14,
