@@ -20,7 +20,6 @@ public class XmlLexerImpl implements XmlLexer {
   private int line;
   private int column;
 
-  // Current token state
   private TokenType currentType;
   private char[] currentText;
   private int currentLine;
@@ -29,7 +28,6 @@ public class XmlLexerImpl implements XmlLexer {
 
   private boolean hasNext = true;
 
-  // State tracking for multi-token constructs
   private State state = State.CONTENT;
   private boolean inAttrValue = false;
   private char attrValueQuote = '\0';
@@ -66,23 +64,27 @@ public class XmlLexerImpl implements XmlLexer {
     return type;
   }
 
-  // Getters for current token state
+  @Override
   public TokenType getType() {
     return currentType;
   }
 
+  @Override
   public char[] getText() {
     return currentText;
   }
 
+  @Override
   public int getLine() {
     return currentLine;
   }
 
+  @Override
   public int getColumn() {
     return currentColumn;
   }
 
+  @Override
   public int getOffset() {
     return currentOffset;
   }
@@ -274,8 +276,6 @@ public class XmlLexerImpl implements XmlLexer {
     int startLine = line;
     int startCol = column;
 
-    //        advance(); // consume '>'
-
     state = State.CONTENT;
     return setCurrentToken(TokenType.ELEMENT_END, new char[] {'>'}, startLine, startCol, startPos);
   }
@@ -348,7 +348,6 @@ public class XmlLexerImpl implements XmlLexer {
     while (pos < input.length) {
       char ch = peek();
       if (ch == attrValueQuote) {
-        // Found closing quote
         break;
       } else if (ch == '>') {
         var next = peek(1);
@@ -367,10 +366,7 @@ public class XmlLexerImpl implements XmlLexer {
               startCol,
               startPos);
         }
-        //      } else if (ch == '>') {
-        //          break;
       } else if (ch == '&') {
-        // References are allowed in attribute values but we'll let them be separate tokens
         break;
       }
       advance();
@@ -400,7 +396,6 @@ public class XmlLexerImpl implements XmlLexer {
     int startCol = column;
 
     char quote = attrValueQuote;
-    //          advance(); // consume quote
 
     inAttrValue = false;
     attrValueQuote = '\0';
@@ -414,11 +409,10 @@ public class XmlLexerImpl implements XmlLexer {
     int startLine = line;
     int startCol = column;
 
-    // Consume '<!--'
-    advance();
-    advance();
-    advance();
-    advance();
+    advance(); // consume '<'
+    advance(); // consume '!'
+    advance(); // consume '-'
+    advance(); // consume '-'
 
     state = State.COMMENT;
     return setCurrentToken(
@@ -446,10 +440,9 @@ public class XmlLexerImpl implements XmlLexer {
     int startLine = line;
     int startCol = column;
 
-    // Consume '-->'
-    advance();
-    advance();
-    advance();
+    advance(); // consume '-'
+    advance(); // consume '-'
+    advance(); // consume '>'
 
     state = State.CONTENT;
     return setCurrentToken(
@@ -502,12 +495,11 @@ public class XmlLexerImpl implements XmlLexer {
     int startLine = line;
     int startCol = column;
 
-    // Consume '<?xml'
-    advance();
-    advance();
-    advance();
-    advance();
-    advance();
+    advance(); // consume '<'
+    advance(); // consume '?'
+    advance(); // consume 'x'
+    advance(); // consume 'm'
+    advance(); // consume 'l'
 
     state = State.XML_DECL;
     return setCurrentToken(
@@ -523,9 +515,8 @@ public class XmlLexerImpl implements XmlLexer {
     int startLine = line;
     int startCol = column;
 
-    // Consume '?>'
-    advance();
-    advance();
+    advance(); // consume '?'
+    advance(); // consume '>'
 
     state = State.CONTENT;
     return setCurrentToken(
@@ -587,7 +578,6 @@ public class XmlLexerImpl implements XmlLexer {
       return setCurrentToken(
           TokenType.CHAR_REF, copyRange(startPos, pos), startLine, startCol, startPos);
     } else {
-      // Entity reference
       while (pos < input.length && isNameChar(peek())) {
         advance();
       }
