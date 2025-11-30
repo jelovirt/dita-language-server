@@ -2,25 +2,24 @@ package com.elovirta.dita.xml;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Iterator;
 
-public abstract class AbstractXmlFilter implements Iterator<XmlLexer.TokenType> {
+public abstract class AbstractXmlFilter implements XmlLexer {
 
   private final XmlLexer parent;
 
-  private final Deque<XmlLexer.TokenType> typeBuffer = new ArrayDeque<>();
+  private final Deque<XmlLexerImpl.TokenType> typeBuffer = new ArrayDeque<>();
   private final Deque<char[]> textBuffer = new ArrayDeque<>();
   private final Deque<Integer> lineBuffer = new ArrayDeque<>();
   private final Deque<Integer> columnBuffer = new ArrayDeque<>();
   private final Deque<Integer> offsetBuffer = new ArrayDeque<>();
 
-  private XmlLexer.TokenType currentType;
+  private XmlLexerImpl.TokenType currentType;
   private char[] currentText;
   private int currentLine;
   private int currentColumn;
   private int currentOffset;
 
-  private XmlLexer.TokenType peekType;
+  private XmlLexerImpl.TokenType peekType;
   private char[] peekText;
   private int peekLine;
   private int peekColumn;
@@ -30,6 +29,7 @@ public abstract class AbstractXmlFilter implements Iterator<XmlLexer.TokenType> 
     this.parent = parent;
   }
 
+  @Override
   public void setInput(String input) {
     parent.setInput(input);
   }
@@ -43,7 +43,7 @@ public abstract class AbstractXmlFilter implements Iterator<XmlLexer.TokenType> 
   }
 
   @Override
-  public XmlLexer.TokenType next() {
+  public XmlLexerImpl.TokenType next() {
     if (!typeBuffer.isEmpty()) {
       setCurrentToken(
           typeBuffer.removeFirst(),
@@ -64,41 +64,36 @@ public abstract class AbstractXmlFilter implements Iterator<XmlLexer.TokenType> 
 
     filter();
 
-    //    if (!typeBuffer.isEmpty()) {
-    //      setCurrentToken(
-    //          typeBuffer.removeFirst(),
-    //          textBuffer.removeFirst(),
-    //          lineBuffer.removeFirst(),
-    //          columnBuffer.removeFirst(),
-    //          offsetBuffer.removeFirst());
-    //      return currentType;
-    //    }
-
     return currentType;
   }
 
-  public XmlLexer.TokenType getType() {
+  @Override
+  public XmlLexerImpl.TokenType getType() {
     return currentType;
   }
 
+  @Override
   public char[] getText() {
     return currentText;
   }
 
+  @Override
   public int getLine() {
     return currentLine;
   }
 
+  @Override
   public int getColumn() {
     return currentColumn;
   }
 
+  @Override
   public int getOffset() {
     return currentOffset;
   }
 
   private void setCurrentToken(
-      XmlLexer.TokenType type, char[] text, int line, int column, int offset) {
+      XmlLexerImpl.TokenType type, char[] text, int line, int column, int offset) {
     this.currentType = type;
     this.currentText = text;
     this.currentLine = line;
@@ -115,7 +110,7 @@ public abstract class AbstractXmlFilter implements Iterator<XmlLexer.TokenType> 
   //    columnBuffer.addLast(currentColumn);
   //    offsetBuffer.addLast(currentOffset);
   //  }
-  void pushToBuffer(XmlLexer.TokenType type, char[] text, int line, int column, int offset) {
+  void pushToBuffer(XmlLexerImpl.TokenType type, char[] text, int line, int column, int offset) {
     typeBuffer.addLast(type);
     textBuffer.addLast(text);
     lineBuffer.addLast(line);
@@ -140,7 +135,7 @@ public abstract class AbstractXmlFilter implements Iterator<XmlLexer.TokenType> 
     peekOffset = -1;
   }
 
-  XmlLexer.TokenType peek() {
+  XmlLexerImpl.TokenType peek() {
     parent.next();
     var type = parent.getType();
 
@@ -158,7 +153,7 @@ public abstract class AbstractXmlFilter implements Iterator<XmlLexer.TokenType> 
     return type;
   }
 
-  XmlLexer.TokenType popLast() {
+  XmlLexerImpl.TokenType popLast() {
     var type = typeBuffer.pop();
     textBuffer.removeFirst();
     lineBuffer.removeFirst();

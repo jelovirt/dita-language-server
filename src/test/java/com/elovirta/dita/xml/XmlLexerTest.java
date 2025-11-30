@@ -17,7 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 public class XmlLexerTest {
 
-  private final XmlLexer lexer = new XmlLexer();
+  private final XmlLexerImpl lexer = new XmlLexerImpl();
   Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
   @ParameterizedTest
@@ -66,7 +66,8 @@ public class XmlLexerTest {
     }
   }
 
-  private record Event(XmlLexer.TokenType type, String text, int line, int column, int offset) {}
+  private record Event(
+      XmlLexerImpl.TokenType type, String text, int line, int column, int offset) {}
 
   private String readResource(String name) {
     try (InputStream in = getClass().getResourceAsStream(name)) {

@@ -10,7 +10,7 @@ public class XmlSerializer {
   public static final String LOC_NAMESPACE = "http://www.elovirta.com/dita/location";
   public static final String LOC_PREFIX = "loc";
 
-  private final XmlFilter lexer;
+  private final XmlLexer lexer;
   private Writer writer;
   private boolean isFirstElement = true;
 
@@ -23,7 +23,7 @@ public class XmlSerializer {
   }
 
   public XmlSerializer() {
-    this.lexer = new XmlFilter(new XmlLexer());
+    this.lexer = new XmlFilter(new XmlLexerImpl());
   }
 
   public void serialize(String input, Writer writer) throws IOException {
@@ -32,7 +32,7 @@ public class XmlSerializer {
     lexer.setInput(input);
 
     while (lexer.hasNext()) {
-      XmlLexer.TokenType type = lexer.next();
+      XmlLexerImpl.TokenType type = lexer.next();
 
       switch (type) {
         case XML_DECL_START:
@@ -91,8 +91,8 @@ public class XmlSerializer {
   private void skipXmlDecl() {
     // Skip until XML_DECL_END
     while (lexer.hasNext()) {
-      XmlLexer.TokenType type = lexer.next();
-      if (type == XmlLexer.TokenType.XML_DECL_END) {
+      XmlLexerImpl.TokenType type = lexer.next();
+      if (type == XmlLexerImpl.TokenType.XML_DECL_END) {
         break;
       }
     }
@@ -101,8 +101,8 @@ public class XmlSerializer {
   private void skipComment() {
     // Skip until COMMENT_END
     while (lexer.hasNext()) {
-      XmlLexer.TokenType type = lexer.next();
-      if (type == XmlLexer.TokenType.COMMENT_END) {
+      XmlLexerImpl.TokenType type = lexer.next();
+      if (type == XmlLexerImpl.TokenType.COMMENT_END) {
         break;
       }
     }
@@ -114,10 +114,10 @@ public class XmlSerializer {
 
     // Write everything until DOCTYPE_END
     while (lexer.hasNext()) {
-      XmlLexer.TokenType type = lexer.next();
+      XmlLexerImpl.TokenType type = lexer.next();
       writer.write(lexer.getText());
 
-      if (type == XmlLexer.TokenType.DOCTYPE_END) {
+      if (type == XmlLexerImpl.TokenType.DOCTYPE_END) {
         break;
       }
     }
@@ -132,8 +132,8 @@ public class XmlSerializer {
       return;
     }
 
-    XmlLexer.TokenType type = lexer.next();
-    if (type != XmlLexer.TokenType.NAME) {
+    XmlLexerImpl.TokenType type = lexer.next();
+    if (type != XmlLexerImpl.TokenType.NAME) {
       writer.write(lexer.getText());
       return;
     }
@@ -171,7 +171,8 @@ public class XmlSerializer {
     while (lexer.hasNext()) {
       type = lexer.next();
 
-      if (type == XmlLexer.TokenType.ELEMENT_END || type == XmlLexer.TokenType.EMPTY_ELEMENT_END) {
+      if (type == XmlLexerImpl.TokenType.ELEMENT_END
+          || type == XmlLexerImpl.TokenType.EMPTY_ELEMENT_END) {
         // Write all buffered content
         writer.write(bufferedContent.toString());
 
@@ -195,7 +196,7 @@ public class XmlSerializer {
         // Write closing '>' or '/>'
         writer.write(lexer.getText());
         break;
-      } else if (type == XmlLexer.TokenType.NAME) {
+      } else if (type == XmlLexerImpl.TokenType.NAME) {
         // Attribute name
         String attrName = new String(lexer.getText());
         bufferedContent.append(lexer.getText());
@@ -211,12 +212,12 @@ public class XmlSerializer {
           type = lexer.next();
           bufferedContent.append(lexer.getText());
 
-          if (type == XmlLexer.TokenType.ATTR_QUOTE) {
+          if (type == XmlLexerImpl.TokenType.ATTR_QUOTE) {
             if (!foundValue) {
               // Opening quote - next token should be the value
               if (lexer.hasNext()) {
                 type = lexer.next();
-                if (type == XmlLexer.TokenType.ATTR_VALUE) {
+                if (type == XmlLexerImpl.TokenType.ATTR_VALUE) {
                   // Record location of attribute value
                   valueStartLine = lexer.getLine();
                   valueStartColumn = lexer.getColumn();
@@ -224,7 +225,7 @@ public class XmlSerializer {
                   valueEndLine = lexer.getLine();
                   valueEndColumn = lexer.getColumn() + lexer.getText().length - 1;
                   foundValue = true;
-                } else if (type == XmlLexer.TokenType.ATTR_QUOTE) {
+                } else if (type == XmlLexerImpl.TokenType.ATTR_QUOTE) {
                   // Empty attribute value
                   valueStartLine = lexer.getLine();
                   valueStartColumn = lexer.getColumn();
@@ -238,13 +239,15 @@ public class XmlSerializer {
               // Closing quote - we're done with this attribute
               break;
             }
-          } else if (type == XmlLexer.TokenType.ENTITY_REF || type == XmlLexer.TokenType.CHAR_REF) {
+          } else if (type == XmlLexerImpl.TokenType.ENTITY_REF
+              || type == XmlLexerImpl.TokenType.CHAR_REF) {
             // References in attribute values - update end position
             if (foundValue) {
               valueEndLine = lexer.getLine();
               valueEndColumn = lexer.getColumn() + lexer.getText().length - 1;
             }
-          } else if (type == XmlLexer.TokenType.EQUALS || type == XmlLexer.TokenType.WHITESPACE) {
+          } else if (type == XmlLexerImpl.TokenType.EQUALS
+              || type == XmlLexerImpl.TokenType.WHITESPACE) {
             // Continue
           } else {
             // Something else, break out
