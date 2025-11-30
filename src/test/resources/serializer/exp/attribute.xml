@@ -1,7 +1,7 @@
 <foo xmlns:loc="http://www.elovirta.com/dita/location" loc:elem="1:2-1:5" bar="foo" loc:attr-bar="1:11-1:13"/>
 <foo loc:elem="2:2-2:5" bar='foo' loc:attr-bar="2:11-2:13"/>
-<foo loc:elem="3:2-3:5" bar = "foo"  loc:attr-bar="3:13-3:15"/>
-<foo loc:elem="4:2-4:5" bar = 'foo'  loc:attr-bar="4:13-4:15"/>
+<foo loc:elem="3:2-3:5" bar ="foo"  loc:attr-bar="3:13-3:15"/>
+<foo loc:elem="4:2-4:5" bar ='foo'  loc:attr-bar="4:13-4:15"/>
 <foo loc:elem="5:2-5:5" bar="'" loc:attr-bar="5:11-5:11"/>
 <foo loc:elem="6:2-6:5" bar='"' loc:attr-bar="6:11-6:11"/>
 <foo loc:elem="7:2-7:5" bar=">" loc:attr-bar="7:11-7:11"/>

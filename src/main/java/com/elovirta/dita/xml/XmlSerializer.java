@@ -10,7 +10,7 @@ public class XmlSerializer {
   public static final String LOC_NAMESPACE = "http://www.elovirta.com/dita/location";
   public static final String LOC_PREFIX = "loc";
 
-  private final XmlLexer lexer;
+  private final XmlFilter lexer;
   private Writer writer;
   private boolean isFirstElement = true;
 
@@ -23,7 +23,7 @@ public class XmlSerializer {
   }
 
   public XmlSerializer() {
-    this.lexer = new XmlLexer();
+    this.lexer = new XmlFilter(new XmlLexer());
   }
 
   public void serialize(String input, Writer writer) throws IOException {
