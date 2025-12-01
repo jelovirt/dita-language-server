@@ -19,8 +19,8 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
       - name: Check formatting
-        run: ./gradlew spotlessCheck --info --stacktrace
+        run: ./gradlew spotlessCheck
       - name: Build with Gradle
-        run: ./gradlew build --info --stacktrace
+        run: ./gradlew build
       - name: Run unit tests
-        run: ./gradlew check --info --stacktrace
+        run: ./gradlew test
