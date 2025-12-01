@@ -4,6 +4,8 @@ import java.util.NoSuchElementException;
 
 public class XmlLexerImpl implements XmlLexer {
 
+  private final boolean errorCorrection;
+
   private enum State {
     CONTENT,
     DOCTYPE,
@@ -31,6 +33,10 @@ public class XmlLexerImpl implements XmlLexer {
   private State state = State.CONTENT;
   private boolean inAttrValue = false;
   private char attrValueQuote = '\0';
+
+  public XmlLexerImpl(boolean errorCorrection) {
+    this.errorCorrection = errorCorrection;
+  }
 
   public void setInput(String input) {
     this.input = input.toCharArray();
@@ -170,11 +176,11 @@ public class XmlLexerImpl implements XmlLexer {
         if (ch == attrValueQuote) {
           state = State.START_ELEM;
           return scanAttrValueClose();
-        } else if (ch == '>' && peek(1) == '<' || peek(1) == '\n') {
+        } else if (errorCorrection && ch == '>' && peek(1) == '<' || peek(1) == '\n') {
           return attrValueEnd();
-        } else if (ch == '/' && peek(1) == '>') {
+        } else if (errorCorrection && ch == '/' && peek(1) == '>') {
           return attrValueEnd();
-        } else if (ch == '<') {
+        } else if (errorCorrection && ch == '<') {
           return elementEnd();
         } else if (ch == '&') {
           return scanReference();

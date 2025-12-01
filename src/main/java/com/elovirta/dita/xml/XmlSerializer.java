@@ -23,7 +23,7 @@ public class XmlSerializer {
   }
 
   public XmlSerializer() {
-    this.lexer = new XmlFilter(new XmlLexerImpl());
+    this.lexer = new XmlFilter(new XmlLexerImpl(true));
   }
 
   public void serialize(String input, Writer writer) throws IOException {

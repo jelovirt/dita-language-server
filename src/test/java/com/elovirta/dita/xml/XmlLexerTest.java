@@ -17,7 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 public class XmlLexerTest {
 
-  private final XmlLexerImpl lexer = new XmlLexerImpl();
+  private final XmlLexerImpl lexer = new XmlLexerImpl(true);
   Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
   @ParameterizedTest
