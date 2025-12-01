@@ -52,7 +52,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     //        var resolver = this.parser.getCatalogResolver();
     //        try {
     //            var res = resolver.resolveEntity("-//OASIS//DTD DITA 1.3 Base Map//EN", null);
-    //            System.err.println(res);
+    //            logger.info(res);
     //        } catch (SAXException | IOException e) {
     //            throw new RuntimeException(e);
     //        }
@@ -65,7 +65,7 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   public void setRootMapUri(URI uri) {
     rootMapUri = uri;
-    System.err.println("Setting root map URI: " + uri);
+    logger.info("Setting root map URI: {}", uri);
     try {
       var content = Files.readString(Paths.get(uri));
       rootMap = parser.parse(content);
@@ -75,7 +75,7 @@ public class DitaTextDocumentService implements TextDocumentService {
 
       revalidateAllOpenDocuments();
     } catch (Exception e) {
-      System.err.println("Failed to parse map document: " + e.getMessage());
+      logger.error("Failed to parse map document", e);
     }
   }
 
@@ -92,7 +92,7 @@ public class DitaTextDocumentService implements TextDocumentService {
           var hrefValue = new URI(attr.getStringValue());
           var uri = stripFragment(documentUri.resolve(hrefValue));
           if (!documentManager.exists(stripFragment(uri))) {
-            System.err.println("Don't suggest files, this is better left to editor");
+            logger.info("Don't suggest files, this is better left to editor");
           } else {
             var fragment = Objects.requireNonNullElse(hrefValue.getFragment(), "");
             var separator = fragment.indexOf('/');
@@ -174,7 +174,7 @@ public class DitaTextDocumentService implements TextDocumentService {
                 Either.forLeft(List.of(keyDefinition.location())));
           }
         } else {
-          System.err.println("Cannot goto key definition because no root map defined");
+          logger.info("Cannot goto key definition because no root map defined");
         }
       }
     }
@@ -270,7 +270,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     //    //    }
     //
     //    if (uri.equals(rootMapUri) && rootMap != null) {
-    //      System.err.println("Root map changed, do async validate");
+    //      logger.info("Root map changed, do async validate");
     //
     //      FullDocumentDiagnosticReport fullReport = new FullDocumentDiagnosticReport();
     //      RelatedFullDocumentDiagnosticReport report =
@@ -290,7 +290,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     //                                      new FullDocumentDiagnosticReport(
     //                                          doSlowValidation(entry.getValue())))))
     //              .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
-    ////      System.err.println(diagnostics);
+    ////      logger.info(diagnostics);
     //      report.setRelatedDocuments(diagnostics);
     //
     //      return CompletableFuture.completedFuture(new DocumentDiagnosticReport(report));
@@ -313,7 +313,7 @@ public class DitaTextDocumentService implements TextDocumentService {
 
       validateDocument(uri, doc);
     } catch (Exception e) {
-      System.err.println("Failed to parse document: " + e.getMessage());
+      logger.error("Failed to parse document", e);
       e.printStackTrace(System.err);
     }
   }
@@ -342,11 +342,11 @@ public class DitaTextDocumentService implements TextDocumentService {
               if (doc != null) {
                 validateDocument(uri, doc);
                 if (Objects.equals(rootMapUri, uri)) {
-                  System.err.println("Root map changed, do debounced validate");
+                  logger.info("Root map changed, do debounced validate");
                   try {
                     debouncer.debounce(uri.toString(), this::revalidateAllOpenDocuments, 500);
                   } catch (Exception e) {
-                    System.err.println("Failed to debounced validate: " + e.getMessage());
+                    logger.error("Failed to debounced validate", e);
                     e.printStackTrace(System.err);
                   }
                 }
@@ -354,7 +354,7 @@ public class DitaTextDocumentService implements TextDocumentService {
             })
         .exceptionally(
             ex -> {
-              System.err.println("Failed to parse: " + ex.getMessage());
+              logger.error("Failed to parse", ex);
               return null;
             });
   }
@@ -370,10 +370,10 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   public void revalidateAllOpenDocuments() {
     try {
-      System.err.println("Revalidating all open documents");
+      logger.info("Revalidating all open documents");
       documentManager.forEach(this::validateDocument);
     } catch (Exception e) {
-      System.err.println("Failed to revalidate all open documents: " + e.getMessage());
+      logger.error("Failed to revalidate all open documents", e);
       e.printStackTrace(System.err);
     }
   }
@@ -382,7 +382,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     try {
       LanguageClient client = server.getClient();
       if (client == null) {
-        System.err.println("Client not yet connected, skipping validation for " + uri);
+        logger.info("Client not yet connected, skipping validation for {}", uri);
         return;
       }
 
@@ -392,7 +392,7 @@ public class DitaTextDocumentService implements TextDocumentService {
       var publishParams = new PublishDiagnosticsParams(uri.toString(), diagnostics);
       client.publishDiagnostics(publishParams);
     } catch (Exception e) {
-      System.err.println("Failed to validate document: " + e.getMessage());
+      logger.error("Failed to validate document", e);
       e.printStackTrace(System.err);
     }
   }

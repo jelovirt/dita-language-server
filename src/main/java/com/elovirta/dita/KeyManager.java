@@ -12,15 +12,19 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmNode;
 import org.eclipse.lsp4j.Location;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KeyManager {
+  private static final Logger logger = LoggerFactory.getLogger(KeyManager.class);
+
   private static final String KEYS_ATTR = "keys";
   private static final String HREF_ATTR = "href";
 
   private volatile Map<String, KeyDefinition> keyDefinitions = Collections.emptyMap();
 
   public void read(URI uri, XdmNode map) {
-    System.err.println("Read key definitions " + uri);
+    logger.info("Read key definitions {}", uri);
     var keyDefs = map.select(descendant().then(attribute(KEYS_ATTR))).toList();
     if (!keyDefs.isEmpty()) {
       Map<String, KeyDefinition> buf = new ConcurrentHashMap<>();
@@ -51,7 +55,7 @@ public class KeyManager {
         }
       }
       keyDefinitions = buf;
-      //      System.err.println("Keys: " + keyDefinitions.keySet());
+      //      logger.info("Keys: " + keyDefinitions.keySet());
     }
   }
 

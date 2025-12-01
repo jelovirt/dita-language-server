@@ -2,8 +2,13 @@ package com.elovirta.dita;
 
 import java.util.Map;
 import java.util.concurrent.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SmartDebouncer {
+
+  private static final Logger logger = LoggerFactory.getLogger(SmartDebouncer.class);
+
   private final ScheduledExecutorService scheduler;
   private final Map<String, ScheduledFuture<?>> pendingTasks;
 
@@ -25,7 +30,7 @@ public class SmartDebouncer {
                 pendingTasks.remove(key);
                 task.run();
               } catch (Exception e) {
-                System.err.println("Error executing debounced task for key: " + key);
+                logger.info("Error executing debounced task for key: " + key);
                 e.printStackTrace();
               }
             },
@@ -50,7 +55,7 @@ public class SmartDebouncer {
 
         // Wait again after forceful shutdown
         if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
-          System.err.println("Scheduler did not terminate");
+          logger.info("Scheduler did not terminate");
         }
       }
     } catch (InterruptedException e) {
