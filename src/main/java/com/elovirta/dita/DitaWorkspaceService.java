@@ -50,9 +50,9 @@ public class DitaWorkspaceService implements WorkspaceService {
 
   @Override
   public void didChangeWatchedFiles(DidChangeWatchedFilesParams params) {
-    logger.info("Watched files changed: " + params.getChanges().size() + " files");
+    logger.info("Watched files changed: {} files", params.getChanges().size());
     for (FileEvent event : params.getChanges()) {
-      logger.info("  - " + event.getUri() + " (" + event.getType() + ")");
+      logger.info("  - {} ({})", event.getUri(), event.getType());
     }
   }
 }

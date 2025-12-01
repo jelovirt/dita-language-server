@@ -314,7 +314,6 @@ public class DitaTextDocumentService implements TextDocumentService {
       validateDocument(uri, doc);
     } catch (Exception e) {
       logger.error("Failed to parse document", e);
-      e.printStackTrace(System.err);
     }
   }
 
@@ -347,7 +346,6 @@ public class DitaTextDocumentService implements TextDocumentService {
                     debouncer.debounce(uri.toString(), this::revalidateAllOpenDocuments, 500);
                   } catch (Exception e) {
                     logger.error("Failed to debounced validate", e);
-                    e.printStackTrace(System.err);
                   }
                 }
               }
@@ -374,7 +372,6 @@ public class DitaTextDocumentService implements TextDocumentService {
       documentManager.forEach(this::validateDocument);
     } catch (Exception e) {
       logger.error("Failed to revalidate all open documents", e);
-      e.printStackTrace(System.err);
     }
   }
 
@@ -393,7 +390,6 @@ public class DitaTextDocumentService implements TextDocumentService {
       client.publishDiagnostics(publishParams);
     } catch (Exception e) {
       logger.error("Failed to validate document", e);
-      e.printStackTrace(System.err);
     }
   }
 

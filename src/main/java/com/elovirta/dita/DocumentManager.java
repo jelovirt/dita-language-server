@@ -40,7 +40,7 @@ public class DocumentManager {
             uri,
             u -> {
               try {
-                logger.info("Parsing " + u);
+                logger.info("Parsing {}", u);
                 var doc = ditaParser.parse(Files.readString(Paths.get(u)));
                 return new DocumentCache(doc, readIds(doc));
               } catch (IOException e) {

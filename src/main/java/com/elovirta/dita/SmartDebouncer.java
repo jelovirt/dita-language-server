@@ -30,7 +30,7 @@ public class SmartDebouncer {
                 pendingTasks.remove(key);
                 task.run();
               } catch (Exception e) {
-                logger.info("Error executing debounced task for key: " + key);
+                logger.info("Error executing debounced task for key: {}", key);
                 e.printStackTrace();
               }
             },
