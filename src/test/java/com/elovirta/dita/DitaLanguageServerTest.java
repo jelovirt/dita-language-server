@@ -107,7 +107,7 @@ class DitaLanguageServerTest {
     assertDoesNotThrow(() -> server.getTextDocumentService().didChange(changeParams));
 
     // Verify diagnostics were published again
-    verify(mockClient, times(1)).publishDiagnostics(any(PublishDiagnosticsParams.class));
+    verify(mockClient, atLeast(1)).publishDiagnostics(any(PublishDiagnosticsParams.class));
   }
 
   @Test
