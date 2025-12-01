@@ -14,8 +14,12 @@ import java.util.stream.Collectors;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.streams.Steps;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DocumentManager {
+
+  private static final Logger logger = LoggerFactory.getLogger(DocumentManager.class);
 
   private final DitaParser ditaParser = new DitaParser();
   private final Map<URI, DocumentCache> openDocuments = new ConcurrentHashMap<>();
@@ -36,7 +40,7 @@ public class DocumentManager {
             uri,
             u -> {
               try {
-                System.err.println("Parsing " + u);
+                logger.info("Parsing {}", u);
                 var doc = ditaParser.parse(Files.readString(Paths.get(u)));
                 return new DocumentCache(doc, readIds(doc));
               } catch (IOException e) {

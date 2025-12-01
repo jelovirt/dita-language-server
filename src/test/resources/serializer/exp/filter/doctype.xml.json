@@ -1,0 +1,219 @@
+[
+  {
+    "type": "DOCTYPE_START",
+    "text": "<!DOCTYPE",
+    "line": 1,
+    "column": 1,
+    "offset": 0
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 1,
+    "column": 10,
+    "offset": 9
+  },
+  {
+    "type": "NAME",
+    "text": "name",
+    "line": 1,
+    "column": 11,
+    "offset": 10
+  },
+  {
+    "type": "DOCTYPE_END",
+    "text": ">",
+    "line": 1,
+    "column": 15,
+    "offset": 14
+  },
+  {
+    "type": "CHAR_DATA",
+    "text": "\n",
+    "line": 1,
+    "column": 16,
+    "offset": 15
+  },
+  {
+    "type": "DOCTYPE_START",
+    "text": "<!DOCTYPE",
+    "line": 2,
+    "column": 1,
+    "offset": 16
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 2,
+    "column": 10,
+    "offset": 25
+  },
+  {
+    "type": "NAME",
+    "text": "name",
+    "line": 2,
+    "column": 11,
+    "offset": 26
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 2,
+    "column": 15,
+    "offset": 30
+  },
+  {
+    "type": "NAME",
+    "text": "SYSTEM",
+    "line": 2,
+    "column": 16,
+    "offset": 31
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 2,
+    "column": 22,
+    "offset": 37
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 2,
+    "column": 23,
+    "offset": 38
+  },
+  {
+    "type": "ATTR_VALUE",
+    "text": "name.dtd",
+    "line": 2,
+    "column": 24,
+    "offset": 39
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 2,
+    "column": 32,
+    "offset": 47
+  },
+  {
+    "type": "DOCTYPE_END",
+    "text": ">",
+    "line": 2,
+    "column": 33,
+    "offset": 48
+  },
+  {
+    "type": "CHAR_DATA",
+    "text": "\n",
+    "line": 2,
+    "column": 34,
+    "offset": 49
+  },
+  {
+    "type": "DOCTYPE_START",
+    "text": "<!DOCTYPE",
+    "line": 3,
+    "column": 1,
+    "offset": 50
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 3,
+    "column": 10,
+    "offset": 59
+  },
+  {
+    "type": "NAME",
+    "text": "name",
+    "line": 3,
+    "column": 11,
+    "offset": 60
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 3,
+    "column": 15,
+    "offset": 64
+  },
+  {
+    "type": "NAME",
+    "text": "PUBLIC",
+    "line": 3,
+    "column": 16,
+    "offset": 65
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 3,
+    "column": 22,
+    "offset": 71
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 3,
+    "column": 23,
+    "offset": 72
+  },
+  {
+    "type": "ATTR_VALUE",
+    "text": "-//EXAMPLE//Name//EN",
+    "line": 3,
+    "column": 24,
+    "offset": 73
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 3,
+    "column": 44,
+    "offset": 93
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 3,
+    "column": 45,
+    "offset": 94
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 3,
+    "column": 46,
+    "offset": 95
+  },
+  {
+    "type": "ATTR_VALUE",
+    "text": "name.dtd",
+    "line": 3,
+    "column": 47,
+    "offset": 96
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 3,
+    "column": 55,
+    "offset": 104
+  },
+  {
+    "type": "DOCTYPE_END",
+    "text": ">",
+    "line": 3,
+    "column": 56,
+    "offset": 105
+  },
+  {
+    "type": "EOF",
+    "text": "",
+    "line": 3,
+    "column": 57,
+    "offset": 106
+  }
+]

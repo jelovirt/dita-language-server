@@ -42,7 +42,7 @@
     "offset": 6
   },
   {
-    "type": "WHITESPACE",
+    "type": "CHAR_DATA",
     "text": "\n",
     "line": 1,
     "column": 8,
@@ -63,80 +63,122 @@
     "offset": 9
   },
   {
-    "type": "EMPTY_ELEMENT_END",
-    "text": "/>",
+    "type": "WHITESPACE",
+    "text": " ",
     "line": 2,
     "column": 3,
     "offset": 10
   },
   {
-    "type": "WHITESPACE",
-    "text": "\n",
+    "type": "ELEMENT_END",
+    "text": ">",
+    "line": 2,
+    "column": 4,
+    "offset": 11
+  },
+  {
+    "type": "ELEMENT_CLOSE",
+    "text": "</",
     "line": 2,
     "column": 5,
     "offset": 12
+  },
+  {
+    "type": "NAME",
+    "text": "p",
+    "line": 2,
+    "column": 7,
+    "offset": 14
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 2,
+    "column": 8,
+    "offset": 15
+  },
+  {
+    "type": "ELEMENT_END",
+    "text": ">",
+    "line": 2,
+    "column": 9,
+    "offset": 16
+  },
+  {
+    "type": "CHAR_DATA",
+    "text": "\n",
+    "line": 2,
+    "column": 10,
+    "offset": 17
   },
   {
     "type": "ELEMENT_START",
     "text": "<",
     "line": 3,
     "column": 1,
-    "offset": 13
+    "offset": 18
   },
   {
     "type": "NAME",
     "text": "p",
     "line": 3,
     "column": 2,
-    "offset": 14
+    "offset": 19
   },
   {
-    "type": "WHITESPACE",
-    "text": " ",
+    "type": "EMPTY_ELEMENT_END",
+    "text": "/>",
     "line": 3,
     "column": 3,
-    "offset": 15
+    "offset": 20
   },
   {
-    "type": "ELEMENT_END",
-    "text": ">",
-    "line": 3,
-    "column": 4,
-    "offset": 16
-  },
-  {
-    "type": "ELEMENT_CLOSE",
-    "text": "</",
+    "type": "CHAR_DATA",
+    "text": "\n",
     "line": 3,
     "column": 5,
-    "offset": 17
+    "offset": 22
+  },
+  {
+    "type": "ELEMENT_START",
+    "text": "<",
+    "line": 4,
+    "column": 1,
+    "offset": 23
   },
   {
     "type": "NAME",
     "text": "p",
-    "line": 3,
-    "column": 7,
-    "offset": 19
+    "line": 4,
+    "column": 2,
+    "offset": 24
   },
   {
     "type": "WHITESPACE",
     "text": " ",
-    "line": 3,
-    "column": 8,
-    "offset": 20
+    "line": 4,
+    "column": 3,
+    "offset": 25
   },
   {
-    "type": "ELEMENT_END",
-    "text": ">",
-    "line": 3,
-    "column": 9,
-    "offset": 21
+    "type": "EMPTY_ELEMENT_END",
+    "text": "/>",
+    "line": 4,
+    "column": 4,
+    "offset": 26
+  },
+  {
+    "type": "CHAR_DATA",
+    "text": "\n",
+    "line": 4,
+    "column": 6,
+    "offset": 28
   },
   {
     "type": "EOF",
     "text": "",
-    "line": 3,
-    "column": 10,
-    "offset": 22
+    "line": 5,
+    "column": 1,
+    "offset": 29
   }
 ]

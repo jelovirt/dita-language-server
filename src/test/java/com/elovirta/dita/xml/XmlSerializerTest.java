@@ -6,22 +6,44 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import org.junit.jupiter.api.Test;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class XmlSerializerTest {
 
   private XmlSerializer serializer = new XmlSerializer();
 
-  @Test
-  void serialize() {
-    String input = readResource("/serializer/src/test.xml");
+  @ParameterizedTest
+  @ValueSource(
+      strings = {
+        "test.xml",
+        "element.xml",
+        "attribute.xml",
+        "attribute-missing-end-quote.xml",
+        "attribute-missing-quotes.xml",
+        "attribute-missing-start-quote.xml",
+        "comment.xml",
+        "doctype.xml",
+        "processing-instruction.xml",
+        "xml-declaration.xml"
+      })
+  void serialize(String file) throws IOException {
+    String act = null;
     try (StringWriter output = new StringWriter()) {
+      var input = readResource("/serializer/src/" + file);
       serializer.serialize(input, output);
-      String act = output.toString();
+      act = output.toString();
 
-      assertEquals(readResource("/serializer/exp/test.xml"), act);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+      assertEquals(readResource("/serializer/exp/" + file), act);
+    } catch (Throwable e) {
+      if (act != null) {
+        Files.write(
+            Paths.get("src/test/resources/serializer/exp", file),
+            act.getBytes(StandardCharsets.UTF_8));
+      }
+      throw e;
     }
   }
 

@@ -1,0 +1,86 @@
+[
+  {
+    "type": "XML_DECL_START",
+    "text": "<?xml",
+    "line": 1,
+    "column": 1,
+    "offset": 0
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 1,
+    "column": 6,
+    "offset": 5
+  },
+  {
+    "type": "NAME",
+    "text": "version",
+    "line": 1,
+    "column": 7,
+    "offset": 6
+  },
+  {
+    "type": "CHAR_DATA",
+    "text": "=\"1.0\"",
+    "line": 1,
+    "column": 14,
+    "offset": 13
+  },
+  {
+    "type": "XML_DECL_END",
+    "text": "?>",
+    "line": 1,
+    "column": 20,
+    "offset": 19
+  },
+  {
+    "type": "CHAR_DATA",
+    "text": "\n",
+    "line": 1,
+    "column": 22,
+    "offset": 21
+  },
+  {
+    "type": "XML_DECL_START",
+    "text": "<?xml",
+    "line": 2,
+    "column": 1,
+    "offset": 22
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 2,
+    "column": 6,
+    "offset": 27
+  },
+  {
+    "type": "NAME",
+    "text": "version",
+    "line": 2,
+    "column": 7,
+    "offset": 28
+  },
+  {
+    "type": "CHAR_DATA",
+    "text": "=\"1.0\" encoding='UTF-8' ",
+    "line": 2,
+    "column": 14,
+    "offset": 35
+  },
+  {
+    "type": "XML_DECL_END",
+    "text": "?>",
+    "line": 2,
+    "column": 38,
+    "offset": 59
+  },
+  {
+    "type": "EOF",
+    "text": "",
+    "line": 2,
+    "column": 40,
+    "offset": 61
+  }
+]

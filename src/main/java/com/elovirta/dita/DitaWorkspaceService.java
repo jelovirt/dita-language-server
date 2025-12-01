@@ -45,14 +45,14 @@ public class DitaWorkspaceService implements WorkspaceService {
 
   @Override
   public void didChangeConfiguration(DidChangeConfigurationParams params) {
-    System.err.println("Configuration changed");
+    logger.info("Configuration changed");
   }
 
   @Override
   public void didChangeWatchedFiles(DidChangeWatchedFilesParams params) {
-    System.err.println("Watched files changed: " + params.getChanges().size() + " files");
+    logger.info("Watched files changed: {} files", params.getChanges().size());
     for (FileEvent event : params.getChanges()) {
-      System.err.println("  - " + event.getUri() + " (" + event.getType() + ")");
+      logger.info("  - {} ({})", event.getUri(), event.getType());
     }
   }
 }

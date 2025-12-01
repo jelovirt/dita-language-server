@@ -1,7 +1,7 @@
 package com.elovirta.dita;
 
-import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_NAMESPACE;
-import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_PREFIX;
+import static com.elovirta.dita.xml.XmlSerializer.LOC_NAMESPACE;
+import static com.elovirta.dita.xml.XmlSerializer.LOC_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 
 import java.net.URI;
@@ -18,6 +18,7 @@ public class Utils {
   private Utils() {}
 
   private static Predicate<? super XdmNode> cls(String cls) {
+    var name = cls.split("/")[1].trim();
     return item -> {
       var node = item.getUnderlyingNode();
       if (node.getNodeKind() != Type.ELEMENT) {
@@ -25,7 +26,7 @@ public class Utils {
       }
       var classValue = node.getAttributeValue(NULL_NS_URI, "class");
       if (classValue == null) {
-        return false;
+        return node.getLocalPart().equals(name);
       }
       return classValue.contains(cls);
     };

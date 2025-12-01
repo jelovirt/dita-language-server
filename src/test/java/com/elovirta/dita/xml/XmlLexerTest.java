@@ -17,7 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 public class XmlLexerTest {
 
-  private final XmlLexer lexer = new XmlLexer();
+  private final XmlLexerImpl lexer = new XmlLexerImpl(true);
   Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
   @ParameterizedTest
@@ -28,7 +28,11 @@ public class XmlLexerTest {
         "attribute.xml",
         "attribute-missing-end-quote.xml",
         "attribute-missing-quotes.xml",
-        "attribute-missing-start-quote.xml"
+        "attribute-missing-start-quote.xml",
+        "comment.xml",
+        "doctype.xml",
+        "processing-instruction.xml",
+        "xml-declaration.xml"
       })
   void tokenize(String file) {
     lexer.setInput(readResource("/serializer/src/" + file));
@@ -62,7 +66,8 @@ public class XmlLexerTest {
     }
   }
 
-  private record Event(XmlLexer.TokenType type, String text, int line, int column, int offset) {}
+  private record Event(
+      XmlLexerImpl.TokenType type, String text, int line, int column, int offset) {}
 
   private String readResource(String name) {
     try (InputStream in = getClass().getResourceAsStream(name)) {

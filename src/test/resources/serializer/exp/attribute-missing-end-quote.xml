@@ -1,0 +1,5 @@
+<foo xmlns:loc="http://www.elovirta.com/dita/location" loc:elem="1:2-1:5" bar="foo" loc:attr-bar="1:11-1:13"></foo>
+<foo loc:elem="2:2-2:5" bar="foo" loc:attr-bar="2:11-2:13"></foo>
+<foo loc:elem="3:2-3:5" bar="foo" loc:attr-bar="3:11-3:13">
+</foo>
+<foo loc:elem="5:2-5:5" bar="foo" loc:attr-bar="5:11-5:13"></foo>

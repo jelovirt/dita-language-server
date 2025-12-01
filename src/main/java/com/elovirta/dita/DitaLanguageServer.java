@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.*;
@@ -27,7 +28,11 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
   private String currentRootMapUri = null;
 
   public DitaLanguageServer() {
-    debouncer = new SmartDebouncer();
+    this(new SmartDebouncer(500));
+  }
+
+  public DitaLanguageServer(SmartDebouncer debouncer) {
+    this.debouncer = debouncer;
     textDocumentService = new DitaTextDocumentService(this, debouncer);
     workspaceService = new DitaWorkspaceService(this);
     properties = new Properties();
@@ -41,8 +46,11 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
 
   @Override
   public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
-    System.err.println("DITA Language Server initializing...");
-    //    System.err.println("Root URI: " + params.getWorkspaceFolders());
+    logger.info("DITA Language Server initializing...");
+    //    logger.info("Root URI: " + params.getWorkspaceFolders());
+    if (params.getLocale() != null) {
+      textDocumentService.setLocale(Locale.forLanguageTag(params.getLocale()));
+    }
 
     // Declare server capabilities
     ServerCapabilities capabilities = new ServerCapabilities();
@@ -62,13 +70,13 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
 
     InitializeResult result = new InitializeResult(capabilities, serverInfo);
 
-    System.err.println("DITA Language Server initialized");
+    logger.info("DITA Language Server initialized");
     return CompletableFuture.completedFuture(result);
   }
 
   @Override
   public CompletableFuture<Object> shutdown() {
-    System.err.println("DITA Language Server shutting down");
+    logger.info("DITA Language Server shutting down");
     return CompletableFuture.supplyAsync(
         () -> {
           debouncer.shutdown();
@@ -78,7 +86,7 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
 
   @Override
   public void exit() {
-    System.err.println("DITA Language Server exiting");
+    logger.info("DITA Language Server exiting");
     System.exit(0);
   }
 
@@ -106,14 +114,14 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
   @Override
   public void connect(LanguageClient client) {
     this.client = client;
-    System.err.println("Language client connected");
+    logger.info("Language client connected");
   }
 
   @Override
   public void setTrace(SetTraceParams params) {
     // Optional: implement trace logging based on params.getValue()
     // Values can be "off", "messages", or "verbose"
-    System.err.println("Trace level set to: " + params.getValue());
+    logger.info("Trace level set to: {}", params.getValue());
   }
 
   public LanguageClient getClient() {
@@ -122,7 +130,7 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
 
   // Main method - starts the language server
   public static void main(String[] args) {
-    System.err.println("Starting DITA Language Server...");
+    logger.info("Starting DITA Language Server...");
 
     DitaLanguageServer server = new DitaLanguageServer();
     Launcher<LanguageClient> launcher =
@@ -131,7 +139,7 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
     // This connects the client to the server
     server.connect(launcher.getRemoteProxy());
 
-    System.err.println("DITA Language Server started and listening");
+    logger.info("DITA Language Server started and listening");
     launcher.startListening();
   }
 }
