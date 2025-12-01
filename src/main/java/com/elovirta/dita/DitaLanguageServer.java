@@ -28,7 +28,11 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
   private String currentRootMapUri = null;
 
   public DitaLanguageServer() {
-    debouncer = new SmartDebouncer();
+    this(new SmartDebouncer(500));
+  }
+
+  public DitaLanguageServer(SmartDebouncer debouncer) {
+    this.debouncer = debouncer;
     textDocumentService = new DitaTextDocumentService(this, debouncer);
     workspaceService = new DitaWorkspaceService(this);
     properties = new Properties();

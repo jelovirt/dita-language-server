@@ -11,13 +11,15 @@ public class SmartDebouncer {
 
   private final ScheduledExecutorService scheduler;
   private final Map<String, ScheduledFuture<?>> pendingTasks;
+  private final int delayMs;
 
-  public SmartDebouncer() {
+  public SmartDebouncer(int delayMs) {
+    this.delayMs = delayMs;
     this.scheduler = Executors.newScheduledThreadPool(1);
     this.pendingTasks = new ConcurrentHashMap<>();
   }
 
-  public void debounce(String key, Runnable task, long delayMs) {
+  public void debounce(String key, Runnable task) {
     ScheduledFuture<?> existing = pendingTasks.get(key);
     if (existing != null && !existing.isDone()) {
       existing.cancel(false);

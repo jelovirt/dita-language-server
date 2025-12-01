@@ -30,7 +30,7 @@ class DitaTextDocumentServiceTest {
     mockClient = Mockito.mock(LanguageClient.class);
     when(server.getClient()).thenReturn(mockClient);
 
-    textDocumentService = new DitaTextDocumentService(server, new SmartDebouncer());
+    textDocumentService = new DitaTextDocumentService(server, new SmartDebouncer(0));
   }
 
   @AfterEach

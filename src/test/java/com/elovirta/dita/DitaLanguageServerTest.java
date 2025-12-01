@@ -18,7 +18,7 @@ class DitaLanguageServerTest {
 
   @BeforeEach
   void setUp() {
-    server = new DitaLanguageServer();
+    server = new DitaLanguageServer(new SmartDebouncer(0));
     mockClient = Mockito.mock(LanguageClient.class);
     server.connect(mockClient);
   }

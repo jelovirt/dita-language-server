@@ -343,7 +343,7 @@ public class DitaTextDocumentService implements TextDocumentService {
                 if (Objects.equals(rootMapUri, uri)) {
                   logger.info("Root map changed, do debounced validate");
                   try {
-                    debouncer.debounce(uri.toString(), this::revalidateAllOpenDocuments, 500);
+                    debouncer.debounce(uri.toString(), this::revalidateAllOpenDocuments);
                   } catch (Exception e) {
                     logger.error("Failed to debounced validate", e);
                   }
