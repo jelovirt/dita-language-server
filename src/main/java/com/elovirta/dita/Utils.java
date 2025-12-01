@@ -1,7 +1,7 @@
 package com.elovirta.dita;
 
-import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_NAMESPACE;
-import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_PREFIX;
+import static com.elovirta.dita.xml.XmlSerializer.LOC_NAMESPACE;
+import static com.elovirta.dita.xml.XmlSerializer.LOC_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 
 import java.net.URI;

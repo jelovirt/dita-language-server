@@ -1,7 +1,7 @@
 package com.elovirta.dita;
 
-import static com.elovirta.dita.LocationEnrichingXNIHandler.LOC_NAMESPACE;
 import static com.elovirta.dita.Utils.*;
+import static com.elovirta.dita.xml.XmlSerializer.LOC_NAMESPACE;
 import static net.sf.saxon.s9api.streams.Predicates.isElement;
 import static net.sf.saxon.s9api.streams.Steps.attribute;
 import static net.sf.saxon.s9api.streams.Steps.descendant;

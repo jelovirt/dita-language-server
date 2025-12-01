@@ -30,8 +30,7 @@ public class SmartDebouncer {
                 pendingTasks.remove(key);
                 task.run();
               } catch (Exception e) {
-                logger.info("Error executing debounced task for key: {}", key);
-                e.printStackTrace();
+                logger.error("Error executing debounced task for key: {}", key, e);
               }
             },
             delayMs,
@@ -55,7 +54,7 @@ public class SmartDebouncer {
 
         // Wait again after forceful shutdown
         if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
-          logger.info("Scheduler did not terminate");
+          logger.error("Scheduler did not terminate");
         }
       }
     } catch (InterruptedException e) {
