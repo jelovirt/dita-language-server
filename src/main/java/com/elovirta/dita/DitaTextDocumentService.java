@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 public class DitaTextDocumentService implements TextDocumentService {
 
   private static final Logger logger = LoggerFactory.getLogger(DitaTextDocumentService.class);
-  private static final ResourceBundle LOCALE = ResourceBundle.getBundle("copy", Locale.ENGLISH);
 
   private static final String KEYREF_ATTR = "keyref";
   private static final String CONKEYREF_ATTR = "conkeyref";
@@ -42,6 +41,7 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   private URI rootMapUri;
   private XdmNode rootMap;
+  private ResourceBundle LOCALE;
 
   public DitaTextDocumentService(DitaLanguageServer server, SmartDebouncer debouncer) {
     this.server = server;
@@ -56,6 +56,11 @@ public class DitaTextDocumentService implements TextDocumentService {
     //        } catch (SAXException | IOException e) {
     //            throw new RuntimeException(e);
     //        }
+    this.LOCALE = ResourceBundle.getBundle("copy", Locale.ENGLISH);
+  }
+
+  public void setLocale(Locale locale) {
+    this.LOCALE = ResourceBundle.getBundle("copy", locale);
   }
 
   public void setRootMapUri(URI uri) {

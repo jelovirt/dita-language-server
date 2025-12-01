@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.*;
@@ -43,6 +44,9 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
   public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
     System.err.println("DITA Language Server initializing...");
     //    System.err.println("Root URI: " + params.getWorkspaceFolders());
+    if (params.getLocale() != null) {
+      textDocumentService.setLocale(Locale.forLanguageTag(params.getLocale()));
+    }
 
     // Declare server capabilities
     ServerCapabilities capabilities = new ServerCapabilities();
