@@ -2,6 +2,11 @@
 
 ## Development
 
+Prerequisites:
+
+* Java 17 or newer
+* Gradle
+
 Build code
 
 ```shell
@@ -11,7 +16,7 @@ Build code
 Run tests
 
 ```shell
-./gradlew check
+./gradlew test
 ```
 
 Format code
