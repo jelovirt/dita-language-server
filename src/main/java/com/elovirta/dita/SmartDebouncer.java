@@ -46,21 +46,17 @@ public class SmartDebouncer {
     pendingTasks.values().forEach(f -> f.cancel(false));
     pendingTasks.clear();
 
-    // Shutdown the scheduler
     scheduler.shutdown();
 
     try {
-      // Wait for tasks to complete
       if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
         scheduler.shutdownNow();
 
-        // Wait again after forceful shutdown
         if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
           logger.error("Scheduler did not terminate");
         }
       }
     } catch (InterruptedException e) {
-      // Re-interrupt and force shutdown
       scheduler.shutdownNow();
       Thread.currentThread().interrupt();
     }

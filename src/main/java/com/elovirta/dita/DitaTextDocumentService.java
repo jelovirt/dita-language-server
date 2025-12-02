@@ -48,13 +48,6 @@ public class DitaTextDocumentService implements TextDocumentService {
     this.documentManager = new DocumentManager();
     this.keyManager = new KeyManager();
     this.debouncer = debouncer;
-    //        var resolver = this.parser.getCatalogResolver();
-    //        try {
-    //            var res = resolver.resolveEntity("-//OASIS//DTD DITA 1.3 Base Map//EN", null);
-    //            logger.info(res);
-    //        } catch (SAXException | IOException e) {
-    //            throw new RuntimeException(e);
-    //        }
     this.LOCALE = ResourceBundle.getBundle("copy", Locale.ENGLISH);
   }
 
@@ -182,29 +175,6 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   private XdmNode findAttribute(URI uri, Position position) {
     return documentManager.get(uri).getNode(position);
-    // TODO: extract this into a TreeMap or TreeSet
-    //    return doc.select(
-    //            descendant()
-    //                .then(
-    //                    attribute(
-    //                        attr ->
-    //
-    // attr.getNodeName().getNamespaceUri().toString().equals(LOC_NAMESPACE)
-    //                                && attr.getNodeName().getLocalName().startsWith("attr-"))))
-    //        .map(
-    //            attr ->
-    //                attr.getParent()
-    //                    .select(
-    //
-    // attribute(attr.getNodeName().getLocalName().substring("attr-".length())))
-    //                    .asOptionalNode()
-    //                    .map(a -> Map.entry(a, Utils.parseRange(attr.getStringValue())))
-    //                    .orElse(null))
-    //        .filter(Objects::nonNull)
-    //        .filter(loc -> Utils.contains(loc.getValue(), position))
-    //        .findFirst()
-    //        .map(Map.Entry::getKey)
-    //        .orElse(null);
   }
 
   @Override

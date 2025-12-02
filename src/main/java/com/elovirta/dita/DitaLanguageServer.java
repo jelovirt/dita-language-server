@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.*;
-import org.eclipse.lsp4j.jsonrpc.Launcher;
 import org.eclipse.lsp4j.launch.LSPLauncher;
 import org.eclipse.lsp4j.services.*;
 import org.slf4j.Logger;
@@ -47,28 +46,24 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
   @Override
   public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
     logger.info("DITA Language Server initializing...");
-    //    logger.info("Root URI: " + params.getWorkspaceFolders());
     if (params.getLocale() != null) {
       textDocumentService.setLocale(Locale.forLanguageTag(params.getLocale()));
     }
 
-    // Declare server capabilities
-    ServerCapabilities capabilities = new ServerCapabilities();
-    // We support text document sync
+    var capabilities = new ServerCapabilities();
     capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
-    // We provide diagnostics (validation)
     capabilities.setDiagnosticProvider(new DiagnosticRegistrationOptions());
     capabilities.setCompletionProvider(new CompletionOptions());
     capabilities.setDefinitionProvider(new DefinitionOptions());
     capabilities.setHoverProvider(new HoverOptions());
-    // Advertise custom command
-    ExecuteCommandOptions commandOptions = new ExecuteCommandOptions(List.of("dita.setRootMap"));
+
+    var commandOptions = new ExecuteCommandOptions(List.of("dita.setRootMap"));
     capabilities.setExecuteCommandProvider(commandOptions);
 
-    ServerInfo serverInfo =
+    var serverInfo =
         new ServerInfo(properties.getProperty("description"), properties.getProperty("version"));
 
-    InitializeResult result = new InitializeResult(capabilities, serverInfo);
+    var result = new InitializeResult(capabilities, serverInfo);
 
     logger.info("DITA Language Server initialized");
     return CompletableFuture.completedFuture(result);
@@ -107,7 +102,6 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
   public void setCurrentRootMapUri(String uri) {
     this.currentRootMapUri = uri;
     textDocumentService.setRootMapUri(URI.create(uri));
-    // Optionally trigger revalidation here
     textDocumentService.revalidateAllOpenDocuments();
   }
 
@@ -119,8 +113,6 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
 
   @Override
   public void setTrace(SetTraceParams params) {
-    // Optional: implement trace logging based on params.getValue()
-    // Values can be "off", "messages", or "verbose"
     logger.info("Trace level set to: {}", params.getValue());
   }
 
@@ -128,15 +120,12 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
     return client;
   }
 
-  // Main method - starts the language server
   public static void main(String[] args) {
     logger.info("Starting DITA Language Server...");
 
-    DitaLanguageServer server = new DitaLanguageServer();
-    Launcher<LanguageClient> launcher =
-        LSPLauncher.createServerLauncher(server, System.in, System.out);
+    var server = new DitaLanguageServer();
+    var launcher = LSPLauncher.createServerLauncher(server, System.in, System.out);
 
-    // This connects the client to the server
     server.connect(launcher.getRemoteProxy());
 
     logger.info("DITA Language Server started and listening");

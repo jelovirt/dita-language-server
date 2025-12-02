@@ -103,13 +103,6 @@ public abstract class AbstractXmlFilter implements XmlLexer {
 
   abstract void filter();
 
-  //  private void push() {
-  //    typeBuffer.addLast(currentType);
-  //    textBuffer.addLast(currentText);
-  //    lineBuffer.addLast(currentLine);
-  //    columnBuffer.addLast(currentColumn);
-  //    offsetBuffer.addLast(currentOffset);
-  //  }
   void pushToBuffer(XmlLexerImpl.TokenType type, char[] text, int line, int column, int offset) {
     typeBuffer.addLast(type);
     textBuffer.addLast(text);
@@ -139,11 +132,6 @@ public abstract class AbstractXmlFilter implements XmlLexer {
     parent.next();
     var type = parent.getType();
 
-    //    typeBuffer.addLast(type);
-    //    textBuffer.addLast(parent.getText());
-    //    lineBuffer.addLast(parent.getLine());
-    //    columnBuffer.addLast(parent.getColumn());
-    //    offsetBuffer.addLast(parent.getOffset());
     peekType = type;
     peekText = parent.getText();
     peekLine = parent.getLine();

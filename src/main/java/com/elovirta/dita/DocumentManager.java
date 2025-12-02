@@ -30,9 +30,6 @@ public class DocumentManager {
   private final DitaParser ditaParser = new DitaParser();
   private final Map<URI, DocumentCache> openDocuments = new ConcurrentHashMap<>();
 
-  //  private final Map<URI, XdmNode> openDocuments = new ConcurrentHashMap<>();
-  //  private final Map<URI, Map<String, List<String>>> ids = new ConcurrentHashMap<>();
-
   public record DocumentCache(
       XdmNode document,
       Map<String, List<String>> ids,
@@ -61,7 +58,7 @@ public class DocumentManager {
                 var doc = ditaParser.parse(Files.readString(Paths.get(u)));
                 return new DocumentCache(doc, readIds(doc), readAttributeLocations(doc));
               } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Error parsing {}", u, e);
                 return null;
               }
             });
@@ -73,12 +70,10 @@ public class DocumentManager {
 
   public void put(URI uri, XdmNode doc) {
     openDocuments.put(uri, new DocumentCache(doc, readIds(doc), readAttributeLocations(doc)));
-    //    ids.put(uri, readIds(node));
   }
 
   public void remove(URI uri) {
     openDocuments.remove(uri);
-    //    ids.remove(uri);
   }
 
   public void forEach(BiConsumer<URI, XdmNode> action) {

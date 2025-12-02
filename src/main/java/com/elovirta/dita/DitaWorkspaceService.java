@@ -13,7 +13,6 @@ public class DitaWorkspaceService implements WorkspaceService {
   private static final Logger logger = LoggerFactory.getLogger(DitaWorkspaceService.class);
 
   private final DitaLanguageServer server;
-  private String currentRootMapUri = null;
 
   public DitaWorkspaceService(DitaLanguageServer server) {
     this.server = server;
