@@ -1,7 +1,6 @@
 package com.elovirta.dita;
 
 import static com.elovirta.dita.Utils.*;
-import static com.elovirta.dita.xml.XmlSerializer.LOC_NAMESPACE;
 import static net.sf.saxon.s9api.streams.Predicates.isElement;
 import static net.sf.saxon.s9api.streams.Steps.attribute;
 import static net.sf.saxon.s9api.streams.Steps.descendant;
@@ -182,28 +181,30 @@ public class DitaTextDocumentService implements TextDocumentService {
   }
 
   private XdmNode findAttribute(URI uri, Position position) {
-    var doc = documentManager.get(uri).document();
+    return documentManager.get(uri).getNode(position);
     // TODO: extract this into a TreeMap or TreeSet
-    return doc.select(
-            descendant()
-                .then(
-                    attribute(
-                        attr ->
-                            attr.getNodeName().getNamespaceUri().toString().equals(LOC_NAMESPACE)
-                                && attr.getNodeName().getLocalName().startsWith("attr-"))))
-        .map(
-            attr ->
-                attr.getParent()
-                    .select(
-                        attribute(attr.getNodeName().getLocalName().substring("attr-".length())))
-                    .asOptionalNode()
-                    .map(a -> Map.entry(a, Utils.parseRange(attr.getStringValue())))
-                    .orElse(null))
-        .filter(Objects::nonNull)
-        .filter(loc -> Utils.contains(loc.getValue(), position))
-        .findFirst()
-        .map(Map.Entry::getKey)
-        .orElse(null);
+    //    return doc.select(
+    //            descendant()
+    //                .then(
+    //                    attribute(
+    //                        attr ->
+    //
+    // attr.getNodeName().getNamespaceUri().toString().equals(LOC_NAMESPACE)
+    //                                && attr.getNodeName().getLocalName().startsWith("attr-"))))
+    //        .map(
+    //            attr ->
+    //                attr.getParent()
+    //                    .select(
+    //
+    // attribute(attr.getNodeName().getLocalName().substring("attr-".length())))
+    //                    .asOptionalNode()
+    //                    .map(a -> Map.entry(a, Utils.parseRange(attr.getStringValue())))
+    //                    .orElse(null))
+    //        .filter(Objects::nonNull)
+    //        .filter(loc -> Utils.contains(loc.getValue(), position))
+    //        .findFirst()
+    //        .map(Map.Entry::getKey)
+    //        .orElse(null);
   }
 
   @Override
