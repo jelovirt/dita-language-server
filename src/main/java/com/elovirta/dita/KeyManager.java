@@ -55,7 +55,6 @@ public class KeyManager {
         }
       }
       keyDefinitions = buf;
-      //      logger.info("Keys: " + keyDefinitions.keySet());
     }
   }
 

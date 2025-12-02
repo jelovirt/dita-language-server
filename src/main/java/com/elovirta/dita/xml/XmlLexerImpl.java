@@ -49,7 +49,6 @@ public class XmlLexerImpl implements XmlLexer {
     this.attrValueQuote = '\0';
   }
 
-  // Iterator implementation
   @Override
   public boolean hasNext() {
     return hasNext;

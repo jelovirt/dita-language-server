@@ -75,7 +75,6 @@ public class XmlSerializer {
                   + " - "
                   + new String(lexer.getText()));
         default:
-          // Write unknown tokens as-is
           writeToken();
           break;
       }
@@ -89,7 +88,6 @@ public class XmlSerializer {
   }
 
   private void skipXmlDecl() {
-    // Skip until XML_DECL_END
     while (lexer.hasNext()) {
       XmlLexerImpl.TokenType type = lexer.next();
       if (type == XmlLexerImpl.TokenType.XML_DECL_END) {
@@ -99,7 +97,6 @@ public class XmlSerializer {
   }
 
   private void skipComment() {
-    // Skip until COMMENT_END
     while (lexer.hasNext()) {
       XmlLexerImpl.TokenType type = lexer.next();
       if (type == XmlLexerImpl.TokenType.COMMENT_END) {
@@ -109,10 +106,8 @@ public class XmlSerializer {
   }
 
   private void writeDocType() throws IOException {
-    // Write DOCTYPE_START
     writer.write(lexer.getText());
 
-    // Write everything until DOCTYPE_END
     while (lexer.hasNext()) {
       XmlLexerImpl.TokenType type = lexer.next();
       writer.write(lexer.getText());
@@ -124,10 +119,8 @@ public class XmlSerializer {
   }
 
   private void writeStartElement() throws IOException {
-    // Write ELEMENT_START '<'
     writer.write(lexer.getText());
 
-    // Next should be element name
     if (!lexer.hasNext()) {
       return;
     }
@@ -138,7 +131,6 @@ public class XmlSerializer {
       return;
     }
 
-    // Write element name
     writer.write(lexer.getText());
 
     // Add loc namespace declaration to root element
@@ -197,11 +189,9 @@ public class XmlSerializer {
         writer.write(lexer.getText());
         break;
       } else if (type == XmlLexerImpl.TokenType.NAME) {
-        // Attribute name
         String attrName = new String(lexer.getText());
         bufferedContent.append(lexer.getText());
 
-        // Expect '=' and quotes
         boolean foundValue = false;
         int valueStartLine = 0;
         int valueStartColumn = 0;
@@ -265,7 +255,6 @@ public class XmlSerializer {
         attrLocations.add(loc);
 
       } else {
-        // Whitespace or other content
         bufferedContent.append(lexer.getText());
       }
     }

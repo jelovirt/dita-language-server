@@ -1,7 +1,10 @@
 package com.elovirta.dita;
 
 import static com.elovirta.dita.Utils.TOPIC_TOPIC;
+import static com.elovirta.dita.xml.XmlSerializer.LOC_NAMESPACE;
 import static net.sf.saxon.s9api.streams.Predicates.*;
+import static net.sf.saxon.s9api.streams.Steps.attribute;
+import static net.sf.saxon.s9api.streams.Steps.descendant;
 
 import java.io.IOException;
 import java.net.URI;
@@ -13,6 +16,9 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.streams.Steps;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +30,21 @@ public class DocumentManager {
   private final DitaParser ditaParser = new DitaParser();
   private final Map<URI, DocumentCache> openDocuments = new ConcurrentHashMap<>();
 
-  //  private final Map<URI, XdmNode> openDocuments = new ConcurrentHashMap<>();
-  //  private final Map<URI, Map<String, List<String>>> ids = new ConcurrentHashMap<>();
-
-  public record DocumentCache(XdmNode document, Map<String, List<String>> ids) {
+  public record DocumentCache(
+      XdmNode document,
+      Map<String, List<String>> ids,
+      TreeMap<PositionKey, RangeValue<XdmNode>> attributeRanges) {
     public DocumentCache {
       Objects.requireNonNull(document);
       Objects.requireNonNull(ids);
+    }
+
+    public XdmNode getNode(Position position) {
+      var entry = attributeRanges().floorEntry(new PositionKey(position));
+      if (entry != null && Utils.contains(entry.getValue().range(), position)) {
+        return entry.getValue().value();
+      }
+      return null;
     }
   }
 
@@ -42,9 +56,9 @@ public class DocumentManager {
               try {
                 logger.info("Parsing {}", u);
                 var doc = ditaParser.parse(Files.readString(Paths.get(u)));
-                return new DocumentCache(doc, readIds(doc));
+                return new DocumentCache(doc, readIds(doc), readAttributeLocations(doc));
               } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Error parsing {}", u, e);
                 return null;
               }
             });
@@ -54,14 +68,12 @@ public class DocumentManager {
     return documentCache;
   }
 
-  public void put(URI uri, XdmNode node) {
-    openDocuments.put(uri, new DocumentCache(node, readIds(node)));
-    //    ids.put(uri, readIds(node));
+  public void put(URI uri, XdmNode doc) {
+    openDocuments.put(uri, new DocumentCache(doc, readIds(doc), readAttributeLocations(doc)));
   }
 
   public void remove(URI uri) {
     openDocuments.remove(uri);
-    //    ids.remove(uri);
   }
 
   public void forEach(BiConsumer<URI, XdmNode> action) {
@@ -93,7 +105,7 @@ public class DocumentManager {
       id =
           cache
               .document()
-              .select(Steps.descendant(TOPIC_TOPIC).first().then(Steps.attribute("id")))
+              .select(descendant(TOPIC_TOPIC).first().then(attribute("id")))
               .map(XdmNode::getStringValue)
               .findFirst()
               .orElse(null);
@@ -126,7 +138,7 @@ public class DocumentManager {
 
   private Map<String, List<String>> readIds(XdmNode doc) {
     var res =
-        doc.select(Steps.descendant(TOPIC_TOPIC))
+        doc.select(descendant(TOPIC_TOPIC))
             .flatMap(
                 topic -> {
                   var topicId = topic.attribute("id");
@@ -134,7 +146,7 @@ public class DocumentManager {
                       .select(
                           Steps.child(isElement())
                               .where(not(TOPIC_TOPIC))
-                              .then(Steps.descendantOrSelf().then(Steps.attribute("id"))))
+                              .then(Steps.descendantOrSelf().then(attribute("id"))))
                       .map(elementId -> Map.entry(topicId, elementId.getStringValue()));
                 })
             .toList();
@@ -142,5 +154,45 @@ public class DocumentManager {
         .collect(
             Collectors.groupingBy(
                 Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+  }
+
+  record RangeValue<T>(Range range, T value) {}
+
+  record PositionKey(int line, int character) implements Comparable<PositionKey> {
+    public PositionKey(Position position) {
+      this(position.getLine(), position.getCharacter());
+    }
+
+    @Override
+    public int compareTo(@NotNull DocumentManager.PositionKey that) {
+      var lineOrder = Integer.compare(line, that.line);
+      if (lineOrder != 0) {
+        return lineOrder;
+      }
+      return Integer.compare(character, that.character);
+    }
+  }
+
+  private TreeMap<PositionKey, RangeValue<XdmNode>> readAttributeLocations(XdmNode doc) {
+    final TreeMap<PositionKey, RangeValue<XdmNode>> res = new TreeMap<>();
+    doc.select(
+            descendant(isElement())
+                .then(
+                    attribute(
+                        attr ->
+                            attr.getNodeName().getNamespaceUri().toString().equals(LOC_NAMESPACE)
+                                && attr.getNodeName().getLocalName().startsWith("attr-"))))
+        .forEach(
+            attr ->
+                attr.getParent()
+                    .select(
+                        attribute(attr.getNodeName().getLocalName().substring("attr-".length())))
+                    .asOptionalNode()
+                    .ifPresent(
+                        a -> {
+                          var range = Utils.parseRange(attr.getStringValue());
+                          res.put(new PositionKey(range.getStart()), new RangeValue<>(range, a));
+                        }));
+    return res;
   }
 }

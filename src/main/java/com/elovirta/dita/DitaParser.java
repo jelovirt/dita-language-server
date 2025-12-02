@@ -10,6 +10,7 @@ import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlresolver.*;
+import org.xmlresolver.logging.DefaultLogger;
 
 public class DitaParser {
 
@@ -19,24 +20,16 @@ public class DitaParser {
   public DitaParser() {
     XMLResolverConfiguration config = new XMLResolverConfiguration();
     config.setFeature(ResolverFeature.PREFER_PUBLIC, true);
-    //            config.setFeature(ResolverFeature.CACHE_DIRECTORY, null);
-    //            config.setFeature(ResolverFeature.CACHE_UNDER_HOME, false);
+    config.setFeature(ResolverFeature.CACHE_DIRECTORY, null);
+    config.setFeature(ResolverFeature.CACHE_UNDER_HOME, false);
     config.setFeature(
-        ResolverFeature.RESOLVER_LOGGER_CLASS, "org.xmlresolver.logging.DefaultLogger");
+        ResolverFeature.RESOLVER_LOGGER_CLASS, DefaultLogger.class.getCanonicalName());
     config.setFeature(ResolverFeature.DEFAULT_LOGGER_LOG_LEVEL, "info");
-    //            config.setFeature(ResolverFeature.CLASSPATH_CATALOGS, true);
-
     config.setFeature(ResolverFeature.CATALOG_FILES, List.of("classpath:/schemas/catalog.xml"));
-    //            config.setFeature(ResolverFeature.CATALOG_FILES,
-    // List.of("file:/Users/jarno.elovirta/work/github.com/jelovirt/dita-lsp/src/main/resources/schemas/catalog.xml"));
-
-    //            config.addCatalog("classpath:/schemas/catalog.xml");
     this.catalogResolver = new Resolver(config);
 
     Configuration configuration = Configuration.newConfiguration();
     configuration.setResourceResolver(new CatalogResourceResolver(catalogResolver));
-    //        configureSaxonExtensions(config);
-    //        configureSaxonCollationResolvers(config);;
     this.processor = new Processor(configuration);
   }
 
@@ -44,16 +37,6 @@ public class DitaParser {
     var contentWithLocation = addLocation(content);
     try (var in = new CharArrayReader(contentWithLocation)) {
       return processor.newDocumentBuilder().build(new StreamSource(in));
-      //      var builder = processor.newDocumentBuilder().newBuildingContentHandler();
-
-      //          var config = new XMLGrammarCachingConfiguration();
-      //      var config = new XIncludeAwareParserConfiguration();
-      //      var handler = new LocationEnrichingXNIHandler(builder);
-      //      config.setDocumentHandler(handler);
-      //
-      //      XMLInputSource input = new XMLInputSource(null, null, null, in, null);
-      //      config.parse(input);
-      //      return builder.getDocumentNode();
     } catch (SaxonApiException e) {
       throw new RuntimeException(e);
     }
