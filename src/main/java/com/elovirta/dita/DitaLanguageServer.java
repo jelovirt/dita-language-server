@@ -24,8 +24,6 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
   private final Properties properties;
   private LanguageClient client;
 
-  private String currentRootMapUri = null;
-
   public DitaLanguageServer() {
     this(new SmartDebouncer(500));
   }
@@ -95,12 +93,7 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
     return workspaceService;
   }
 
-  public String getCurrentRootMapUri() {
-    return currentRootMapUri;
-  }
-
   public void setCurrentRootMapUri(String uri) {
-    this.currentRootMapUri = uri;
     textDocumentService.setRootMapUri(URI.create(uri));
     textDocumentService.revalidateAllOpenDocuments();
   }

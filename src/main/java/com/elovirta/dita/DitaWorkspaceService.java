@@ -24,14 +24,17 @@ public class DitaWorkspaceService implements WorkspaceService {
       List<Object> arguments = params.getArguments();
       if (!arguments.isEmpty()) {
         if (arguments.get(0) instanceof JsonPrimitive json && json.isString()) {
-          String rootMapUri = json.getAsString();
-          server.setCurrentRootMapUri(rootMapUri);
-
-          server
-              .getClient()
-              .showMessage(
-                  new MessageParams(
-                      MessageType.Info, "Root map set to: " + getFileName(rootMapUri)));
+          var rootMapUri = json.getAsString();
+          return CompletableFuture.supplyAsync(
+              () -> {
+                server
+                    .getClient()
+                    .showMessage(
+                        new MessageParams(
+                            MessageType.Info, "Root map set to: " + getFileName(rootMapUri)));
+                server.setCurrentRootMapUri(rootMapUri);
+                return null;
+              });
         }
       }
     }
