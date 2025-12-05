@@ -54,7 +54,7 @@ public class DitaParser {
   }
 
   public XdmNode parse(String content, URI uri) {
-    var contentWithLocation = addLocation(content);
+    var contentWithLocation = addLocation(content.toCharArray());
     try (var in = new CharArrayReader(contentWithLocation)) {
       var src = processor.newDocumentBuilder().build(new StreamSource(in, uri.toString()));
       if (Utils.isDitaMap(src)) {
@@ -72,7 +72,16 @@ public class DitaParser {
     }
   }
 
-  private char[] addLocation(String content) {
+  public XdmNode parseDocument(char[] content, URI uri) {
+    var contentWithLocation = addLocation(content);
+    try (var in = new CharArrayReader(contentWithLocation)) {
+      return processor.newDocumentBuilder().build(new StreamSource(in, uri.toString()));
+    } catch (SaxonApiException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private char[] addLocation(char[] content) {
     var serializer = new XmlSerializer();
     try (CharArrayWriter output = new CharArrayWriter()) {
       serializer.serialize(content, output);

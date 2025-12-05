@@ -33,7 +33,7 @@ public class XmlSerializerTest {
     String act = null;
     try (StringWriter output = new StringWriter()) {
       var input = readResource("/serializer/src/" + file);
-      serializer.serialize(input, output);
+      serializer.serialize(input.toCharArray(), output);
       act = output.toString();
 
       assertEquals(readResource("/serializer/exp/" + file), act);

@@ -30,7 +30,7 @@ public abstract class AbstractXmlFilter implements XmlLexer {
   }
 
   @Override
-  public void setInput(String input) {
+  public void setInput(char[] input) {
     parent.setInput(input);
   }
 
