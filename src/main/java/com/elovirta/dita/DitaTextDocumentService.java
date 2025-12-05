@@ -60,7 +60,8 @@ public class DitaTextDocumentService implements TextDocumentService {
     logger.info("Setting root map URI: {}", uri);
     try {
       var content = Files.readString(Paths.get(uri));
-      rootMap = parser.parse(content);
+      rootMap = parser.parse(content, uri);
+      // XXX: This doesn't have to be cached, because it's not being edited
       documentManager.put(uri, rootMap);
 
       keyManager.read(uri, rootMap);
@@ -279,7 +280,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     URI uri = URI.create(params.getTextDocument().getUri());
     String text = params.getTextDocument().getText();
     try {
-      XdmNode doc = parser.parse(text);
+      XdmNode doc = parser.parse(text, uri);
       documentManager.put(uri, doc);
 
       validateDocument(uri, doc);
@@ -298,7 +299,7 @@ public class DitaTextDocumentService implements TextDocumentService {
 
     CompletableFuture.supplyAsync(
             () -> {
-              XdmNode doc = parser.parse(text);
+              XdmNode doc = parser.parse(text, uri);
               documentManager.put(uri, doc);
 
               if (Objects.equals(rootMapUri, uri)) {
