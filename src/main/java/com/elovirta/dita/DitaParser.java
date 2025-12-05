@@ -57,12 +57,16 @@ public class DitaParser {
     var contentWithLocation = addLocation(content);
     try (var in = new CharArrayReader(contentWithLocation)) {
       var src = processor.newDocumentBuilder().build(new StreamSource(in, uri.toString()));
-      var transformer = this.mergeExecutable.load();
-      transformer.setSource(src.getUnderlyingNode());
-      XdmDestination dst = new XdmDestination();
-      transformer.setDestination(dst);
-      transformer.transform();
-      return dst.getXdmNode();
+      if (Utils.isDitaMap(src)) {
+        var transformer = this.mergeExecutable.load();
+        transformer.setSource(src.getUnderlyingNode());
+        XdmDestination dst = new XdmDestination();
+        transformer.setDestination(dst);
+        transformer.transform();
+        return dst.getXdmNode();
+      } else {
+        return src;
+      }
     } catch (SaxonApiException e) {
       throw new RuntimeException(e);
     }
