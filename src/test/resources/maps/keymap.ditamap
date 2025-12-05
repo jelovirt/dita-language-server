@@ -1,4 +1,4 @@
 <map>
   <keydef keys="foo" href="../topics/valid.dita"/>
-  <keydef keys="external" href="https://example.com/"/>
+  <keydef keys="external" href="https://example.com/" scope="external"/>
 </map>

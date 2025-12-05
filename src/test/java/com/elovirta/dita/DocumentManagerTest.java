@@ -18,10 +18,10 @@ class DocumentManagerTest {
   private final DocumentManager documentManager;
 
   public DocumentManagerTest() {
-    try (var in = getClass().getClassLoader().getResourceAsStream("valid.dita")) {
+    try (var in = getClass().getClassLoader().getResourceAsStream("topics/valid.dita")) {
       documentManager = new DocumentManager();
       var doc = new Processor().newDocumentBuilder().build(new StreamSource(in));
-      documentManager.put(URI.create("file:///valid.dita"), doc);
+      documentManager.put(URI.create("file:///topics/valid.dita"), doc);
     } catch (SaxonApiException | IOException e) {
       throw new RuntimeException(e);
     }
@@ -29,7 +29,7 @@ class DocumentManagerTest {
 
   @Test
   void get() {
-    assertNotNull(documentManager.get(URI.create("file:///valid.dita")));
+    assertNotNull(documentManager.get(URI.create("file:///topics/valid.dita")));
   }
 
   @Test
@@ -39,7 +39,7 @@ class DocumentManagerTest {
 
   @Test
   void fileExists() {
-    assertTrue(documentManager.exists(URI.create("file:///valid.dita")));
+    assertTrue(documentManager.exists(URI.create("file:///topics/valid.dita")));
   }
 
   @Test
@@ -50,7 +50,7 @@ class DocumentManagerTest {
   @ParameterizedTest
   @ValueSource(strings = {"test", "nested"})
   void topicExists(String topicId) {
-    assertTrue(documentManager.exists(URI.create("file:///valid.dita"), topicId));
+    assertTrue(documentManager.exists(URI.create("file:///topics/valid.dita"), topicId));
   }
 
   @ParameterizedTest
@@ -62,24 +62,25 @@ class DocumentManagerTest {
   @ParameterizedTest
   @CsvSource({"test,para", "nested,nested-para"})
   void elementExists(String topicId, String elementId) {
-    assertTrue(documentManager.exists(URI.create("file:///valid.dita"), topicId, elementId));
+    assertTrue(documentManager.exists(URI.create("file:///topics/valid.dita"), topicId, elementId));
   }
 
   @ParameterizedTest
   @CsvSource({"test,missing", "missing,para", "nested,missing", "missing,nested-para"})
   void elementExists_missing(String topicId, String elementId) {
-    assertFalse(documentManager.exists(URI.create("file:///valid.dita"), topicId, elementId));
+    assertFalse(
+        documentManager.exists(URI.create("file:///topics/valid.dita"), topicId, elementId));
   }
 
   @Test
   void listElementIds() {
-    var act = documentManager.listElementIds(URI.create("file:///valid.dita"), "test");
+    var act = documentManager.listElementIds(URI.create("file:///topics/valid.dita"), "test");
     assertEquals(List.of("para", "pre"), act);
   }
 
   @Test
   void listElementIds_missing() {
-    var act = documentManager.listElementIds(URI.create("file:///valid.dita"), "missing");
+    var act = documentManager.listElementIds(URI.create("file:///topics/valid.dita"), "missing");
     assertEquals(List.of(), act);
   }
 }

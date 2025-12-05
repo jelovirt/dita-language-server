@@ -1,7 +1,7 @@
 package com.elovirta.dita;
 
 import static com.elovirta.dita.Utils.*;
-import static net.sf.saxon.s9api.streams.Predicates.isElement;
+import static net.sf.saxon.s9api.streams.Predicates.*;
 import static net.sf.saxon.s9api.streams.Steps.attribute;
 import static net.sf.saxon.s9api.streams.Steps.descendant;
 
@@ -417,12 +417,21 @@ public class DitaTextDocumentService implements TextDocumentService {
       }
     }
 
-    var hrefs = content.select(descendant(isElement()).then(attribute(HREF_ATTR))).toList();
+    var hrefs =
+        content
+            .select(
+                descendant(isElement())
+                    .where(hasAttribute(HREF_ATTR).and(not(attributeEq("scope", "external"))))
+                    .then(attribute(HREF_ATTR)))
+            .toList();
     if (!hrefs.isEmpty()) {
       for (XdmNode href : hrefs) {
         try {
           var hrefValue = new URI(href.getStringValue());
           var uri = stripFragment(documentUri.resolve(hrefValue));
+          if (!uri.getScheme().equals("file")) {
+            continue;
+          }
           if (!documentManager.exists(uri)) {
             var range = Utils.getAttributeRange(href);
             diagnostics.add(
