@@ -8,9 +8,10 @@ import org.junit.jupiter.api.Test;
 
 public class DitaParserTest {
 
+  private final DitaParser parser = new DitaParser();
+
   @Test
   void parse() throws URISyntaxException {
-    var parser = new DitaParser();
     var src = readResource("topics/valid.dita");
 
     var act = parser.parse(src, getClass().getResource("/topics/valid.dita").toURI());
@@ -20,7 +21,6 @@ public class DitaParserTest {
 
   @Test
   void mergeMap() throws URISyntaxException {
-    var parser = new DitaParser();
     var src = readResource("root.ditamap");
 
     var act = parser.parse(src, getClass().getResource("/root.ditamap").toURI());
