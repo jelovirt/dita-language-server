@@ -38,8 +38,8 @@ public class XmlLexerImpl implements XmlLexer {
     this.errorCorrection = errorCorrection;
   }
 
-  public void setInput(String input) {
-    this.input = input.toCharArray();
+  public void setInput(char[] input) {
+    this.input = input;
     this.pos = 0;
     this.line = 1;
     this.column = 1;

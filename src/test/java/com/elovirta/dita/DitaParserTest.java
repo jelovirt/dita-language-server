@@ -2,17 +2,28 @@ package com.elovirta.dita;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 
 public class DitaParserTest {
 
-  @Test
-  void parse() {
-    var parser = new DitaParser();
-    var src = readResource("valid.dita");
+  private final DitaParser parser = new DitaParser();
 
-    var act = parser.parse(src);
+  @Test
+  void parse() throws URISyntaxException {
+    var src = readResource("topics/valid.dita");
+
+    var act = parser.parse(src, getClass().getResource("/topics/valid.dita").toURI());
+
+    System.out.println(act.toString());
+  }
+
+  @Test
+  void mergeMap() throws URISyntaxException {
+    var src = readResource("root.ditamap");
+
+    var act = parser.parse(src, getClass().getResource("/root.ditamap").toURI());
 
     System.out.println(act.toString());
   }

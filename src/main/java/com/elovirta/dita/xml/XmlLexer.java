@@ -51,7 +51,7 @@ public interface XmlLexer extends Iterator<XmlLexer.TokenType> {
     ERROR
   }
 
-  void setInput(String input);
+  void setInput(char[] input);
 
   TokenType getType();
 

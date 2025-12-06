@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.util.function.Predicate;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.streams.Steps;
 import net.sf.saxon.type.Type;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
@@ -33,6 +34,7 @@ public class Utils {
   }
 
   public static final Predicate<? super XdmNode> TOPIC_TOPIC = cls(" topic/topic ");
+  public static final Predicate<? super XdmNode> MAP_MAP = cls(" map/map ");
   public static final Predicate<? super XdmNode> MAP_TOPICMETA = cls(" map/topicmeta ");
   public static final Predicate<? super XdmNode> TOPIC_KEYWORDS = cls(" topic/keywords ");
   public static final Predicate<? super XdmNode> TOPIC_KEYWORD = cls(" topic/keyword ");
@@ -91,5 +93,17 @@ public class Utils {
     } catch (URISyntaxException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public static boolean isDitaMap(XdmNode src) {
+    return src.select(Steps.child("map").cat(Steps.child().where(MAP_MAP))).exists();
+  }
+
+  public static String getExtension(String uri) {
+    var index = uri.lastIndexOf('.');
+    if (index == -1) {
+      return null;
+    }
+    return uri.substring(index + 1);
   }
 }

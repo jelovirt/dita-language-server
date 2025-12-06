@@ -35,7 +35,7 @@ public class XmlLexerTest {
         "xml-declaration.xml"
       })
   void tokenize(String file) {
-    lexer.setInput(readResource("/serializer/src/" + file));
+    lexer.setInput(readResource("/serializer/src/" + file).toCharArray());
 
     var act = new ArrayList<Event>();
     lexer.forEachRemaining(

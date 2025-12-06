@@ -1,0 +1,5 @@
+<!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN" "map.dtd">
+<map>
+  <keydef keys="foo" href="../topics/valid.dita"/>
+  <keydef keys="external" href="https://example.com/" scope="external"/>
+</map>

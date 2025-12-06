@@ -25,7 +25,7 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
   private LanguageClient client;
 
   public DitaLanguageServer() {
-    this(new SmartDebouncer(500));
+    this(new SmartDebouncer(1_000));
   }
 
   public DitaLanguageServer(SmartDebouncer debouncer) {

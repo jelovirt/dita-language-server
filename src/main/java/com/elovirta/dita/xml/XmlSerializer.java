@@ -26,7 +26,7 @@ public class XmlSerializer {
     this.lexer = new XmlFilter(new XmlLexerImpl(true));
   }
 
-  public void serialize(String input, Writer writer) throws IOException {
+  public void serialize(char[] input, Writer writer) throws IOException {
     this.writer = writer;
     this.isFirstElement = true;
     lexer.setInput(input);

@@ -55,7 +55,7 @@ public class DocumentManager {
             u -> {
               try {
                 logger.info("Parsing {}", u);
-                var doc = ditaParser.parse(Files.readString(Paths.get(u)));
+                var doc = ditaParser.parse(Files.readString(Paths.get(u)), uri);
                 return new DocumentCache(doc, readIds(doc), readAttributeLocations(doc));
               } catch (IOException e) {
                 logger.error("Error parsing {}", u, e);

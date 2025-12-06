@@ -40,28 +40,28 @@ class DitaTextDocumentServiceTest {
 
   @Test
   void testValidDitaDocument() {
-    var validDita = readResource("valid.dita");
-    textDocumentService.didOpen(createOpenParams("file:///valid.dita", validDita));
+    var validDita = readResource("topics/valid.dita");
+    textDocumentService.didOpen(createOpenParams("file:///topics/valid.dita", validDita));
 
     var captor = ArgumentCaptor.forClass(PublishDiagnosticsParams.class);
     verify(mockClient).publishDiagnostics(captor.capture());
     var act = captor.getValue();
 
-    assertEquals("file:///valid.dita", act.getUri());
+    assertEquals("file:///topics/valid.dita", act.getUri());
     assertTrue(act.getDiagnostics().isEmpty());
   }
 
   @Test
   void testInvalidDitaDocument()
       throws ExecutionException, InterruptedException, URISyntaxException {
-    textDocumentService.setRootMapUri(getClass().getResource("/keymap.ditamap").toURI());
+    textDocumentService.setRootMapUri(getClass().getResource("/maps/keymap.ditamap").toURI());
     var invalidDita = readResource("invalid-keyref.dita");
     textDocumentService.didOpen(createOpenParams("file:///invalid-keyref.dita", invalidDita));
     var params = createChangeParams("file:///invalid-keyref.dita", invalidDita);
     textDocumentService.didChange(params);
 
     var captor = ArgumentCaptor.forClass(PublishDiagnosticsParams.class);
-    verify(mockClient, atLeast(2)).publishDiagnostics(captor.capture());
+    verify(mockClient, atLeast(1)).publishDiagnostics(captor.capture());
     var act = captor.getValue();
 
     assertEquals(

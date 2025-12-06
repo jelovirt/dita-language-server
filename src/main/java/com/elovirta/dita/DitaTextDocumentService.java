@@ -1,7 +1,7 @@
 package com.elovirta.dita;
 
 import static com.elovirta.dita.Utils.*;
-import static net.sf.saxon.s9api.streams.Predicates.isElement;
+import static net.sf.saxon.s9api.streams.Predicates.*;
 import static net.sf.saxon.s9api.streams.Steps.attribute;
 import static net.sf.saxon.s9api.streams.Steps.descendant;
 
@@ -60,8 +60,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     logger.info("Setting root map URI: {}", uri);
     try {
       var content = Files.readString(Paths.get(uri));
-      rootMap = parser.parse(content);
-      documentManager.put(uri, rootMap);
+      rootMap = parser.mergeMap(parser.parse(content, uri));
 
       keyManager.read(uri, rootMap);
 
@@ -279,7 +278,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     URI uri = URI.create(params.getTextDocument().getUri());
     String text = params.getTextDocument().getText();
     try {
-      XdmNode doc = parser.parse(text);
+      XdmNode doc = parser.parse(text, uri);
       documentManager.put(uri, doc);
 
       validateDocument(uri, doc);
@@ -298,13 +297,8 @@ public class DitaTextDocumentService implements TextDocumentService {
 
     CompletableFuture.supplyAsync(
             () -> {
-              XdmNode doc = parser.parse(text);
+              var doc = parser.parse(text, uri);
               documentManager.put(uri, doc);
-
-              if (Objects.equals(rootMapUri, uri)) {
-                keyManager.read(uri, doc);
-              }
-
               return doc;
             })
         .thenAccept(
@@ -312,9 +306,14 @@ public class DitaTextDocumentService implements TextDocumentService {
               if (doc != null) {
                 validateDocument(uri, doc);
                 if (Objects.equals(rootMapUri, uri)) {
-                  logger.info("Root map changed, do debounced validate");
+                  logger.info("Root map changed, do debounced key read and validate all");
                   try {
-                    debouncer.debounce(uri.toString(), this::revalidateAllOpenDocuments);
+                    debouncer.debounce(
+                        uri.toString(),
+                        () -> {
+                          keyManager.read(uri, parser.mergeMap(doc));
+                          revalidateAllOpenDocuments();
+                        });
                   } catch (Exception e) {
                     logger.error("Failed to debounced validate", e);
                   }
@@ -416,12 +415,21 @@ public class DitaTextDocumentService implements TextDocumentService {
       }
     }
 
-    var hrefs = content.select(descendant(isElement()).then(attribute(HREF_ATTR))).toList();
+    var hrefs =
+        content
+            .select(
+                descendant(isElement())
+                    .where(hasAttribute(HREF_ATTR).and(not(attributeEq("scope", "external"))))
+                    .then(attribute(HREF_ATTR)))
+            .toList();
     if (!hrefs.isEmpty()) {
       for (XdmNode href : hrefs) {
         try {
           var hrefValue = new URI(href.getStringValue());
           var uri = stripFragment(documentUri.resolve(hrefValue));
+          if (!uri.getScheme().equals("file")) {
+            continue;
+          }
           if (!documentManager.exists(uri)) {
             var range = Utils.getAttributeRange(href);
             diagnostics.add(
