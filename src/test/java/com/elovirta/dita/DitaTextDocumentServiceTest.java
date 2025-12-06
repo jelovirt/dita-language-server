@@ -61,7 +61,7 @@ class DitaTextDocumentServiceTest {
     textDocumentService.didChange(params);
 
     var captor = ArgumentCaptor.forClass(PublishDiagnosticsParams.class);
-    verify(mockClient, atLeast(2)).publishDiagnostics(captor.capture());
+    verify(mockClient, atLeast(1)).publishDiagnostics(captor.capture());
     var act = captor.getValue();
 
     assertEquals(

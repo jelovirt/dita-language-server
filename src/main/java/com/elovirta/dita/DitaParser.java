@@ -3,7 +3,6 @@ package com.elovirta.dita;
 import com.elovirta.dita.xml.XmlSerializer;
 import java.io.*;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -56,20 +55,21 @@ public class DitaParser {
           return resolver.resolve(request);
         });
     this.processor = new Processor(configuration);
-    try {
+    try (var in = getClass().getResourceAsStream("/xslt/merge.xsl")) {
       this.mergeExecutable =
-          processor
-              .newXsltCompiler()
-              .compile(Paths.get(getClass().getResource("/xslt/merge.xsl").toURI()).toFile());
-    } catch (SaxonApiException | URISyntaxException e) {
-      throw new RuntimeException(e);
+          processor.newXsltCompiler().compile(new StreamSource(in, "classpath:/xslt/merge.xsl"));
+    } catch (SaxonApiException | IOException e) {
+      throw new RuntimeException("Failed to parse classpath:/xslt/merge.xsl", e);
     }
   }
 
   public XdmNode parse(String content, URI uri) {
-    var contentWithLocation = addLocation(content.toCharArray());
-    try (var in = new CharArrayReader(contentWithLocation)) {
-      var src = processor.newDocumentBuilder().build(new StreamSource(in, uri.toString()));
+    return parseDocument(content.toCharArray(), uri);
+  }
+
+  public XdmNode parseRootMap(String content, URI uri) {
+    var src = parseDocument(content.toCharArray(), uri);
+    try {
       if (Utils.isDitaMap(src)) {
         var transformer = this.mergeExecutable.load();
         transformer.setSource(src.getUnderlyingNode());
@@ -85,7 +85,7 @@ public class DitaParser {
     }
   }
 
-  public XdmNode parseDocument(char[] content, URI uri) {
+  private XdmNode parseDocument(char[] content, URI uri) {
     var contentWithLocation = addLocation(content);
     try (var in = new CharArrayReader(contentWithLocation)) {
       return processor.newDocumentBuilder().build(new StreamSource(in, uri.toString()));

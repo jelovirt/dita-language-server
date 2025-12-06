@@ -60,9 +60,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     logger.info("Setting root map URI: {}", uri);
     try {
       var content = Files.readString(Paths.get(uri));
-      rootMap = parser.parse(content, uri);
-      // XXX: This doesn't have to be cached, because it's not being edited
-      documentManager.put(uri, rootMap);
+      rootMap = parser.parseRootMap(content, uri);
 
       keyManager.read(uri, rootMap);
 
