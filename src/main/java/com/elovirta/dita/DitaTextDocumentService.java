@@ -60,7 +60,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     logger.info("Setting root map URI: {}", uri);
     try {
       var content = Files.readString(Paths.get(uri));
-      rootMap = parser.parseRootMap(content, uri);
+      rootMap = parser.mergeMap(parser.parse(content, uri));
 
       keyManager.read(uri, rootMap);
 
@@ -297,13 +297,8 @@ public class DitaTextDocumentService implements TextDocumentService {
 
     CompletableFuture.supplyAsync(
             () -> {
-              XdmNode doc = parser.parse(text, uri);
+              var doc = parser.parse(text, uri);
               documentManager.put(uri, doc);
-
-              if (Objects.equals(rootMapUri, uri)) {
-                keyManager.read(uri, doc);
-              }
-
               return doc;
             })
         .thenAccept(
@@ -311,9 +306,14 @@ public class DitaTextDocumentService implements TextDocumentService {
               if (doc != null) {
                 validateDocument(uri, doc);
                 if (Objects.equals(rootMapUri, uri)) {
-                  logger.info("Root map changed, do debounced validate");
+                  logger.info("Root map changed, do debounced key read and validate all");
                   try {
-                    debouncer.debounce(uri.toString(), this::revalidateAllOpenDocuments);
+                    debouncer.debounce(
+                        uri.toString(),
+                        () -> {
+                          keyManager.read(uri, parser.mergeMap(doc));
+                          revalidateAllOpenDocuments();
+                        });
                   } catch (Exception e) {
                     logger.error("Failed to debounced validate", e);
                   }

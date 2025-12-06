@@ -67,19 +67,14 @@ public class DitaParser {
     return parseDocument(content.toCharArray(), uri);
   }
 
-  public XdmNode parseRootMap(String content, URI uri) {
-    var src = parseDocument(content.toCharArray(), uri);
+  public XdmNode mergeMap(XdmNode src) {
     try {
-      if (Utils.isDitaMap(src)) {
-        var transformer = this.mergeExecutable.load();
-        transformer.setSource(src.getUnderlyingNode());
-        XdmDestination dst = new XdmDestination();
-        transformer.setDestination(dst);
-        transformer.transform();
-        return dst.getXdmNode();
-      } else {
-        return src;
-      }
+      var transformer = this.mergeExecutable.load();
+      transformer.setSource(src.getUnderlyingNode());
+      XdmDestination dst = new XdmDestination();
+      transformer.setDestination(dst);
+      transformer.transform();
+      return dst.getXdmNode();
     } catch (SaxonApiException e) {
       throw new RuntimeException(e);
     }
