@@ -8,7 +8,7 @@
   <xsl:variable name="root-base-uri" as="xs:anyURI" select="base-uri()"/>
 
   <xsl:template match="*[contains(@class, ' mapgroup-d/mapref ')] | mapref">
-    <xsl:message>Found mapref <xsl:value-of select="@href"/> (<xsl:value-of select="base-uri()"/>)</xsl:message>
+<!--    <xsl:message>Found mapref <xsl:value-of select="@href"/> (<xsl:value-of select="base-uri()"/>)</xsl:message>-->
     <xsl:variable name="submap-uri" select="resolve-uri(@href, base-uri())"/>
     <xsl:variable name="submap" as="document-node()" select="doc($submap-uri)"/>
     <xsl:apply-templates select="$submap/*/*"/>

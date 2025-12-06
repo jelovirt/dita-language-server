@@ -4,6 +4,7 @@ import com.elovirta.dita.xml.XmlSerializer;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import javax.xml.transform.stream.StreamSource;
@@ -39,7 +40,19 @@ public class DitaParser {
     var resolver = new CatalogResourceResolver(catalogResolver);
     configuration.setResourceResolver(
         (ResourceRequest request) -> {
-          logger.info("Resolve {} {}", request.baseUri, request.uri);
+          var uri = URI.create(request.uri);
+          if (uri.getScheme().equals("file")) {
+            var extension = Utils.getExtension(uri.getPath());
+            if (extension != null && (extension.equals("dita") || extension.equals("ditamap"))) {
+              try {
+                var content = Files.readString(Paths.get(uri)).toCharArray();
+                var doc = parseDocument(content, uri);
+                return doc.getUnderlyingNode();
+              } catch (IOException e) {
+                throw new UncheckedIOException("Failed to read " + request.uri, e);
+              }
+            }
+          }
           return resolver.resolve(request);
         });
     this.processor = new Processor(configuration);

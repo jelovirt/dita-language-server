@@ -98,4 +98,12 @@ public class Utils {
   public static boolean isDitaMap(XdmNode src) {
     return src.select(Steps.child("map").cat(Steps.child().where(MAP_MAP))).exists();
   }
+
+  public static String getExtension(String uri) {
+    var index = uri.lastIndexOf('.');
+    if (index == -1) {
+      return null;
+    }
+    return uri.substring(index + 1);
+  }
 }

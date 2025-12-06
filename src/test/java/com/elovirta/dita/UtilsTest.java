@@ -57,4 +57,16 @@ class UtilsTest {
   void stripFragment(URI uri) {
     assertEquals(URI.create("file:///Users/foo/test.dita"), Utils.stripFragment(uri));
   }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"file:///Users/foo/test.dita"})
+  void getExtension(String uri) {
+    assertEquals("dita", Utils.getExtension(uri));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"file:///Users/foo/test", "file:///Users/foo/"})
+  void getExtension_noExtension(String uri) {
+    assertNull(Utils.getExtension(uri));
+  }
 }
