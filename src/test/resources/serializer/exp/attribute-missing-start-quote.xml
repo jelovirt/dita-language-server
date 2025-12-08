@@ -1,1 +1,1 @@
-<foo xmlns:loc="http://www.elovirta.com/dita/location" loc:elem="1:2-1:5" bar=""" loc:attr-bar="1:14-1:14"/>
+<foo xmlns:loc="loc:" xmlns:loc-xml="loc:http://www.w3.org/XML/1998/namespace" xmlns:loc-xmlns="loc:http://www.w3.org/2000/xmlns/" loc:elem="1:2-1:5" bar=""" loc:attr-bar="1:14-1:14"/>

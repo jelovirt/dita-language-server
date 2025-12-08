@@ -1,0 +1,5 @@
+<foo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="urn:oasis:names:tc:dita:xsd:topic.xsd"/>
+<foo xml:space="preserve"/>
+<foo xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/"
+     ditaarch:DITAArchVersion="1.3"/>

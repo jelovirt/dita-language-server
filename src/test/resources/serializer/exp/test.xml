@@ -1,6 +1,6 @@
 
 <!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
-<root xmlns:loc="http://www.elovirta.com/dita/location" loc:elem="3:2-3:6" attr="value" loc:attr-attr="3:13-3:17">
+<root xmlns:loc="loc:" xmlns:loc-xml="loc:http://www.w3.org/XML/1998/namespace" xmlns:loc-xmlns="loc:http://www.w3.org/2000/xmlns/" loc:elem="3:2-3:6" attr="value" loc:attr-attr="3:13-3:17">
   <child loc:elem="4:4-4:9" id="foo"
      loc:attr-id="4:14-4:16">text
     content</child>
