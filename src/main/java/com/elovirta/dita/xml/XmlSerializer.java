@@ -1,13 +1,15 @@
 package com.elovirta.dita.xml;
 
+import static javax.xml.XMLConstants.*;
+
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class XmlSerializer {
 
-  public static final String LOC_NAMESPACE = "http://www.elovirta.com/dita/location";
+  public static final String LOC_NAMESPACE = "loc:";
   public static final String LOC_PREFIX = "loc";
 
   private final XmlLexer lexer;
@@ -15,7 +17,8 @@ public class XmlSerializer {
   private boolean isFirstElement = true;
 
   private static class AttributeLocation {
-    String name;
+    String prefix;
+    String localName;
     int startLine;
     int startColumn;
     int endLine;
@@ -135,12 +138,36 @@ public class XmlSerializer {
 
     // Add loc namespace declaration to root element
     if (isFirstElement) {
-      writer.write(" xmlns:");
+      writer.write(" ");
+      writer.write(XMLNS_ATTRIBUTE);
+      writer.write(":");
       writer.write(LOC_PREFIX);
       writer.write("=\"");
       writer.write(LOC_NAMESPACE);
       writer.write("\"");
       isFirstElement = false;
+
+      writer.write(" ");
+      writer.write(XMLNS_ATTRIBUTE);
+      writer.write(":");
+      writer.write(LOC_PREFIX);
+      writer.write("-");
+      writer.write(XML_NS_PREFIX);
+      writer.write("=\"");
+      writer.write(LOC_NAMESPACE);
+      writer.write(XML_NS_URI);
+      writer.write("\"");
+
+      writer.write(" ");
+      writer.write(XMLNS_ATTRIBUTE);
+      writer.write(":");
+      writer.write(LOC_PREFIX);
+      writer.write("-");
+      writer.write(XMLNS_ATTRIBUTE);
+      writer.write("=\"");
+      writer.write(LOC_NAMESPACE);
+      writer.write(XMLNS_ATTRIBUTE_NS_URI);
+      writer.write("\"");
     }
 
     writer.write(" ");
@@ -157,6 +184,7 @@ public class XmlSerializer {
 
     // Collect attributes and their locations
     List<AttributeLocation> attrLocations = new ArrayList<>();
+    Map<String, String> namespaceDeclarations = new HashMap<>();
     StringBuilder bufferedContent = new StringBuilder();
 
     // Parse attributes until we hit '>' or '/>'
@@ -172,8 +200,12 @@ public class XmlSerializer {
         for (AttributeLocation loc : attrLocations) {
           writer.write(" ");
           writer.write(LOC_PREFIX);
+          if (loc.prefix != null) {
+            writer.write("-");
+            writer.write(loc.prefix);
+          }
           writer.write(":attr-");
-          writer.write(loc.name);
+          writer.write(loc.localName);
           writer.write("=\"");
           writer.write(String.valueOf(loc.startLine));
           writer.write(":");
@@ -184,6 +216,22 @@ public class XmlSerializer {
           writer.write(String.valueOf(loc.endColumn));
           writer.write("\"");
         }
+        namespaceDeclarations.forEach(
+            (key, value) -> {
+              try {
+                writer.write(" ");
+                writer.write(XMLNS_ATTRIBUTE);
+                writer.write(":");
+                writer.write(LOC_PREFIX);
+                writer.write("-");
+                writer.write(key);
+                writer.write("=\"");
+                writer.write(value);
+                writer.write("\"");
+              } catch (IOException e) {
+                throw new UncheckedIOException(e);
+              }
+            });
 
         // Write closing '>' or '/>'
         writer.write(lexer.getText());
@@ -191,6 +239,10 @@ public class XmlSerializer {
       } else if (type == XmlLexerImpl.TokenType.NAME) {
         String attrName = new String(lexer.getText());
         bufferedContent.append(lexer.getText());
+
+        String namespacePrefix =
+            attrName.startsWith(XMLNS_ATTRIBUTE + ":") ? attrName.substring(6) : null;
+        StringBuilder namespaceUri = namespacePrefix != null ? new StringBuilder() : null;
 
         boolean foundValue = false;
         int valueStartLine = 0;
@@ -211,9 +263,12 @@ public class XmlSerializer {
                   // Record location of attribute value
                   valueStartLine = lexer.getLine();
                   valueStartColumn = lexer.getColumn();
-                  bufferedContent.append(lexer.getText());
                   valueEndLine = lexer.getLine();
                   valueEndColumn = lexer.getColumn() + lexer.getText().length - 1;
+                  bufferedContent.append(lexer.getText());
+                  if (namespacePrefix != null) {
+                    namespaceUri.append(lexer.getText());
+                  }
                   foundValue = true;
                 } else if (type == XmlLexerImpl.TokenType.ATTR_QUOTE) {
                   // Empty attribute value
@@ -227,6 +282,9 @@ public class XmlSerializer {
               }
             } else {
               // Closing quote - we're done with this attribute
+              if (namespacePrefix != null) {
+                namespaceDeclarations.put(namespacePrefix, namespaceUri.toString());
+              }
               break;
             }
           } else if (type == XmlLexerImpl.TokenType.ENTITY_REF
@@ -247,13 +305,21 @@ public class XmlSerializer {
 
         // Store attribute location
         AttributeLocation loc = new AttributeLocation();
-        loc.name = attrName;
-        loc.startLine = valueStartLine;
-        loc.startColumn = valueStartColumn;
-        loc.endLine = valueEndLine;
-        loc.endColumn = valueEndColumn;
-        attrLocations.add(loc);
-
+        var index = attrName.indexOf(':');
+        if (index != -1) {
+          loc.prefix = attrName.substring(0, index);
+          loc.localName = attrName.substring(index + 1);
+        } else {
+          loc.prefix = null;
+          loc.localName = attrName;
+        }
+        if (!Objects.equals(loc.prefix, XMLNS_ATTRIBUTE)) {
+          loc.startLine = valueStartLine;
+          loc.startColumn = valueStartColumn;
+          loc.endLine = valueEndLine;
+          loc.endColumn = valueEndColumn;
+          attrLocations.add(loc);
+        }
       } else {
         bufferedContent.append(lexer.getText());
       }

@@ -1,0 +1,184 @@
+[
+  {
+    "type": "ELEMENT_START",
+    "text": "<",
+    "line": 1,
+    "column": 1,
+    "offset": 0
+  },
+  {
+    "type": "NAME",
+    "text": "foo",
+    "line": 1,
+    "column": 2,
+    "offset": 1
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 1,
+    "column": 5,
+    "offset": 4
+  },
+  {
+    "type": "NAME",
+    "text": "xmlns:xsi",
+    "line": 1,
+    "column": 6,
+    "offset": 5
+  },
+  {
+    "type": "EQUALS",
+    "text": "=",
+    "line": 1,
+    "column": 15,
+    "offset": 14
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 1,
+    "column": 16,
+    "offset": 15
+  },
+  {
+    "type": "ATTR_VALUE",
+    "text": "http://www.w3.org/2001/XMLSchema-instance",
+    "line": 1,
+    "column": 17,
+    "offset": 16
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 1,
+    "column": 58,
+    "offset": 57
+  },
+  {
+    "type": "WHITESPACE",
+    "text": "\n     ",
+    "line": 1,
+    "column": 59,
+    "offset": 58
+  },
+  {
+    "type": "NAME",
+    "text": "xsi:noNamespaceSchemaLocation",
+    "line": 2,
+    "column": 6,
+    "offset": 64
+  },
+  {
+    "type": "EQUALS",
+    "text": "=",
+    "line": 2,
+    "column": 35,
+    "offset": 93
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 2,
+    "column": 36,
+    "offset": 94
+  },
+  {
+    "type": "ATTR_VALUE",
+    "text": "urn:oasis:names:tc:dita:xsd:topic.xsd",
+    "line": 2,
+    "column": 37,
+    "offset": 95
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 2,
+    "column": 74,
+    "offset": 132
+  },
+  {
+    "type": "EMPTY_ELEMENT_END",
+    "text": "/>",
+    "line": 2,
+    "column": 75,
+    "offset": 133
+  },
+  {
+    "type": "CHAR_DATA",
+    "text": "\n",
+    "line": 2,
+    "column": 77,
+    "offset": 135
+  },
+  {
+    "type": "ELEMENT_START",
+    "text": "<",
+    "line": 3,
+    "column": 1,
+    "offset": 136
+  },
+  {
+    "type": "NAME",
+    "text": "foo",
+    "line": 3,
+    "column": 2,
+    "offset": 137
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 3,
+    "column": 5,
+    "offset": 140
+  },
+  {
+    "type": "NAME",
+    "text": "xml:space",
+    "line": 3,
+    "column": 6,
+    "offset": 141
+  },
+  {
+    "type": "EQUALS",
+    "text": "=",
+    "line": 3,
+    "column": 15,
+    "offset": 150
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 3,
+    "column": 16,
+    "offset": 151
+  },
+  {
+    "type": "ATTR_VALUE",
+    "text": "preserve",
+    "line": 3,
+    "column": 17,
+    "offset": 152
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 3,
+    "column": 25,
+    "offset": 160
+  },
+  {
+    "type": "EMPTY_ELEMENT_END",
+    "text": "/>",
+    "line": 3,
+    "column": 26,
+    "offset": 161
+  },
+  {
+    "type": "EOF",
+    "text": "",
+    "line": 3,
+    "column": 28,
+    "offset": 163
+  }
+]
