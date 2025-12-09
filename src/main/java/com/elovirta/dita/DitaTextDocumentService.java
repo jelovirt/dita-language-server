@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.streams.Steps;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -488,10 +489,11 @@ public class DitaTextDocumentService implements TextDocumentService {
     return diagnostics;
   }
 
-  private List<Diagnostic> doValidation(XdmNode content) {
+  private List<Diagnostic> doValidation(XdmNode doc) {
     List<Diagnostic> diagnostics = new ArrayList<>();
 
-    var ids = content.select(descendant().then(attribute(ID_ATTR))).toList();
+    // Topic IDs
+    var ids = doc.select(descendant(TOPIC_TOPIC).then(attribute(ID_ATTR))).toList();
     var idValues = ids.stream().map(XdmItem::getStringValue).toList();
     if (Set.copyOf(idValues).size() != idValues.size()) {
       Set<String> encountered = new HashSet<>();
@@ -501,7 +503,7 @@ public class DitaTextDocumentService implements TextDocumentService {
           diagnostics.add(
               new Diagnostic(
                   Utils.getAttributeRange(id),
-                  LOCALE.getString("error.duplicate_id").formatted(id.getStringValue()),
+                  LOCALE.getString("error.duplicate_topic_id").formatted(id.getStringValue()),
                   DiagnosticSeverity.Error,
                   SOURCE));
         } else {
@@ -509,6 +511,38 @@ public class DitaTextDocumentService implements TextDocumentService {
         }
       }
     }
+
+    // Element IDs
+    doc.select(descendant(TOPIC_TOPIC))
+        .forEach(
+            topic -> {
+              var elementIds =
+                  topic
+                      .select(
+                          Steps.child()
+                              .where(not(TOPIC_TOPIC))
+                              .then(Steps.descendantOrSelf().then(attribute(ATTR_ID))))
+                      .toList();
+              var elementIdValues = elementIds.stream().map(XdmItem::getStringValue).toList();
+              if (Set.copyOf(elementIdValues).size() != elementIdValues.size()) {
+                Set<String> encountered = new HashSet<>();
+                for (XdmNode id : elementIds) {
+                  var idValue = id.getStringValue();
+                  if (encountered.contains(idValue)) {
+                    diagnostics.add(
+                        new Diagnostic(
+                            Utils.getAttributeRange(id),
+                            LOCALE
+                                .getString("error.duplicate_element_id")
+                                .formatted(id.getStringValue()),
+                            DiagnosticSeverity.Error,
+                            SOURCE));
+                  } else {
+                    encountered.add(idValue);
+                  }
+                }
+              }
+            });
 
     return diagnostics;
   }

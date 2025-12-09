@@ -43,6 +43,10 @@ public class Utils {
   public static final Predicate<? super XdmNode> TOPIC_XREF = cls(" topic/xref ");
   public static final Predicate<? super XdmNode> TOPIC_LINK = cls(" topic/link ");
 
+  public static final String ATTR_ID = "id";
+  public static final String ATTR_NAME = "name";
+  public static final String ATTR_TYPE = "type";
+
   public static Range getAttributeRange(XdmNode attr) {
     var loc =
         attr.getParent()
