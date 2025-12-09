@@ -93,8 +93,13 @@ class DitaTextDocumentServiceTest {
     assertEquals(
         List.of(
             new Diagnostic(
+                new Range(new Position(8, 13), new Position(8, 17)),
+                "Duplicate topic id attribute value 'test'",
+                DiagnosticSeverity.Error,
+                "dita-validator"),
+            new Diagnostic(
                 new Range(new Position(6, 11), new Position(6, 17)),
-                "Duplicate id attribute value 'second'",
+                "Duplicate element id attribute value 'second'",
                 DiagnosticSeverity.Error,
                 "dita-validator")),
         diagnostics.getDiagnostics());

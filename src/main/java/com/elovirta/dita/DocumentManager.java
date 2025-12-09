@@ -1,5 +1,6 @@
 package com.elovirta.dita;
 
+import static com.elovirta.dita.Utils.ATTR_ID;
 import static com.elovirta.dita.Utils.TOPIC_TOPIC;
 import static com.elovirta.dita.xml.XmlSerializer.LOC_NAMESPACE;
 import static net.sf.saxon.s9api.streams.Predicates.*;
@@ -105,7 +106,7 @@ public class DocumentManager {
       id =
           cache
               .document()
-              .select(descendant(TOPIC_TOPIC).first().then(attribute("id")))
+              .select(descendant(TOPIC_TOPIC).first().then(attribute(ATTR_ID)))
               .map(XdmNode::getStringValue)
               .findFirst()
               .orElse(null);
@@ -141,12 +142,12 @@ public class DocumentManager {
         doc.select(descendant(TOPIC_TOPIC))
             .flatMap(
                 topic -> {
-                  var topicId = topic.attribute("id");
+                  var topicId = topic.attribute(ATTR_ID);
                   return topic
                       .select(
                           Steps.child(isElement())
                               .where(not(TOPIC_TOPIC))
-                              .then(Steps.descendantOrSelf().then(attribute("id"))))
+                              .then(Steps.descendantOrSelf().then(attribute(ATTR_ID))))
                       .map(elementId -> Map.entry(topicId, elementId.getStringValue()));
                 })
             .toList();
