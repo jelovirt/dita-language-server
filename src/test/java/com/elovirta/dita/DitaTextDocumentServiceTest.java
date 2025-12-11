@@ -9,6 +9,8 @@ import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -90,16 +92,17 @@ class DitaTextDocumentServiceTest {
     PublishDiagnosticsParams diagnostics = captor.getValue();
 
     assertEquals("file:///invalid-id.dita", diagnostics.getUri());
+    var locale = ResourceBundle.getBundle("copy", Locale.ENGLISH);
     assertEquals(
         List.of(
             new Diagnostic(
                 new Range(new Position(8, 13), new Position(8, 17)),
-                "Duplicate topic id attribute value 'test'",
+                locale.getString("error.duplicate_topic_id").formatted("test"),
                 DiagnosticSeverity.Error,
                 "dita-validator"),
             new Diagnostic(
                 new Range(new Position(6, 11), new Position(6, 17)),
-                "Duplicate element id attribute value 'second'",
+                locale.getString("error.duplicate_element_id").formatted("second"),
                 DiagnosticSeverity.Error,
                 "dita-validator")),
         diagnostics.getDiagnostics());
