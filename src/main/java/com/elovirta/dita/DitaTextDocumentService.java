@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.streams.Steps;
@@ -30,6 +31,7 @@ public class DitaTextDocumentService implements TextDocumentService {
   private static final String CONKEYREF_ATTR = "conkeyref";
   private static final String HREF_ATTR = "href";
   private static final String ID_ATTR = "id";
+  private static final QName AUDIENCE_ATTR = QName.fromClarkName("audience");
 
   public static final String SOURCE = "dita-validator";
 
@@ -144,6 +146,20 @@ public class DitaTextDocumentService implements TextDocumentService {
             items.add(item);
           }
         }
+        return CompletableFuture.completedFuture(Either.forLeft(items));
+      } else if (localName.equals(AUDIENCE_ATTR.getLocalName())) {
+        var parentElem = attr.getParent();
+        var items =
+            subjectSchemeManager
+                .values(AUDIENCE_ATTR, parentElem.getNodeName().getLocalName())
+                .stream()
+                .map(
+                    suggestion -> {
+                      CompletionItem item = new CompletionItem(suggestion);
+                      item.setKind(CompletionItemKind.EnumMember);
+                      return item;
+                    })
+                .toList();
         return CompletableFuture.completedFuture(Either.forLeft(items));
       }
     }

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.*;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import net.sf.saxon.s9api.QName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +24,7 @@ class SubjectSchemeManagerTest {
 
   @Test
   void get() {
-    var act = subjectSchemeManager.get("users");
+    var act = subjectSchemeManager.values(QName.fromClarkName("users"), "p");
     assertNotNull(act);
   }
 

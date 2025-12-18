@@ -25,12 +25,9 @@ public class SubjectSchemeManager {
   private static final String ANY_ELEMENT = "*";
 
   private volatile Map<String, SubjectDefinition> subjectDefinitions = Collections.emptyMap();
-  private final Map<javax.xml.namespace.QName, Map<String, Set<SubjectDefinition>>> bindingMap =
-      new HashMap<>();
-  private final Map<javax.xml.namespace.QName, Map<String, Set<String>>> validValuesMap =
-      new HashMap<>();
-  private final Map<javax.xml.namespace.QName, Map<String, String>> defaultValueMap =
-      new HashMap<>();
+  private final Map<QName, Map<String, Set<SubjectDefinition>>> bindingMap = new HashMap<>();
+  private final Map<QName, Map<String, Set<String>>> validValuesMap = new HashMap<>();
+  private final Map<QName, Map<String, String>> defaultValueMap = new HashMap<>();
 
   public void read(URI uri, XdmNode map) {
     logger.info("Read subject scheme definitions {}", uri);
@@ -62,11 +59,11 @@ public class SubjectSchemeManager {
 
     final Optional<XdmNode> attributeDefElement =
         enumerationDef.select(Steps.child(SUBJECTSCHEME_ATTRIBUTEDEF).first()).findFirst();
-    final javax.xml.namespace.QName attributeName =
+    final QName attributeName =
         attributeDefElement
             .map(child -> child.getAttributeValue(ATTRIBUTE_QNAME_NAME))
             .filter(name -> name != null && !name.isEmpty())
-            .map(javax.xml.namespace.QName::valueOf)
+            .map(QName::fromClarkName)
             .orElse(null);
     if (attributeDefElement.isPresent()) {
       bindingMap.computeIfAbsent(attributeName, k -> new HashMap<>());
@@ -126,7 +123,7 @@ public class SubjectSchemeManager {
   private void putValuePairsIntoMap(
       final SubjectDefinition subtree,
       final String elementName,
-      final javax.xml.namespace.QName attName,
+      final QName attName,
       final String category) {
     final Map<String, Set<String>> valueMap = validValuesMap.getOrDefault(attName, new HashMap<>());
     final Set<String> valueSet = valueMap.getOrDefault(elementName, new HashSet<>());
@@ -191,8 +188,11 @@ public class SubjectSchemeManager {
     return Set.of(value.split("\\s+"));
   }
 
-  public SubjectDefinition get(String key) {
-    return subjectDefinitions.get(key);
+  public Set<String> values(QName attributeName, String elementName) {
+    var elements = validValuesMap.getOrDefault(attributeName, Collections.emptyMap());
+    logger.info("elements: " + elements);
+    return elements.getOrDefault(
+        elementName, elements.getOrDefault(ANY_ELEMENT, Collections.emptySet()));
   }
 
   public boolean containsKey(String key) {
