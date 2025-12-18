@@ -37,6 +37,7 @@ public class DitaTextDocumentService implements TextDocumentService {
   private final DitaParser parser;
   private final DocumentManager documentManager;
   private final KeyManager keyManager;
+  private final SubjectSchemeManager subjectSchemeManager;
   private final SmartDebouncer debouncer;
 
   private URI rootMapUri;
@@ -48,6 +49,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     this.parser = new DitaParser();
     this.documentManager = new DocumentManager();
     this.keyManager = new KeyManager();
+    this.subjectSchemeManager = new SubjectSchemeManager();
     this.debouncer = debouncer;
     this.LOCALE = ResourceBundle.getBundle("copy", Locale.ENGLISH);
   }
@@ -61,9 +63,11 @@ public class DitaTextDocumentService implements TextDocumentService {
     logger.info("Setting root map URI: {}", uri);
     try {
       var content = Files.readString(Paths.get(uri));
+      // XXX: Should everything below be done async?
       rootMap = parser.mergeMap(parser.parse(content, uri));
 
       keyManager.read(uri, rootMap);
+      subjectSchemeManager.read(uri, rootMap);
 
       revalidateAllOpenDocuments();
     } catch (Exception e) {
@@ -228,7 +232,8 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   @Override
   public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
-    return CompletableFuture.completedFuture(null);
+    var report = new DocumentDiagnosticReport(new RelatedFullDocumentDiagnosticReport());
+    return CompletableFuture.completedFuture(report);
     //    String uri = params.getTextDocument().getUri();
     //
     //    // Get the content from storage
@@ -312,7 +317,9 @@ public class DitaTextDocumentService implements TextDocumentService {
                     debouncer.debounce(
                         uri.toString(),
                         () -> {
-                          keyManager.read(uri, parser.mergeMap(doc));
+                          var merged = parser.mergeMap(doc);
+                          keyManager.read(uri, merged);
+                          subjectSchemeManager.read(uri, merged);
                           revalidateAllOpenDocuments();
                         });
                   } catch (Exception e) {
