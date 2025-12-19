@@ -390,55 +390,65 @@ public class DitaTextDocumentService implements TextDocumentService {
   private List<Diagnostic> doSlowValidation(XdmNode content, URI documentUri) {
     List<Diagnostic> diagnostics = new ArrayList<>();
     if (rootMap != null) {
-      var keyrefs =
-          content
-              .select(
-                  descendant(isElement())
-                      .then(attribute(CONKEYREF_ATTR).cat(attribute(KEYREF_ATTR))))
-              .toList();
-      if (!keyrefs.isEmpty()) {
-        for (XdmNode keyref : keyrefs) {
-          var keyrefValue = keyref.getStringValue();
-          var separator = keyrefValue.indexOf('/');
-          var keyName = separator != -1 ? keyrefValue.substring(0, separator) : keyrefValue;
-          var id = separator != -1 ? keyrefValue.substring(separator + 1) : null;
-          var keyDefinition = keyManager.get(keyName);
-          if (keyDefinition == null) {
-            // FIXME range should match only the key name
+      validateConrefAttributes(content, diagnostics);
+    }
+    validateCrossReferences(content, documentUri, diagnostics);
+    validateProfilingAttributes(content, diagnostics);
+
+    return diagnostics;
+  }
+
+  private void validateConrefAttributes(XdmNode content, List<Diagnostic> diagnostics) {
+    var keyrefs =
+        content
+            .select(
+                descendant(isElement()).then(attribute(CONKEYREF_ATTR).cat(attribute(KEYREF_ATTR))))
+            .toList();
+    if (!keyrefs.isEmpty()) {
+      for (XdmNode keyref : keyrefs) {
+        var keyrefValue = keyref.getStringValue();
+        var separator = keyrefValue.indexOf('/');
+        var keyName = separator != -1 ? keyrefValue.substring(0, separator) : keyrefValue;
+        var id = separator != -1 ? keyrefValue.substring(separator + 1) : null;
+        var keyDefinition = keyManager.get(keyName);
+        if (keyDefinition == null) {
+          // FIXME range should match only the key name
+          var range = Utils.getAttributeRange(keyref);
+          diagnostics.add(
+              new Diagnostic(
+                  range,
+                  LOCALE.getString("error.missing_key").formatted(keyrefValue),
+                  DiagnosticSeverity.Warning,
+                  SOURCE));
+        } else {
+          var uri = keyDefinition.target();
+          if (uri == null) {
             var range = Utils.getAttributeRange(keyref);
             diagnostics.add(
                 new Diagnostic(
                     range,
-                    LOCALE.getString("error.missing_key").formatted(keyrefValue),
+                    LOCALE.getString("error.keyref_target_undefined"),
                     DiagnosticSeverity.Warning,
                     SOURCE));
-          } else {
-            var uri = keyDefinition.target();
-            if (uri == null) {
+          } else if (id != null) {
+            var ids = documentManager.listElementIds(stripFragment(uri), uri.getFragment());
+            if (!ids.contains(id)) {
               var range = Utils.getAttributeRange(keyref);
               diagnostics.add(
                   new Diagnostic(
                       range,
-                      LOCALE.getString("error.keyref_target_undefined"),
+                      LOCALE.getString("error.keyref_id_missing").formatted(id),
                       DiagnosticSeverity.Warning,
                       SOURCE));
-            } else if (id != null) {
-              var ids = documentManager.listElementIds(stripFragment(uri), uri.getFragment());
-              if (!ids.contains(id)) {
-                var range = Utils.getAttributeRange(keyref);
-                diagnostics.add(
-                    new Diagnostic(
-                        range,
-                        LOCALE.getString("error.keyref_id_missing").formatted(id),
-                        DiagnosticSeverity.Warning,
-                        SOURCE));
-              }
             }
           }
         }
       }
     }
+  }
 
+  private void validateCrossReferences(
+      XdmNode content, URI documentUri, List<Diagnostic> diagnostics) {
     var hrefs =
         content
             .select(
@@ -508,7 +518,9 @@ public class DitaTextDocumentService implements TextDocumentService {
         }
       }
     }
+  }
 
+  void validateProfilingAttributes(XdmNode content, List<Diagnostic> diagnostics) {
     var profileAttributes = subjectSchemeManager.attributes();
     content
         .select(
@@ -534,8 +546,6 @@ public class DitaTextDocumentService implements TextDocumentService {
                         SOURCE));
               }
             });
-
-    return diagnostics;
   }
 
   private List<Diagnostic> doValidation(XdmNode doc) {
