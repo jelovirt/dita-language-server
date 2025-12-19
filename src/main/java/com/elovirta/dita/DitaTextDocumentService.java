@@ -542,20 +542,21 @@ public class DitaTextDocumentService implements TextDocumentService {
               var values =
                   subjectSchemeManager.values(
                       attr.getNodeName(), attr.getParent().getNodeName().getLocalName());
-              var value = attr.getStringValue();
-              if (!values.contains(value)) {
-                var range = Utils.getAttributeRange(attr);
-                diagnostics.add(
-                    new Diagnostic(
-                        range,
-                        LOCALE
-                            .getString("error.invalid_profile_value")
-                            .formatted(
-                                value,
-                                attr.getNodeName().getLocalName(),
-                                String.join(", ", values)),
-                        DiagnosticSeverity.Error,
-                        SOURCE));
+              for (var value : attr.getStringValue().trim().split("\\s+")) {
+                if (!values.contains(value)) {
+                  var range = Utils.getAttributeRange(attr);
+                  diagnostics.add(
+                      new Diagnostic(
+                          range,
+                          LOCALE
+                              .getString("error.invalid_profile_value")
+                              .formatted(
+                                  value,
+                                  attr.getNodeName().getLocalName(),
+                                  String.join(", ", values)),
+                          DiagnosticSeverity.Error,
+                          SOURCE));
+                }
               }
             });
   }
