@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
@@ -29,9 +30,12 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   private static final String KEYREF_ATTR = "keyref";
   private static final String CONKEYREF_ATTR = "conkeyref";
+  private static final String CONREF_ATTR = "conref";
   private static final String HREF_ATTR = "href";
   private static final String ID_ATTR = "id";
   private static final QName AUDIENCE_ATTR = QName.fromClarkName("audience");
+
+  private static final Set<String> CROSS_REFERENCE_ATTRS = Set.of(HREF_ATTR, CONREF_ATTR);
 
   public static final String SOURCE = "dita-validator";
 
@@ -447,14 +451,22 @@ public class DitaTextDocumentService implements TextDocumentService {
     }
   }
 
+  private static boolean isCrossReferenceAttribute(XdmNode attr) {
+    return CROSS_REFERENCE_ATTRS.contains(attr.getNodeName().getLocalName());
+  }
+
+  private static Predicate<XdmNode> hasCrossReferenceAttribute() {
+    return elem -> CROSS_REFERENCE_ATTRS.stream().anyMatch(name -> elem.attribute(name) != null);
+  }
+
   private void validateCrossReferences(
       XdmNode content, URI documentUri, List<Diagnostic> diagnostics) {
     var hrefs =
         content
             .select(
                 descendant(isElement())
-                    .where(hasAttribute(HREF_ATTR).and(not(attributeEq("scope", "external"))))
-                    .then(attribute(HREF_ATTR)))
+                    .where(hasCrossReferenceAttribute().and(not(attributeEq("scope", "external"))))
+                    .then(attribute(DitaTextDocumentService::isCrossReferenceAttribute)))
             .toList();
     if (!hrefs.isEmpty()) {
       for (XdmNode href : hrefs) {

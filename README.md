@@ -12,8 +12,8 @@ It provides features like completion and goto definition for many code editors, 
 |------------------------|-------------|------------|------------------|-------|
 | `keyref`               | ✓           | ✓          | ✓                | ✓     |
 | `conkeyref`            | ✓           | ✓          | ✓                | ✓     |
-| `href`                 | ✓           | ✓          |                  |       |
-| `conref`               | ✗           |            |                  |       |
+| `href`                 | ✓           |            |                  |       |
+| `conref`               | ✓           |            |                  |       |
 | Topic `id`             | ✓           |            |                  |       |
 | Element `id`           | ✓           |            |                  |       |
 | Profiling attributes   | ✓           | ✓          |                  |       |
