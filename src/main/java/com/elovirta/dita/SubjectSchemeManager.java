@@ -199,8 +199,12 @@ public class SubjectSchemeManager {
     return subjectDefinitions.containsKey(key);
   }
 
-  public Set<Map.Entry<String, SubjectDefinition>> keys() {
-    return subjectDefinitions.entrySet();
+  public boolean hasAttribute(QName attributeName) {
+    return validValuesMap.containsKey(attributeName);
+  }
+
+  public Set<QName> attributes() {
+    return validValuesMap.keySet();
   }
 
   public record SubjectDefinition(

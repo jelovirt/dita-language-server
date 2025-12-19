@@ -147,7 +147,7 @@ public class DitaTextDocumentService implements TextDocumentService {
           }
         }
         return CompletableFuture.completedFuture(Either.forLeft(items));
-      } else if (localName.equals(AUDIENCE_ATTR.getLocalName())) {
+      } else if (subjectSchemeManager.hasAttribute(attr.getNodeName())) {
         var parentElem = attr.getParent();
         var items =
             subjectSchemeManager
@@ -508,6 +508,32 @@ public class DitaTextDocumentService implements TextDocumentService {
         }
       }
     }
+
+    var profileAttributes = subjectSchemeManager.attributes();
+    content
+        .select(
+            descendant().then(attribute(attr -> profileAttributes.contains(attr.getNodeName()))))
+        .forEach(
+            attr -> {
+              var values =
+                  subjectSchemeManager.values(
+                      attr.getNodeName(), attr.getParent().getNodeName().getLocalName());
+              var value = attr.getStringValue();
+              if (!values.contains(value)) {
+                var range = Utils.getAttributeRange(attr);
+                diagnostics.add(
+                    new Diagnostic(
+                        range,
+                        LOCALE
+                            .getString("error.invalid_profile_value")
+                            .formatted(
+                                value,
+                                attr.getNodeName().getLocalName(),
+                                String.join(", ", values)),
+                        DiagnosticSeverity.Error,
+                        SOURCE));
+              }
+            });
 
     return diagnostics;
   }
