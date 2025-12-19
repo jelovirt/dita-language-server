@@ -5,6 +5,21 @@ It provides features like completion and goto definition for many code editors, 
 
 ## Features
 
+<details>
+<summary>Features table</summary>
+
+| DITA Attribute/Element | Diagnostics | Completion | Go to Definition | Hover |
+|------------------------|-------------|------------|------------------|-------|
+| `keyref`               | ✓           | ✓          | ✓                | ✓     |
+| `conkeyref`            | ✓           | ✓          | ✓                | ✓     |
+| `href`                 | ✓           | ✓          |                  |       |
+| `conref`               | ✗           |            |                  |       |
+| Topic `id`             | ✓           |            |                  |       |
+| Element `id`           | ✓           |            |                  |       |
+| Profiling attributes   | ✓           | ✓          |                  |       |
+
+</details>
+
 ### Diagnostics and Validation
 
 * Duplicate topic ID detection
