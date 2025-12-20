@@ -13,7 +13,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 public class XmlSerializerTest {
 
-  private XmlSerializer serializer = new XmlSerializer();
+  private final XmlSerializer serializer = new XmlSerializer();
 
   @ParameterizedTest
   @ValueSource(
@@ -40,9 +40,7 @@ public class XmlSerializerTest {
       assertEquals(readResource("/serializer/exp/" + file), act);
     } catch (Throwable e) {
       if (act != null) {
-        Files.write(
-            Paths.get("src/test/resources/serializer/exp", file),
-            act.getBytes(StandardCharsets.UTF_8));
+        Files.writeString(Paths.get("src/test/resources/serializer/exp", file), act);
       }
       throw e;
     }

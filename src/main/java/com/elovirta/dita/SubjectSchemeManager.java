@@ -34,14 +34,11 @@ public class SubjectSchemeManager {
     subjectDefinitions = getSubjectDefinition(map);
 
     map.select(descendant(SUBJECTSCHEME_ENUMERATIONDEF))
-        .forEach(
-            enumerationDef -> {
-              processEnumerationDef(subjectDefinitions, enumerationDef);
-            });
-    logger.info("subjectDefinitions: " + subjectDefinitions);
-    logger.info("bindingMap: " + bindingMap);
-    logger.info("validValuesMap: " + validValuesMap);
-    logger.info("defaultValueMap: " + defaultValueMap);
+        .forEach(enumerationDef -> processEnumerationDef(subjectDefinitions, enumerationDef));
+    logger.info("subjectDefinitions: {}", subjectDefinitions);
+    logger.info("bindingMap: {}", bindingMap);
+    logger.info("validValuesMap: {}", validValuesMap);
+    logger.info("defaultValueMap: {}", defaultValueMap);
   }
 
   public void processEnumerationDef(
@@ -190,7 +187,7 @@ public class SubjectSchemeManager {
 
   public Set<String> values(QName attributeName, String elementName) {
     var elements = validValuesMap.getOrDefault(attributeName, Collections.emptyMap());
-    logger.info("elements: " + elements);
+    logger.info("elements: {}", elements);
     return elements.getOrDefault(
         elementName, elements.getOrDefault(ANY_ELEMENT, Collections.emptySet()));
   }

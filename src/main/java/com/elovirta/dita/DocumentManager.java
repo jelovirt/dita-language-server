@@ -78,10 +78,7 @@ public class DocumentManager {
   }
 
   public void forEach(BiConsumer<URI, XdmNode> action) {
-    openDocuments.forEach(
-        (uri, cache) -> {
-          action.accept(uri, cache.document());
-        });
+    openDocuments.forEach((uri, cache) -> action.accept(uri, cache.document()));
   }
 
   public Collection<String> listIds(URI uri) {

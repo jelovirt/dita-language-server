@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class SubjectSchemeManagerTest {
 
   private SubjectSchemeManager subjectSchemeManager;
-  private DitaParser ditaParser = new DitaParser();
+  private final DitaParser ditaParser = new DitaParser();
 
   @BeforeEach
   void setUp() {

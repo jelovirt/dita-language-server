@@ -11,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutionException;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.junit.jupiter.api.AfterEach;
@@ -54,8 +53,7 @@ class DitaTextDocumentServiceTest {
   }
 
   @Test
-  void testInvalidDitaDocument()
-      throws ExecutionException, InterruptedException, URISyntaxException {
+  void testInvalidDitaDocument() throws URISyntaxException {
     textDocumentService.setRootMapUri(getClass().getResource("/maps/keymap.ditamap").toURI());
     var invalidDita = readResource("invalid-keyref.dita");
     textDocumentService.didOpen(createOpenParams("file:///invalid-keyref.dita", invalidDita));

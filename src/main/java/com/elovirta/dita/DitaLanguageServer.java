@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
 
-  private static final Logger logger = LoggerFactory.getLogger(DitaWorkspaceService.class);
+  private static final Logger logger = LoggerFactory.getLogger(DitaLanguageServer.class);
 
   private final SmartDebouncer debouncer;
   private final DitaTextDocumentService textDocumentService;
