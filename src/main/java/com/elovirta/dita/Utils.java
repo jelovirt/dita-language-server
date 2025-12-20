@@ -42,6 +42,16 @@ public class Utils {
   public static final Predicate<? super XdmNode> TOPIC_IMAGE = cls(" topic/image ");
   public static final Predicate<? super XdmNode> TOPIC_XREF = cls(" topic/xref ");
   public static final Predicate<? super XdmNode> TOPIC_LINK = cls(" topic/link ");
+  public static final Predicate<? super XdmNode> SUBJECTSCHEME_SUBJECTDEF =
+      cls(" subjectScheme/subjectdef ");
+  public static final Predicate<? super XdmNode> SUBJECTSCHEME_ENUMERATIONDEF =
+      cls(" subjectScheme/enumerationdef ");
+  public static final Predicate<? super XdmNode> SUBJECTSCHEME_ELEMENTDEF =
+      cls(" subjectScheme/elementdef ");
+  public static final Predicate<? super XdmNode> SUBJECTSCHEME_ATTRIBUTEDEF =
+      cls(" subjectScheme/attributedef ");
+  public static final Predicate<? super XdmNode> SUBJECTSCHEME_DEFAULTSUBJECT =
+      cls(" subjectScheme/defaultsubject ");
 
   public static final String ATTR_ID = "id";
   public static final String ATTR_NAME = "name";
@@ -109,5 +119,9 @@ public class Utils {
       return null;
     }
     return uri.substring(index + 1);
+  }
+
+  public static Predicate<XdmNode> isEmptyAttribute() {
+    return attr -> attr.getStringValue().isEmpty();
   }
 }

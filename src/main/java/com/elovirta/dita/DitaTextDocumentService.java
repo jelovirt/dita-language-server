@@ -12,6 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
+import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.streams.Steps;
@@ -28,8 +30,12 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   private static final String KEYREF_ATTR = "keyref";
   private static final String CONKEYREF_ATTR = "conkeyref";
+  private static final String CONREF_ATTR = "conref";
   private static final String HREF_ATTR = "href";
   private static final String ID_ATTR = "id";
+  private static final QName AUDIENCE_ATTR = QName.fromClarkName("audience");
+
+  private static final Set<String> CROSS_REFERENCE_ATTRS = Set.of(HREF_ATTR, CONREF_ATTR);
 
   public static final String SOURCE = "dita-validator";
 
@@ -37,6 +43,7 @@ public class DitaTextDocumentService implements TextDocumentService {
   private final DitaParser parser;
   private final DocumentManager documentManager;
   private final KeyManager keyManager;
+  private final SubjectSchemeManager subjectSchemeManager;
   private final SmartDebouncer debouncer;
 
   private URI rootMapUri;
@@ -48,6 +55,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     this.parser = new DitaParser();
     this.documentManager = new DocumentManager();
     this.keyManager = new KeyManager();
+    this.subjectSchemeManager = new SubjectSchemeManager();
     this.debouncer = debouncer;
     this.LOCALE = ResourceBundle.getBundle("copy", Locale.ENGLISH);
   }
@@ -61,9 +69,11 @@ public class DitaTextDocumentService implements TextDocumentService {
     logger.info("Setting root map URI: {}", uri);
     try {
       var content = Files.readString(Paths.get(uri));
+      // XXX: Should everything below be done async?
       rootMap = parser.mergeMap(parser.parse(content, uri));
 
       keyManager.read(uri, rootMap);
+      subjectSchemeManager.read(uri, rootMap);
 
       revalidateAllOpenDocuments();
     } catch (Exception e) {
@@ -140,6 +150,20 @@ public class DitaTextDocumentService implements TextDocumentService {
             items.add(item);
           }
         }
+        return CompletableFuture.completedFuture(Either.forLeft(items));
+      } else if (subjectSchemeManager.hasAttribute(attr.getNodeName())) {
+        var parentElem = attr.getParent();
+        var items =
+            subjectSchemeManager
+                .values(AUDIENCE_ATTR, parentElem.getNodeName().getLocalName())
+                .stream()
+                .map(
+                    suggestion -> {
+                      CompletionItem item = new CompletionItem(suggestion);
+                      item.setKind(CompletionItemKind.EnumMember);
+                      return item;
+                    })
+                .toList();
         return CompletableFuture.completedFuture(Either.forLeft(items));
       }
     }
@@ -228,7 +252,8 @@ public class DitaTextDocumentService implements TextDocumentService {
 
   @Override
   public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
-    return CompletableFuture.completedFuture(null);
+    var report = new DocumentDiagnosticReport(new RelatedFullDocumentDiagnosticReport());
+    return CompletableFuture.completedFuture(report);
     //    String uri = params.getTextDocument().getUri();
     //
     //    // Get the content from storage
@@ -312,7 +337,9 @@ public class DitaTextDocumentService implements TextDocumentService {
                     debouncer.debounce(
                         uri.toString(),
                         () -> {
-                          keyManager.read(uri, parser.mergeMap(doc));
+                          var merged = parser.mergeMap(doc);
+                          keyManager.read(uri, merged);
+                          subjectSchemeManager.read(uri, merged);
                           revalidateAllOpenDocuments();
                         });
                   } catch (Exception e) {
@@ -367,61 +394,79 @@ public class DitaTextDocumentService implements TextDocumentService {
   private List<Diagnostic> doSlowValidation(XdmNode content, URI documentUri) {
     List<Diagnostic> diagnostics = new ArrayList<>();
     if (rootMap != null) {
-      var keyrefs =
-          content
-              .select(
-                  descendant(isElement())
-                      .then(attribute(CONKEYREF_ATTR).cat(attribute(KEYREF_ATTR))))
-              .toList();
-      if (!keyrefs.isEmpty()) {
-        for (XdmNode keyref : keyrefs) {
-          var keyrefValue = keyref.getStringValue();
-          var separator = keyrefValue.indexOf('/');
-          var keyName = separator != -1 ? keyrefValue.substring(0, separator) : keyrefValue;
-          var id = separator != -1 ? keyrefValue.substring(separator + 1) : null;
-          var keyDefinition = keyManager.get(keyName);
-          if (keyDefinition == null) {
-            // FIXME range should match only the key name
+      validateConrefAttributes(content, diagnostics);
+    }
+    validateCrossReferences(content, documentUri, diagnostics);
+    validateProfilingAttributes(content, diagnostics);
+
+    return diagnostics;
+  }
+
+  private void validateConrefAttributes(XdmNode content, List<Diagnostic> diagnostics) {
+    var keyrefs =
+        content
+            .select(
+                descendant(isElement()).then(attribute(CONKEYREF_ATTR).cat(attribute(KEYREF_ATTR))))
+            .toList();
+    if (!keyrefs.isEmpty()) {
+      for (XdmNode keyref : keyrefs) {
+        var keyrefValue = keyref.getStringValue();
+        var separator = keyrefValue.indexOf('/');
+        var keyName = separator != -1 ? keyrefValue.substring(0, separator) : keyrefValue;
+        var id = separator != -1 ? keyrefValue.substring(separator + 1) : null;
+        var keyDefinition = keyManager.get(keyName);
+        if (keyDefinition == null) {
+          // FIXME range should match only the key name
+          var range = Utils.getAttributeRange(keyref);
+          diagnostics.add(
+              new Diagnostic(
+                  range,
+                  LOCALE.getString("error.missing_key").formatted(keyrefValue),
+                  DiagnosticSeverity.Warning,
+                  SOURCE));
+        } else {
+          var uri = keyDefinition.target();
+          if (uri == null) {
             var range = Utils.getAttributeRange(keyref);
             diagnostics.add(
                 new Diagnostic(
                     range,
-                    LOCALE.getString("error.missing_key").formatted(keyrefValue),
+                    LOCALE.getString("error.keyref_target_undefined"),
                     DiagnosticSeverity.Warning,
                     SOURCE));
-          } else {
-            var uri = keyDefinition.target();
-            if (uri == null) {
+          } else if (id != null) {
+            var ids = documentManager.listElementIds(stripFragment(uri), uri.getFragment());
+            if (!ids.contains(id)) {
               var range = Utils.getAttributeRange(keyref);
               diagnostics.add(
                   new Diagnostic(
                       range,
-                      LOCALE.getString("error.keyref_target_undefined"),
+                      LOCALE.getString("error.keyref_id_missing").formatted(id),
                       DiagnosticSeverity.Warning,
                       SOURCE));
-            } else if (id != null) {
-              var ids = documentManager.listElementIds(stripFragment(uri), uri.getFragment());
-              if (!ids.contains(id)) {
-                var range = Utils.getAttributeRange(keyref);
-                diagnostics.add(
-                    new Diagnostic(
-                        range,
-                        LOCALE.getString("error.keyref_id_missing").formatted(id),
-                        DiagnosticSeverity.Warning,
-                        SOURCE));
-              }
             }
           }
         }
       }
     }
+  }
 
+  private static boolean isCrossReferenceAttribute(XdmNode attr) {
+    return CROSS_REFERENCE_ATTRS.contains(attr.getNodeName().getLocalName());
+  }
+
+  private static Predicate<XdmNode> hasCrossReferenceAttribute() {
+    return elem -> CROSS_REFERENCE_ATTRS.stream().anyMatch(name -> elem.attribute(name) != null);
+  }
+
+  private void validateCrossReferences(
+      XdmNode content, URI documentUri, List<Diagnostic> diagnostics) {
     var hrefs =
         content
             .select(
                 descendant(isElement())
-                    .where(hasAttribute(HREF_ATTR).and(not(attributeEq("scope", "external"))))
-                    .then(attribute(HREF_ATTR)))
+                    .where(hasCrossReferenceAttribute().and(not(attributeEq("scope", "external"))))
+                    .then(attribute(DitaTextDocumentService::isCrossReferenceAttribute)))
             .toList();
     if (!hrefs.isEmpty()) {
       for (XdmNode href : hrefs) {
@@ -485,8 +530,35 @@ public class DitaTextDocumentService implements TextDocumentService {
         }
       }
     }
+  }
 
-    return diagnostics;
+  void validateProfilingAttributes(XdmNode content, List<Diagnostic> diagnostics) {
+    var profileAttributes = subjectSchemeManager.attributes();
+    content
+        .select(
+            descendant().then(attribute(attr -> profileAttributes.contains(attr.getNodeName()))))
+        .forEach(
+            attr -> {
+              var values =
+                  subjectSchemeManager.values(
+                      attr.getNodeName(), attr.getParent().getNodeName().getLocalName());
+              for (var value : attr.getStringValue().trim().split("\\s+")) {
+                if (!values.contains(value)) {
+                  var range = Utils.getAttributeRange(attr);
+                  diagnostics.add(
+                      new Diagnostic(
+                          range,
+                          LOCALE
+                              .getString("error.invalid_profile_value")
+                              .formatted(
+                                  value,
+                                  attr.getNodeName().getLocalName(),
+                                  String.join(", ", values)),
+                          DiagnosticSeverity.Error,
+                          SOURCE));
+                }
+              }
+            });
   }
 
   private List<Diagnostic> doValidation(XdmNode doc) {

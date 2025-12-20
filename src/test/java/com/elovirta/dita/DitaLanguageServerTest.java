@@ -3,7 +3,6 @@ package com.elovirta.dita;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -25,10 +24,10 @@ class DitaLanguageServerTest {
 
   @Test
   void testInitialize() throws ExecutionException, InterruptedException {
-    InitializeParams params = new InitializeParams();
+    var params = new InitializeParams();
     params.setRootUri("file:///test/workspace");
 
-    CompletableFuture<InitializeResult> result = server.initialize(params);
+    var result = server.initialize(params);
     InitializeResult initResult = result.get();
 
     assertNotNull(initResult);
@@ -39,8 +38,8 @@ class DitaLanguageServerTest {
 
   @Test
   void testDidOpen() {
-    DidOpenTextDocumentParams params = new DidOpenTextDocumentParams();
-    TextDocumentItem document = new TextDocumentItem();
+    var params = new DidOpenTextDocumentParams();
+    var document = new TextDocumentItem();
     document.setUri("file:///test.dita");
     document.setLanguageId("dita");
     document.setVersion(1);
@@ -57,8 +56,8 @@ class DitaLanguageServerTest {
   @Test
   void testDiagnosticValidation() throws ExecutionException, InterruptedException {
     // Open document first
-    DidOpenTextDocumentParams openParams = new DidOpenTextDocumentParams();
-    TextDocumentItem document = new TextDocumentItem();
+    var openParams = new DidOpenTextDocumentParams();
+    var document = new TextDocumentItem();
     document.setUri("file:///test.dita");
     document.setLanguageId("dita");
     document.setVersion(1);
@@ -68,27 +67,20 @@ class DitaLanguageServerTest {
     server.getTextDocumentService().didOpen(openParams);
 
     // Request diagnostics
-    DocumentDiagnosticParams diagnosticParams = new DocumentDiagnosticParams();
+    var diagnosticParams = new DocumentDiagnosticParams();
     diagnosticParams.setTextDocument(new TextDocumentIdentifier("file:///test.dita"));
 
-    CompletableFuture<DocumentDiagnosticReport> diagnosticFuture =
-        server.getTextDocumentService().diagnostic(diagnosticParams);
-    DocumentDiagnosticReport report = diagnosticFuture.get();
+    var diagnosticFuture = server.getTextDocumentService().diagnostic(diagnosticParams);
+    var act = diagnosticFuture.get();
 
-    assertNull(report);
-    //        assertTrue(report instanceof RelatedFullDocumentDiagnosticReport);
-
-    //        RelatedFullDocumentDiagnosticReport fullReport =
-    //                (RelatedFullDocumentDiagnosticReport) report;
-    //        assertFalse(fullReport.getItems().isEmpty(), "Should have diagnostics for unclosed
-    // tag");
+    assertEquals(new DocumentDiagnosticReport(new RelatedFullDocumentDiagnosticReport()), act);
   }
 
   @Test
   void testDidChange() {
     // Open document
-    DidOpenTextDocumentParams openParams = new DidOpenTextDocumentParams();
-    TextDocumentItem document = new TextDocumentItem();
+    var openParams = new DidOpenTextDocumentParams();
+    var document = new TextDocumentItem();
     document.setUri("file:///test.dita");
     document.setLanguageId("dita");
     document.setVersion(1);
@@ -97,10 +89,10 @@ class DitaLanguageServerTest {
     server.getTextDocumentService().didOpen(openParams);
 
     // Change document
-    DidChangeTextDocumentParams changeParams = new DidChangeTextDocumentParams();
+    var changeParams = new DidChangeTextDocumentParams();
     changeParams.setTextDocument(new VersionedTextDocumentIdentifier("file:///test.dita", 2));
 
-    TextDocumentContentChangeEvent change = new TextDocumentContentChangeEvent();
+    var change = new TextDocumentContentChangeEvent();
     change.setText("<topic id=\"test\"><title>New Title</title></topic>");
     changeParams.getContentChanges().add(change);
 
@@ -112,7 +104,7 @@ class DitaLanguageServerTest {
 
   @Test
   void testSetTrace() {
-    SetTraceParams params = new SetTraceParams();
+    var params = new SetTraceParams();
     params.setValue("verbose");
 
     assertDoesNotThrow(() -> server.setTrace(params));
