@@ -3,9 +3,13 @@ package com.elovirta.dita;
 import static com.elovirta.dita.xml.XmlSerializer.*;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -161,5 +165,21 @@ public class Utils {
       }
       return false;
     };
+  }
+
+  public static BufferedReader readFile(URI uri) throws IOException {
+    // Use detection, something like this
+    /*
+    XMLInputSource source = new XMLInputSource(null, null, null);
+    source.setByteStream(new ByteArrayInputStream(bytes));
+
+    XMLEntityScanner scanner = new XMLEntityScanner();
+    XMLErrorReporter errorReporter = new XMLErrorReporter();
+
+    scanner.reset(source, errorReporter);
+
+    return scanner.getEncoding();
+    */
+    return Files.newBufferedReader(Paths.get(uri), Charset.defaultCharset());
   }
 }

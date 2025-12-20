@@ -2,13 +2,17 @@ package com.elovirta.dita;
 
 import static com.elovirta.dita.Utils.*;
 import static com.elovirta.dita.xml.XmlSerializer.LOC_NAMESPACE;
+import static net.sf.saxon.s9api.streams.Predicates.isElement;
 import static net.sf.saxon.s9api.streams.Steps.*;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmNode;
 import org.eclipse.lsp4j.Location;
@@ -22,6 +26,8 @@ public class KeyManager {
   private static final String HREF_ATTR = "href";
 
   private volatile Map<String, KeyDefinition> keyDefinitions = Collections.emptyMap();
+
+  private static final Pattern KEYREF_ATTR = Pattern.compile("\\s(keyref)\\s*=\\s*\"[^\"]*?\"");
 
   public void read(URI uri, XdmNode map) {
     logger.info("Read key definitions {}", uri);
@@ -56,6 +62,27 @@ public class KeyManager {
       }
       keyDefinitions = buf;
     }
+    logger.info("Read key references");
+    var refs =
+        map.select(descendant(isElement()).then(attribute(HREF_ATTR)))
+            .map(href -> uri.resolve(href.getStringValue()).normalize())
+            .filter(href -> href.getScheme().equals("file"))
+            .map(Utils::stripFragment)
+            .collect(Collectors.toSet());
+    refs.forEach(
+        ref -> {
+          logger.info("Read key reference {}", ref);
+          try (var in = Utils.readFile(ref); ) {
+            for (var line = in.readLine(); line != null; line = in.readLine()) {
+              var matcher = KEYREF_ATTR.matcher(line);
+              while (matcher.find()) {
+                logger.info("keyref start={} end={}", matcher.start(1), matcher.end(1));
+              }
+            }
+          } catch (IOException e) {
+            logger.error("Failed to read {}: {}", ref, e.getMessage(), e);
+          }
+        });
   }
 
   public KeyDefinition get(String key) {
