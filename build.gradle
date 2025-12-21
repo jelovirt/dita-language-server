@@ -50,8 +50,14 @@ tasks.register('generateVersionProperties') {
         }
     }
 }
+
+tasks.register('copyTranspileXsl', Copy) {
+    from 'schxslt2/src/main/resources/content/transpile.xsl'
+    into layout.buildDirectory.dir('resources/main/xslt')
+}
+
 tasks.named('processResources') {
-    dependsOn('generateVersionProperties')
+    dependsOn 'generateVersionProperties', 'copyTranspileXsl'
 }
 
 shadowJar {

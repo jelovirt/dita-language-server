@@ -1,0 +1,91 @@
+package com.elovirta.dita.validator;
+
+import static net.sf.saxon.s9api.streams.Steps.child;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import net.sf.saxon.s9api.*;
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class SchematronValidator {
+
+  private static final QName SCHEMATRON_OUTPUT =
+      QName.fromClarkName("{http://purl.oclc.org/dsdl/svrl}schematron-output");
+  private static final QName FAILED_ASSERT =
+      QName.fromClarkName("{http://purl.oclc.org/dsdl/svrl}failed-assert");
+  private static final QName TEXT = QName.fromClarkName("{http://purl.oclc.org/dsdl/svrl}text");
+
+  private static final Logger logger = LoggerFactory.getLogger(SchematronValidator.class);
+
+  private final Processor processor;
+  private final XsltExecutable schematronCompiler;
+  private XsltExecutable schematron;
+
+  public SchematronValidator(Processor processor) {
+    this.processor = processor;
+
+    try (var in = getClass().getResourceAsStream("/xslt/transpile.xsl")) {
+      this.schematronCompiler =
+          processor
+              .newXsltCompiler()
+              .compile(new StreamSource(in, "classpath:/xslt/transpile.xsl"));
+    } catch (SaxonApiException | IOException e) {
+      throw new RuntimeException("Failed to parse classpath:/xslt/transpile.xsl", e);
+    }
+  }
+
+  public void setSchematron(URI srcUri) {
+    logger.info("Setting schematron: {}", srcUri);
+    try {
+      Source src;
+      if (srcUri.getScheme().equals("classpath")) {
+        src =
+            new StreamSource(getClass().getResourceAsStream("/" + srcUri.getSchemeSpecificPart()));
+      } else {
+        src = new StreamSource(srcUri.toString());
+      }
+      var dst = new XdmDestination();
+      schematronCompiler.load30().transform(src, dst);
+      schematron = processor.newXsltCompiler().compile(dst.getXdmNode().getUnderlyingNode());
+    } catch (SaxonApiException e) {
+      logger.error("Failed to compile schematron", e);
+    }
+  }
+
+  public void validate(XdmNode content, List<Diagnostic> diagnostics) {
+    if (schematron == null) {
+      return;
+    }
+    try {
+      var res = new XdmDestination();
+      schematron.load30().transform(content.getUnderlyingNode(), res);
+      var act = res.getXdmNode();
+      act.select(
+              child(SCHEMATRON_OUTPUT.getNamespace(), SCHEMATRON_OUTPUT.getLocalName())
+                  .then(child(FAILED_ASSERT.getNamespace(), FAILED_ASSERT.getLocalName())))
+          .forEach(
+              failedAssert -> {
+                failedAssert
+                    .select(child(TEXT.getNamespace(), TEXT.getLocalName()))
+                    .findAny()
+                    .ifPresent(
+                        text -> {
+                          // TODO
+                          //                var range = Utils.getAttributeRange(keyref);
+                          var range = new Range(new Position(0, 0), new Position(0, 0));
+                          diagnostics.add(new Diagnostic(range, text.getStringValue()));
+                        });
+              });
+      logger.info("Schematron validated: {}", act);
+    } catch (SaxonApiException e) {
+      logger.error("Failed to validate schematron", e);
+    }
+  }
+}

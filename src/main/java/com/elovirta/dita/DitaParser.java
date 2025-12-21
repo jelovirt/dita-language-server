@@ -63,6 +63,10 @@ public class DitaParser {
     }
   }
 
+  public Processor getProcessor() {
+    return processor;
+  }
+
   public XdmNode parse(String content, URI uri) {
     return parseDocument(content.toCharArray(), uri);
   }
