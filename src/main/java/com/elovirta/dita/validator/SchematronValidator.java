@@ -1,16 +1,17 @@
 package com.elovirta.dita.validator;
 
+import static com.elovirta.dita.xml.XmlSerializer.LOC_NAMESPACE;
 import static net.sf.saxon.s9api.streams.Steps.child;
 
+import com.elovirta.dita.Utils;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.s9api.*;
+import net.sf.saxon.s9api.streams.Step;
 import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,9 +78,15 @@ public class SchematronValidator {
                     .findAny()
                     .ifPresent(
                         text -> {
-                          // TODO
-                          //                var range = Utils.getAttributeRange(keyref);
-                          var range = new Range(new Position(0, 0), new Position(0, 0));
+                          logger.info("{}", failedAssert);
+                          var context =
+                              content
+                                  .select(parsePattern(failedAssert.attribute("location")))
+                                  .firstItem();
+                          var range =
+                              Utils.parseRange(
+                                  context.getAttributeValue(
+                                      QName.fromClarkName("{" + LOC_NAMESPACE + "}elem")));
                           diagnostics.add(new Diagnostic(range, text.getStringValue()));
                         });
               });
@@ -87,5 +94,9 @@ public class SchematronValidator {
     } catch (SaxonApiException e) {
       logger.error("Failed to validate schematron", e);
     }
+  }
+
+  Step<XdmNode> parsePattern(String pattern) {
+    return child("topic").at(0).then(child("body").at(0).then(child("pre").at(0)));
   }
 }
