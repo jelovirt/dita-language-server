@@ -1,5 +1,6 @@
 package com.elovirta.dita.validator;
 
+import static net.sf.saxon.s9api.streams.Steps.attribute;
 import static net.sf.saxon.s9api.streams.Steps.child;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,11 +36,10 @@ class SchematronValidatorTest {
     doc =
         parser.parse(
             """
-            <topic id="topic">
-             <title>Title</title>
-             <body>
-               <pre/>
-             </body>
+            <topic xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/"
+                   ditaarch:DITAArchVersion="1.3"
+                   id="topic">
+             <body/>
             </topic>
             """,
             URI.create("file:///topic.dita"));
@@ -70,8 +70,15 @@ class SchematronValidatorTest {
   private static Stream<Arguments> parseLocationArguments() {
     return Stream.of(
         Arguments.of(
-            "/Q{}topic[1]/Q{}body[1]/Q{}pre[1]",
-            child("topic").first().then(child("body").first().then(child("pre").first()))));
+            "/Q{}topic[1]/Q{}body[1]",
+            child("","topic").at(0).then(child("","body").at(0))),
+        Arguments.of(
+            "/Q{}topic[1]/@id",
+            child("topic").first().then(attribute("id"))),
+        Arguments.of(
+            "/Q{}topic[1]/@Q{http://dita.oasis-open.org/architecture/2005/}DITAArchVersion",
+            child("topic").first().then(attribute("http://dita.oasis-open.org/architecture/2005/", "DITAArchVersion")))
+    );
   }
 
   @ParameterizedTest
