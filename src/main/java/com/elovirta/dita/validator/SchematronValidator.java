@@ -7,11 +7,8 @@ import static net.sf.saxon.s9api.streams.Steps.child;
 import com.elovirta.dita.Utils;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.s9api.*;
@@ -102,40 +99,19 @@ public class SchematronValidator {
   }
 
   Step<XdmNode> parsePattern(String pattern) {
-    List<String> split = new ArrayList<>(Arrays.asList(pattern.split("/")));
-    split.remove(0);
-    Collections.reverse(split);
-    Step<XdmNode> res = null;
-    String resString = null;
-    for (var step : split) {
-      Step<XdmNode> current;
-      String currentString;
-      if (step.startsWith("@Q{")) {
-        var nsIndex = step.indexOf('}');
-        currentString = "attribute(%s, %s)".formatted(step.substring(0, nsIndex), step.substring(nsIndex + 1));
-        current = attribute(step.substring(0, nsIndex), step.substring(nsIndex + 1));
-      } else if (step.startsWith("@")) {
-        currentString = "attribute(%s)".formatted(step.substring(1));
-        current = attribute(step.substring(1));
-      } else {
-        var nsIndex = step.indexOf('}');
-        var predicateIndex = step.indexOf('[');
-        currentString = "child(%s, %s).at(%s)".formatted(
-                step.substring(2, nsIndex),
-                step.substring(nsIndex + 1, predicateIndex),
-                Integer.parseInt(step.substring(predicateIndex + 1, step.length() - 1)) - 1);
-        current = child(step.substring(2, nsIndex), step.substring(nsIndex + 1, predicateIndex)).at(Integer.parseInt(step.substring(predicateIndex + 1, step.length() - 1)) - 1);
-      }
-      if (res == null) {
-        res = current;
-        resString = currentString;
-      } else {
-        res = current.then(res);
-        currentString = currentString + ".then(" + resString + ")";
-        resString = currentString;
-      }
-    }
-    logger.info("Parsed pattern: {}", resString);
-    return res;
+    var steps = PseudoXPathParser.parse(pattern);
+    Collections.reverse(steps);
+    return steps.stream()
+        .map(
+            step -> {
+              if (step instanceof PseudoXPathParser.AttributeStep attr) {
+                return attribute(attr.namespace(), attr.localName());
+              } else if (step instanceof PseudoXPathParser.ElementStep elem) {
+                return child(elem.namespace(), elem.localName()).at(elem.position() - 1);
+              } else {
+                throw new IllegalArgumentException("Unrecognized step: " + step);
+              }
+            })
+        .reduce(null, (acc, curr) -> acc == null ? curr : curr.then(acc));
   }
 }

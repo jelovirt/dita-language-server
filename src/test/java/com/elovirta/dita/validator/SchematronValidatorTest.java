@@ -70,15 +70,15 @@ class SchematronValidatorTest {
   private static Stream<Arguments> parseLocationArguments() {
     return Stream.of(
         Arguments.of(
-            "/Q{}topic[1]/Q{}body[1]",
-            child("","topic").at(0).then(child("","body").at(0))),
-        Arguments.of(
-            "/Q{}topic[1]/@id",
-            child("topic").first().then(attribute("id"))),
+            "/Q{}topic[1]/Q{}body[1]", child("", "topic").at(0).then(child("", "body").at(0))),
+        Arguments.of("/Q{}topic[1]/@id", child("topic").first().then(attribute("id"))),
         Arguments.of(
             "/Q{}topic[1]/@Q{http://dita.oasis-open.org/architecture/2005/}DITAArchVersion",
-            child("topic").first().then(attribute("http://dita.oasis-open.org/architecture/2005/", "DITAArchVersion")))
-    );
+            child("topic")
+                .first()
+                .then(
+                    attribute(
+                        "http://dita.oasis-open.org/architecture/2005/", "DITAArchVersion"))));
   }
 
   @ParameterizedTest
