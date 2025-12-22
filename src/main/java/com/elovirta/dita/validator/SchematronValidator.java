@@ -1,5 +1,6 @@
 package com.elovirta.dita.validator;
 
+import static com.elovirta.dita.DitaTextDocumentService.SOURCE;
 import static com.elovirta.dita.xml.XmlSerializer.LOC_NAMESPACE;
 import static net.sf.saxon.s9api.streams.Steps.attribute;
 import static net.sf.saxon.s9api.streams.Steps.child;
@@ -9,11 +10,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.s9api.*;
 import net.sf.saxon.s9api.streams.Step;
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +27,9 @@ public class SchematronValidator {
   private static final QName FAILED_ASSERT =
       QName.fromClarkName("{http://purl.oclc.org/dsdl/svrl}failed-assert");
   private static final QName TEXT = QName.fromClarkName("{http://purl.oclc.org/dsdl/svrl}text");
+
+  private static final QName SCHXSLT_PHASE =
+      QName.fromClarkName("{http://dmaus.name/ns/2023/schxslt}phase");
 
   private static final Logger logger = LoggerFactory.getLogger(SchematronValidator.class);
 
@@ -55,7 +61,9 @@ public class SchematronValidator {
         src = new StreamSource(srcUri.toString());
       }
       var dst = new XdmDestination();
-      schematronCompiler.load30().transform(src, dst);
+      var compiler = schematronCompiler.load30();
+      compiler.setStylesheetParameters(Map.of(SCHXSLT_PHASE, XdmValue.makeValue("#ALL")));
+      compiler.transform(src, dst);
       schematron = processor.newXsltCompiler().compile(dst.getXdmNode().getUnderlyingNode());
     } catch (SaxonApiException e) {
       logger.error("Failed to compile schematron", e);
@@ -63,6 +71,7 @@ public class SchematronValidator {
   }
 
   public void validate(XdmNode content, List<Diagnostic> diagnostics) {
+    logger.debug("Validating with schematron {}", schematron);
     if (schematron == null) {
       return;
     }
@@ -80,7 +89,7 @@ public class SchematronValidator {
                     .findAny()
                     .ifPresent(
                         text -> {
-                          logger.info("{}", failedAssert);
+                          logger.debug("{}", failedAssert);
                           var context =
                               content
                                   .select(parsePattern(failedAssert.attribute("location")))
@@ -89,7 +98,15 @@ public class SchematronValidator {
                               Utils.parseRange(
                                   context.getAttributeValue(
                                       QName.fromClarkName("{" + LOC_NAMESPACE + "}elem")));
-                          diagnostics.add(new Diagnostic(range, text.getStringValue()));
+                          var severity =
+                              switch (failedAssert.attribute("role")) {
+                                case "error" -> DiagnosticSeverity.Error;
+                                case "warning" -> DiagnosticSeverity.Warning;
+                                default -> null;
+                              };
+                          diagnostics.add(
+                              new Diagnostic(
+                                  range, text.getStringValue().trim(), severity, SOURCE));
                         });
               });
       logger.info("Schematron validated: {}", act);
