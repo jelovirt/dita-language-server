@@ -4,9 +4,11 @@ import java.util.*;
 
 public class PseudoXPathParser {
 
-  sealed interface Step permits ElementStep, AttributeStep {}
+  sealed interface Step permits ElementStep, TextStep, AttributeStep {}
 
   record ElementStep(String namespace, String localName, int position) implements Step {}
+
+  record TextStep(int position) implements Step {}
 
   record AttributeStep(String namespace, String localName) implements Step {}
 
@@ -18,6 +20,7 @@ public class PseudoXPathParser {
     IN_NAMESPACE,
     IN_LOCAL_NAME,
     AFTER_LOCAL_NAME,
+    IN_TEXT,
     IN_POSITION
   }
 
@@ -29,6 +32,7 @@ public class PseudoXPathParser {
     StringBuilder localName = new StringBuilder();
     StringBuilder position = new StringBuilder();
     boolean isAttribute = false;
+    boolean isElement = false;
 
     var chars = xpath.toCharArray();
     int i = 0;
@@ -48,17 +52,23 @@ public class PseudoXPathParser {
         case AFTER_SLASH:
           if (ch == '@') {
             isAttribute = true;
+            isElement = false;
             state = State.AFTER_AT;
             i++;
           } else if (ch == 'Q') {
             isAttribute = false;
+            isElement = true;
             state = State.IN_Q;
+            i++;
+          } else if (ch == 't') {
+            isAttribute = false;
+            isElement = false;
+            state = State.IN_TEXT;
             i++;
           } else {
             throw new IllegalArgumentException("Expected Q or @ at position " + i);
           }
           break;
-
         case AFTER_AT:
           if (ch == 'Q') {
             state = State.IN_Q;
@@ -80,7 +90,15 @@ public class PseudoXPathParser {
             throw new IllegalArgumentException("Expected { after Q at position " + i);
           }
           break;
-
+        case IN_TEXT:
+          if (ch == '[') {
+            position.setLength(0);
+            state = State.IN_POSITION;
+            i++;
+          } else {
+            i++;
+          }
+          break;
         case IN_NAMESPACE:
           if (ch == '}') {
             localName.setLength(0);
@@ -127,7 +145,11 @@ public class PseudoXPathParser {
         case IN_POSITION:
           if (ch == ']') {
             int pos = Integer.parseInt(position.toString());
-            steps.add(new ElementStep(namespace.toString(), localName.toString(), pos));
+            if (isElement) {
+              steps.add(new ElementStep(namespace.toString(), localName.toString(), pos));
+            } else {
+              steps.add(new TextStep(pos));
+            }
             state = State.AFTER_SLASH;
             i++;
 

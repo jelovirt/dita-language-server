@@ -2,8 +2,7 @@ package com.elovirta.dita.validator;
 
 import static com.elovirta.dita.DitaTextDocumentService.SOURCE;
 import static com.elovirta.dita.xml.XmlSerializer.LOC_NAMESPACE;
-import static net.sf.saxon.s9api.streams.Steps.attribute;
-import static net.sf.saxon.s9api.streams.Steps.child;
+import static net.sf.saxon.s9api.streams.Steps.*;
 
 import com.elovirta.dita.Utils;
 import java.io.IOException;
@@ -26,6 +25,8 @@ public class SchematronValidator {
       QName.fromClarkName("{http://purl.oclc.org/dsdl/svrl}schematron-output");
   private static final QName FAILED_ASSERT =
       QName.fromClarkName("{http://purl.oclc.org/dsdl/svrl}failed-assert");
+  private static final QName SUCCESSFUL_REPORT =
+      QName.fromClarkName("{http://purl.oclc.org/dsdl/svrl}successful-report");
   private static final QName TEXT = QName.fromClarkName("{http://purl.oclc.org/dsdl/svrl}text");
 
   private static final QName SCHXSLT_PHASE =
@@ -81,7 +82,12 @@ public class SchematronValidator {
       var act = res.getXdmNode();
       act.select(
               child(SCHEMATRON_OUTPUT.getNamespace(), SCHEMATRON_OUTPUT.getLocalName())
-                  .then(child(FAILED_ASSERT.getNamespace(), FAILED_ASSERT.getLocalName())))
+                  .then(
+                      child(FAILED_ASSERT.getNamespace(), FAILED_ASSERT.getLocalName())
+                          .cat(
+                              child(
+                                  SUCCESSFUL_REPORT.getNamespace(),
+                                  SUCCESSFUL_REPORT.getLocalName()))))
           .forEach(
               failedAssert -> {
                 failedAssert
@@ -94,6 +100,10 @@ public class SchematronValidator {
                               content
                                   .select(parsePattern(failedAssert.attribute("location")))
                                   .firstItem();
+                          // FIXME: Track text node locations with PIs
+                          if (context.getNodeKind() == XdmNodeKind.TEXT) {
+                            context = context.getParent();
+                          }
                           var range =
                               Utils.parseRange(
                                   context.getAttributeValue(
@@ -125,6 +135,8 @@ public class SchematronValidator {
                 return attribute(attr.namespace(), attr.localName());
               } else if (step instanceof PseudoXPathParser.ElementStep elem) {
                 return child(elem.namespace(), elem.localName()).at(elem.position() - 1);
+              } else if (step instanceof PseudoXPathParser.TextStep text) {
+                return text().at(text.position() - 1);
               } else {
                 throw new IllegalArgumentException("Unrecognized step: " + step);
               }

@@ -1,7 +1,6 @@
 package com.elovirta.dita.validator;
 
-import static net.sf.saxon.s9api.streams.Steps.attribute;
-import static net.sf.saxon.s9api.streams.Steps.child;
+import static net.sf.saxon.s9api.streams.Steps.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.elovirta.dita.DitaParser;
@@ -39,6 +38,7 @@ class SchematronValidatorTest {
             <topic xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/"
                    ditaarch:DITAArchVersion="1.3"
                    id="topic">
+             <title>Title</title>
              <body/>
             </topic>
             """,
@@ -77,8 +77,10 @@ class SchematronValidatorTest {
             child("topic")
                 .first()
                 .then(
-                    attribute(
-                        "http://dita.oasis-open.org/architecture/2005/", "DITAArchVersion"))));
+                    attribute("http://dita.oasis-open.org/architecture/2005/", "DITAArchVersion"))),
+        Arguments.of(
+            "/Q{}topic[1]/Q{}title[1]/text()[1]",
+            child("topic").first().then(child("title").first().then(text().first()))));
   }
 
   @ParameterizedTest
