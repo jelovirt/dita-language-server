@@ -10,12 +10,15 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.s9api.*;
 import net.sf.saxon.s9api.streams.Step;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +39,7 @@ public class SchematronValidator {
 
   private final Processor processor;
   private final XsltExecutable schematronCompiler;
-  private XsltExecutable schematron;
+  private final Map<String, XsltExecutable> schematrons;
 
   public SchematronValidator(Processor processor) {
     this.processor = processor;
@@ -49,10 +52,35 @@ public class SchematronValidator {
     } catch (SaxonApiException | IOException e) {
       throw new RuntimeException("Failed to parse classpath:/xslt/transpile.xsl", e);
     }
+
+    try (var in = getClass().getResourceAsStream("/schemas/sch/dita.sch")) {
+      var src = processor.newDocumentBuilder().build(new StreamSource(in)).getUnderlyingNode();
+      schematrons =
+          Stream.of("1.0", "1.1", "1.2", "1.3")
+              .collect(
+                  Collectors.toMap(
+                      version -> version,
+                      version -> {
+                        try {
+                          var dst = new XdmDestination();
+                          var compiler = schematronCompiler.load30();
+                          compiler.setStylesheetParameters(
+                              Map.of(SCHXSLT_PHASE, XdmValue.makeValue("all_" + version)));
+                          compiler.transform(src, dst);
+                          return processor
+                              .newXsltCompiler()
+                              .compile(dst.getXdmNode().getUnderlyingNode());
+                        } catch (SaxonApiException e) {
+                          throw new RuntimeException("Failed to compile schematron", e);
+                        }
+                      }));
+    } catch (IOException | SaxonApiException e) {
+      throw new RuntimeException("Failed to read schematron", e);
+    }
   }
 
-  public void setSchematron(URI srcUri) {
-    logger.info("Setting schematron: {}", srcUri);
+  private XsltExecutable readSchematron(URI srcUri, String version) {
+    logger.info("Reading schematron: {}", srcUri);
     try {
       Source src;
       if (srcUri.getScheme().equals("classpath")) {
@@ -63,16 +91,18 @@ public class SchematronValidator {
       }
       var dst = new XdmDestination();
       var compiler = schematronCompiler.load30();
-      compiler.setStylesheetParameters(Map.of(SCHXSLT_PHASE, XdmValue.makeValue("#ALL")));
+      compiler.setStylesheetParameters(Map.of(SCHXSLT_PHASE, XdmValue.makeValue("all_" + version)));
       compiler.transform(src, dst);
-      schematron = processor.newXsltCompiler().compile(dst.getXdmNode().getUnderlyingNode());
+      return processor.newXsltCompiler().compile(dst.getXdmNode().getUnderlyingNode());
     } catch (SaxonApiException e) {
-      logger.error("Failed to compile schematron", e);
+      throw new RuntimeException("Failed to compile schematron", e);
     }
   }
 
   public void validate(XdmNode content, List<Diagnostic> diagnostics) {
-    logger.debug("Validating with schematron {}", schematron);
+    var version = getDitaArchVersion(content);
+    logger.debug("Validating with schematron");
+    var schematron = schematrons.get(version);
     if (schematron == null) {
       return;
     }
@@ -123,6 +153,17 @@ public class SchematronValidator {
     } catch (SaxonApiException e) {
       logger.error("Failed to validate schematron", e);
     }
+  }
+
+  private static @NotNull String getDitaArchVersion(XdmNode content) {
+    return content
+        .select(
+            child()
+                .then(
+                    attribute("http://dita.oasis-open.org/architecture/2005/", "DITAArchVersion")))
+        .findAny()
+        .map(XdmNode::getStringValue)
+        .orElse("1.3");
   }
 
   Step<XdmNode> parsePattern(String pattern) {
