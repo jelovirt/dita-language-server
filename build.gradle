@@ -1,9 +1,22 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url "https://dev.saxonica.com/maven" }
+    }
+    dependencies {
+        classpath group: 'net.sf.saxon', name: 'Saxon-HE', version: '12.1'
+    }
+}
+
 plugins {
     id 'java'
     id 'application'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'com.diffplug.spotless' version '6.25.0'
+    id 'com.nwalsh.gradle.saxon.saxon-gradle' version '0.10.7'
 }
+
+import com.nwalsh.gradle.saxon.SaxonXsltTask
 
 group = 'com.elovirta'
 version = '0.1.0'
@@ -56,8 +69,14 @@ tasks.register('copyTranspileXsl', Copy) {
     into layout.buildDirectory.dir('resources/main/xslt')
 }
 
+tasks.register('copySchematron', SaxonXsltTask) {
+    stylesheet file("${projectDir}/gradle/schematron.xsl")
+    input file('dita-schematron/src/sch/dita.sch').toURI().toString()
+    output layout.buildDirectory.file('resources/main/schemas/sch/dita.sch').get().asFile.toURI().toString()
+}
+
 tasks.named('processResources') {
-    dependsOn 'generateVersionProperties', 'copyTranspileXsl'
+    dependsOn 'generateVersionProperties', 'copyTranspileXsl', 'copySchematron'
 }
 
 shadowJar {
