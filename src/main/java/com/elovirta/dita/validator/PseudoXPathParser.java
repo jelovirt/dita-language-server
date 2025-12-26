@@ -4,7 +4,7 @@ import java.util.*;
 
 public class PseudoXPathParser {
 
-  sealed interface Step permits ElementStep, TextStep, AttributeStep {}
+  public sealed interface Step permits ElementStep, TextStep, AttributeStep {}
 
   record ElementStep(String namespace, String localName, int position) implements Step {}
 

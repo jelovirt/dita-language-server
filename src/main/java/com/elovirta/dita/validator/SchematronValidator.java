@@ -39,7 +39,7 @@ public class SchematronValidator {
 
   private final Processor processor;
   private final XsltExecutable schematronCompiler;
-  private final Map<String, XsltExecutable> schematrons;
+  private final Map<String, XsltExecutable> builtInSchematrons;
 
   public SchematronValidator(Processor processor) {
     this.processor = processor;
@@ -55,7 +55,7 @@ public class SchematronValidator {
 
     try (var in = getClass().getResourceAsStream("/schemas/sch/dita.sch")) {
       var src = processor.newDocumentBuilder().build(new StreamSource(in)).getUnderlyingNode();
-      schematrons =
+      builtInSchematrons =
           Stream.of("1.0", "1.1", "1.2", "1.3")
               .collect(
                   Collectors.toMap(
@@ -65,7 +65,7 @@ public class SchematronValidator {
                           var dst = new XdmDestination();
                           var compiler = schematronCompiler.load30();
                           compiler.setStylesheetParameters(
-                              Map.of(SCHXSLT_PHASE, XdmValue.makeValue("all_" + version)));
+                              Map.of(SCHXSLT_PHASE, XdmValue.makeValue("all" + "_" + version)));
                           compiler.transform(src, dst);
                           return processor
                               .newXsltCompiler()
@@ -102,7 +102,7 @@ public class SchematronValidator {
   public void validate(XdmNode content, List<Diagnostic> diagnostics) {
     var version = getDitaArchVersion(content);
     logger.debug("Validating with schematron");
-    var schematron = schematrons.get(version);
+    var schematron = builtInSchematrons.get(version);
     if (schematron == null) {
       return;
     }
@@ -119,36 +119,35 @@ public class SchematronValidator {
                                   SUCCESSFUL_REPORT.getNamespace(),
                                   SUCCESSFUL_REPORT.getLocalName()))))
           .forEach(
-              failedAssert -> {
-                failedAssert
-                    .select(child(TEXT.getNamespace(), TEXT.getLocalName()))
-                    .findAny()
-                    .ifPresent(
-                        text -> {
-                          logger.debug("{}", failedAssert);
-                          var context =
-                              content
-                                  .select(parsePattern(failedAssert.attribute("location")))
-                                  .firstItem();
-                          // FIXME: Track text node locations with PIs
-                          if (context.getNodeKind() == XdmNodeKind.TEXT) {
-                            context = context.getParent();
-                          }
-                          var range =
-                              Utils.parseRange(
-                                  context.getAttributeValue(
-                                      QName.fromClarkName("{" + LOC_NAMESPACE + "}elem")));
-                          var severity =
-                              switch (failedAssert.attribute("role")) {
-                                case "error" -> DiagnosticSeverity.Error;
-                                case "warning" -> DiagnosticSeverity.Warning;
-                                default -> null;
-                              };
-                          diagnostics.add(
-                              new Diagnostic(
-                                  range, text.getStringValue().trim(), severity, SOURCE));
-                        });
-              });
+              failedAssert ->
+                  failedAssert
+                      .select(child(TEXT.getNamespace(), TEXT.getLocalName()))
+                      .findAny()
+                      .ifPresent(
+                          text -> {
+                            logger.debug("{}", failedAssert);
+                            var context =
+                                content
+                                    .select(parsePattern(failedAssert.attribute("location")))
+                                    .firstItem();
+                            // FIXME: Track text node locations with PIs
+                            if (context.getNodeKind() == XdmNodeKind.TEXT) {
+                              context = context.getParent();
+                            }
+                            var range =
+                                Utils.parseRange(
+                                    context.getAttributeValue(
+                                        QName.fromClarkName("{" + LOC_NAMESPACE + "}elem")));
+                            var severity =
+                                switch (failedAssert.attribute("role")) {
+                                  case "error" -> DiagnosticSeverity.Error;
+                                  case "warning" -> DiagnosticSeverity.Warning;
+                                  default -> null;
+                                };
+                            diagnostics.add(
+                                new Diagnostic(
+                                    range, text.getStringValue().trim(), severity, SOURCE));
+                          }));
       logger.info("Schematron validated: {}", act);
     } catch (SaxonApiException e) {
       logger.error("Failed to validate schematron", e);
