@@ -1,7 +1,6 @@
 package com.elovirta.dita;
 
-import static com.elovirta.dita.xml.XmlSerializer.LOC_NAMESPACE;
-import static com.elovirta.dita.xml.XmlSerializer.LOC_PREFIX;
+import static com.elovirta.dita.xml.XmlSerializer.*;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 
 import java.net.URI;
@@ -61,7 +60,10 @@ public class Utils {
     var loc =
         attr.getParent()
             .getAttributeValue(
-                new QName(LOC_PREFIX, LOC_NAMESPACE, "attr-" + attr.getNodeName().getLocalName()));
+                new QName(
+                    LOC_PREFIX,
+                    LOC_NAMESPACE,
+                    LOC_ATTR_PREFIX + attr.getNodeName().getLocalName()));
     return parseRange(loc);
   }
 

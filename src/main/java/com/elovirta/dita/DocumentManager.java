@@ -2,6 +2,7 @@ package com.elovirta.dita;
 
 import static com.elovirta.dita.Utils.ATTR_ID;
 import static com.elovirta.dita.Utils.TOPIC_TOPIC;
+import static com.elovirta.dita.xml.XmlSerializer.LOC_ATTR_PREFIX;
 import static com.elovirta.dita.xml.XmlSerializer.LOC_NAMESPACE;
 import static net.sf.saxon.s9api.streams.Predicates.*;
 import static net.sf.saxon.s9api.streams.Steps.attribute;
@@ -179,12 +180,13 @@ public class DocumentManager {
                     attribute(
                         attr ->
                             attr.getNodeName().getNamespaceUri().toString().equals(LOC_NAMESPACE)
-                                && attr.getNodeName().getLocalName().startsWith("attr-"))))
+                                && attr.getNodeName().getLocalName().startsWith(LOC_ATTR_PREFIX))))
         .forEach(
             attr ->
                 attr.getParent()
                     .select(
-                        attribute(attr.getNodeName().getLocalName().substring("attr-".length())))
+                        attribute(
+                            attr.getNodeName().getLocalName().substring(LOC_ATTR_PREFIX.length())))
                     .asOptionalNode()
                     .ifPresent(
                         a -> {

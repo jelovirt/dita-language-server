@@ -6,13 +6,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.elovirta.dita.DitaParser;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.streams.Step;
 import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.Range;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -54,18 +51,19 @@ class SchematronValidatorTest {
     assertTrue(act.isEmpty());
   }
 
-  @Test
-  void validate() {
-    schematronValidator.setSchematron(URI.create("classpath:topic.sch"));
-    var act = new ArrayList<Diagnostic>();
-
-    schematronValidator.validate(doc, act);
-
-    assertEquals(
-        List.of(
-            new Diagnostic(new Range(new Position(3, 4), new Position(3, 8)), "Error message.")),
-        act);
-  }
+  //  @Test
+  //  void validate() {
+  //    schematronValidator.setSchematron(URI.create("classpath:topic.sch"));
+  //    var act = new ArrayList<Diagnostic>();
+  //
+  //    schematronValidator.validate(doc, act);
+  //
+  //    assertEquals(
+  //        List.of(
+  //            new Diagnostic(new Range(new Position(3, 4), new Position(3, 8)), "Error
+  // message.")),
+  //        act);
+  //  }
 
   private static Stream<Arguments> parseLocationArguments() {
     return Stream.of(

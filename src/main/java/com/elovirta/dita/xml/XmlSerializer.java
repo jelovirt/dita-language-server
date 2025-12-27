@@ -11,6 +11,7 @@ public class XmlSerializer {
 
   public static final String LOC_NAMESPACE = "loc:";
   public static final String LOC_PREFIX = "loc";
+  public static final String LOC_ATTR_PREFIX = "attr-";
 
   private final XmlLexer lexer;
   private Writer writer;

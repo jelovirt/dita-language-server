@@ -1,6 +1,7 @@
 package com.elovirta.dita.validator;
 
 import static com.elovirta.dita.DitaTextDocumentService.SOURCE;
+import static com.elovirta.dita.xml.XmlSerializer.LOC_ATTR_PREFIX;
 import static com.elovirta.dita.xml.XmlSerializer.LOC_NAMESPACE;
 import static net.sf.saxon.s9api.streams.Steps.*;
 
@@ -18,6 +19,7 @@ import net.sf.saxon.s9api.*;
 import net.sf.saxon.s9api.streams.Step;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
+import org.eclipse.lsp4j.Range;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,39 +121,53 @@ public class SchematronValidator {
                                   SUCCESSFUL_REPORT.getNamespace(),
                                   SUCCESSFUL_REPORT.getLocalName()))))
           .forEach(
-              failedAssert ->
-                  failedAssert
-                      .select(child(TEXT.getNamespace(), TEXT.getLocalName()))
-                      .findAny()
-                      .ifPresent(
-                          text -> {
-                            logger.debug("{}", failedAssert);
-                            var context =
-                                content
-                                    .select(parsePattern(failedAssert.attribute("location")))
-                                    .firstItem();
-                            // FIXME: Track text node locations with PIs
-                            if (context.getNodeKind() == XdmNodeKind.TEXT) {
-                              context = context.getParent();
-                            }
-                            var range =
-                                Utils.parseRange(
-                                    context.getAttributeValue(
-                                        QName.fromClarkName("{" + LOC_NAMESPACE + "}elem")));
-                            var severity =
-                                switch (failedAssert.attribute("role")) {
-                                  case "error" -> DiagnosticSeverity.Error;
-                                  case "warning" -> DiagnosticSeverity.Warning;
-                                  default -> null;
-                                };
-                            diagnostics.add(
-                                new Diagnostic(
-                                    range, text.getStringValue().trim(), severity, SOURCE));
-                          }));
+              failedAssert -> {
+                //                logger.debug("{}", failedAssert);
+                failedAssert
+                    .select(child(TEXT.getNamespace(), TEXT.getLocalName()))
+                    .findAny()
+                    .ifPresent(
+                        text -> {
+                          //                          logger.debug("{}", failedAssert);
+                          var context =
+                              content
+                                  .select(parsePattern(failedAssert.attribute("location")))
+                                  .firstItem();
+                          //                          logger.debug("context={}", context);
+                          var range = getRange(context);
+                          var severity =
+                              switch (failedAssert.attribute("role")) {
+                                case "error" -> DiagnosticSeverity.Error;
+                                case "warning" -> DiagnosticSeverity.Warning;
+                                default -> null;
+                              };
+                          diagnostics.add(
+                              new Diagnostic(
+                                  range, text.getStringValue().trim(), severity, SOURCE));
+                        });
+              });
       logger.info("Schematron validated: {}", act);
     } catch (SaxonApiException e) {
       logger.error("Failed to validate schematron", e);
     }
+  }
+
+  private Range getRange(XdmNode context) {
+    // FIXME: Track text node locations with PIs
+    var element =
+        switch (context.getNodeKind()) {
+          case TEXT, ATTRIBUTE -> context.getParent();
+          default -> context;
+        };
+    var attribute =
+        switch (context.getNodeKind()) {
+          case ATTRIBUTE ->
+              new QName(
+                  LOC_NAMESPACE + context.getNodeName().getNamespaceUri(),
+                  LOC_ATTR_PREFIX + context.getNodeName().getLocalName());
+          default -> new QName(LOC_NAMESPACE, "elem");
+        };
+    return Utils.parseRange(element.getAttributeValue(attribute));
   }
 
   private static @NotNull String getDitaArchVersion(XdmNode content) {
