@@ -143,10 +143,13 @@ public class SchematronValidator {
                               };
                           diagnostics.add(
                               new Diagnostic(
-                                  range, text.getStringValue().trim(), severity, SOURCE));
+                                  range,
+                                  text.getStringValue().replaceAll("\\s+", " ").trim(),
+                                  severity,
+                                  SOURCE));
                         });
               });
-      logger.info("Schematron validated: {}", act);
+//      logger.info("Schematron validated: {}", act);
     } catch (SaxonApiException e) {
       logger.error("Failed to validate schematron", e);
     }
