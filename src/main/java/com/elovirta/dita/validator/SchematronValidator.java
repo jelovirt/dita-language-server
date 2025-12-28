@@ -149,7 +149,7 @@ public class SchematronValidator {
                                   SOURCE));
                         });
               });
-//      logger.info("Schematron validated: {}", act);
+      //      logger.info("Schematron validated: {}", act);
     } catch (SaxonApiException e) {
       logger.error("Failed to validate schematron", e);
     }

@@ -1,6 +1,3 @@
 [submodule "schxslt2"]
 	path = schxslt2
 	url = https://codeberg.org/SchXslt/schxslt2.git
-[submodule "dita-schematron"]
-	path = dita-schematron
-	url = https://github.com/jelovirt/dita-schematron.git
