@@ -50,23 +50,37 @@
   },
   {
     "type": "NAME",
-    "text": "p",
+    "text": "pre",
     "line": 2,
     "column": 2,
     "offset": 8
   },
   {
-    "type": "EMPTY_ELEMENT_END",
-    "text": "/>",
+    "type": "ELEMENT_END",
+    "text": ">",
     "line": 2,
-    "column": 3,
-    "offset": 9
+    "column": 5,
+    "offset": 11
+  },
+  {
+    "type": "ELEMENT_CLOSE",
+    "text": "</",
+    "line": 2,
+    "column": 6,
+    "offset": 12
+  },
+  {
+    "type": "NAME",
+    "text": "pr",
+    "line": 2,
+    "column": 8,
+    "offset": 14
   },
   {
     "type": "EOF",
     "text": "",
     "line": 2,
-    "column": 5,
-    "offset": 11
+    "column": 10,
+    "offset": 16
   }
 ]
