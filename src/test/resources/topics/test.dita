@@ -1,0 +1,177 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "http://docs.oasis-open.org/dita/v1.1/OS/dtd/topic.dtd">
+<?oxygen SCHSchema="../src/sch/dita.sch"?>
+<topic id="test">
+  <title>Topic title</title>
+  <topic id="multiple_section_titles">
+    <title/>
+    <body>
+      <section>
+        <title/>
+        <title/>
+      </section>
+    </body>
+  </topic>
+  <topic id="otherrole">
+    <title/>
+    <related-links role="other">
+      <link href="test.dita"/>
+    </related-links>
+  </topic>
+  <topic id="othernote">
+    <title/>
+    <body>
+      <note type="other">
+        Note
+      </note>
+    </body>
+  </topic>
+  <topic id="indextermref">
+    <title/>
+    <shortdesc/>
+    <body>
+      <p>
+        <indextermref keyref="foo"/>
+      </p>
+    </body>
+  </topic>
+  <topic id="keyref_attr">
+    <title/>
+    <body>
+      <image href=""
+             keyref="foo">
+        <alt/>
+      </image>
+    </body>
+  </topic>
+  <topic id="boolean">
+    <title/>
+    <shortdesc/>
+    <body>
+      <p>
+        <boolean state="no"/>
+      </p>
+    </body>
+  </topic>
+  <topic id="image_alt_attr">
+    <title/>
+    <body>
+      <image href=""
+             alt=""/>
+    </body>
+  </topic>
+  <topic id="query_attr">
+    <title/>
+    <related-links>
+      <link href="test.dita" query=""/>
+    </related-links>
+  </topic>
+  <topic id="role_attr_value">
+    <title/>
+    <topic id="sample">
+      <title/>
+      <related-links role="sample">
+        <link href="test.dita" role="sample"/>
+        <linklist role="sample"/>
+        <linkpool role="sample"/>
+      </related-links>
+    </topic>
+    <topic id="external">
+      <title/>
+      <related-links role="external">
+        <link href="test.dita" role="external"/>
+        <linklist role="external"/>
+        <linkpool role="external"/>
+      </related-links>
+    </topic>
+  </topic>
+  <topic id="single_paragraph">
+    <title/>
+    <body>
+      <p>Paragraph</p>
+    </body>
+  </topic>
+  <topic id="shortdesc_length">
+    <title/>
+    <shortdesc>
+      1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+    </shortdesc>
+  </topic>
+  <topic id="self_nested_xref">
+    <title/>
+    <shortdesc/>
+    <body>
+      <p>
+        <xref href="test.dita">
+          <ph>
+            <xref href="test.dita"/>
+          </ph>
+        </xref>
+      </p>
+    </body>
+  </topic>
+  <topic id="pre_content">
+    <title/>
+    <body>
+      <pre>
+        <uicontrol>
+          <image href="">
+            <alt/>
+          </image>
+        </uicontrol>
+      </pre>
+      <pre>
+        <sup/>
+      </pre>
+      <pre>
+        <sub/>
+      </pre>
+    </body>
+  </topic>
+  <topic id="abstract_shortdesc">
+    <title/>
+    <abstract/>
+  </topic>  
+  <topic id="xref_in_title">
+    <title>
+      <b>
+        <xref href="test.dita"/>
+      </b>
+    </title>
+  </topic>
+  <topic id="idless_title">
+    <title/>
+    <body>
+      <section>
+        <title/>
+      </section>
+    </body>
+  </topic>
+  <topic id="required-cleanup">
+    <title/>
+    <body>
+      <required-cleanup/>
+    </body>
+  </topic>
+  <topic id="tm_character">
+    <title/>
+    <body>
+      <p>
+        ™
+      </p>
+      <p>
+        ℠
+      </p>
+      <p>
+        ®
+      </p>
+    </body>
+  </topic>
+  <topic id="no_alt_desc">
+    <title/>
+    <body>
+      <image href=""/>
+      <object/>
+    </body>
+  </topic>
+</topic>

@@ -193,8 +193,10 @@ public class XmlLexerImpl implements XmlLexer {
           return scanElementEnd();
         } else if (isNameStartChar(ch)) {
           return scanName();
+        } else if (ch == '<') {
+          return scanElementStart();
         } else {
-          throw new IllegalStateException();
+          throw new IllegalStateException("Unsupported character: " + ch);
         }
       case CONTENT:
         if (ch == '<') {
@@ -223,7 +225,7 @@ public class XmlLexerImpl implements XmlLexer {
           return scanCharData();
         }
       default:
-        throw new IllegalStateException();
+        throw new IllegalStateException("Unsupported character: " + ch);
     }
   }
 

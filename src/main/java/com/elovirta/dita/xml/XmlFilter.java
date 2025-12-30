@@ -40,6 +40,36 @@ public class XmlFilter extends AbstractXmlFilter {
           pushPeekToBuffer();
         }
       }
+    } else if (getType() == XmlLexerImpl.TokenType.ELEMENT_CLOSE) {
+      switch (peek()) {
+        case NAME -> {
+          pushPeekToBuffer();
+          switch (peek()) {
+            case ELEMENT_END -> {
+              pushPeekToBuffer();
+            }
+            case WHITESPACE -> {
+              clearPeek();
+              switch (peek()) {
+                case ELEMENT_END -> {
+                  pushPeekToBuffer();
+                }
+                default -> {
+                  pushToBuffer(TokenType.ELEMENT_END, new char[] {'>'}, -1, -1, -1);
+                  pushPeekToBuffer();
+                }
+              }
+            }
+            default -> {
+              pushToBuffer(TokenType.ELEMENT_END, new char[] {'>'}, -1, -1, -1);
+              pushPeekToBuffer();
+            }
+          }
+        }
+        default -> {
+          pushPeekToBuffer();
+        }
+      }
     }
   }
 }
