@@ -14,7 +14,7 @@
     "offset": 9
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "elem",
     "line": 1,
     "column": 11,
@@ -49,7 +49,7 @@
     "offset": 25
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "elem",
     "line": 2,
     "column": 11,
@@ -63,7 +63,7 @@
     "offset": 30
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "SYSTEM",
     "line": 2,
     "column": 16,
@@ -126,7 +126,7 @@
     "offset": 59
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "elem",
     "line": 3,
     "column": 11,
@@ -140,7 +140,7 @@
     "offset": 64
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "PUBLIC",
     "line": 3,
     "column": 16,

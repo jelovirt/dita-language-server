@@ -7,7 +7,7 @@
     "offset": 0
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "elem",
     "line": 1,
     "column": 2,
@@ -21,7 +21,7 @@
     "offset": 5
   },
   {
-    "type": "NAME",
+    "type": "ATTR_NAME",
     "text": "xmlns:xsi",
     "line": 1,
     "column": 7,
@@ -63,7 +63,7 @@
     "offset": 59
   },
   {
-    "type": "NAME",
+    "type": "ATTR_NAME",
     "text": "xsi:noNamespaceSchemaLocation",
     "line": 2,
     "column": 7,
@@ -119,7 +119,7 @@
     "offset": 138
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "elem",
     "line": 3,
     "column": 2,
@@ -133,7 +133,7 @@
     "offset": 143
   },
   {
-    "type": "NAME",
+    "type": "ATTR_NAME",
     "text": "xml:space",
     "line": 3,
     "column": 7,
@@ -189,7 +189,7 @@
     "offset": 167
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "elem",
     "line": 4,
     "column": 2,
@@ -203,7 +203,7 @@
     "offset": 172
   },
   {
-    "type": "NAME",
+    "type": "ATTR_NAME",
     "text": "xmlns:ditaarch",
     "line": 4,
     "column": 7,
@@ -245,7 +245,7 @@
     "offset": 235
   },
   {
-    "type": "NAME",
+    "type": "ATTR_NAME",
     "text": "ditaarch:DITAArchVersion",
     "line": 5,
     "column": 7,

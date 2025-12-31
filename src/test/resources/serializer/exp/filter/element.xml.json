@@ -7,7 +7,7 @@
     "offset": 0
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "elem",
     "line": 1,
     "column": 2,
@@ -28,7 +28,7 @@
     "offset": 6
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "elem",
     "line": 1,
     "column": 9,
@@ -56,7 +56,7 @@
     "offset": 14
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "elem",
     "line": 2,
     "column": 2,
@@ -84,7 +84,7 @@
     "offset": 21
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "elem",
     "line": 2,
     "column": 10,
@@ -112,7 +112,7 @@
     "offset": 30
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "elem",
     "line": 3,
     "column": 2,
@@ -140,7 +140,7 @@
     "offset": 38
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "elem",
     "line": 4,
     "column": 2,

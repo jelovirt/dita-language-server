@@ -13,7 +13,7 @@ public class XmlFilter extends AbstractXmlFilter {
         case WHITESPACE -> {
           clearPeek();
         }
-        case NAME -> {
+        case ATTR_NAME -> {
           pushToBuffer(XmlLexerImpl.TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
           pushPeekToBuffer();
           switch (peek()) {
@@ -42,7 +42,7 @@ public class XmlFilter extends AbstractXmlFilter {
       }
     } else if (getType() == XmlLexerImpl.TokenType.ELEMENT_CLOSE) {
       switch (peek()) {
-        case NAME -> {
+        case ELEMENT_NAME -> {
           pushPeekToBuffer();
           switch (peek()) {
             case ELEMENT_END -> {

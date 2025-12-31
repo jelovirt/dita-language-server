@@ -7,7 +7,7 @@
     "offset": 0
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "elem",
     "line": 1,
     "column": 2,
@@ -21,7 +21,7 @@
     "offset": 5
   },
   {
-    "type": "NAME",
+    "type": "ATTR_NAME",
     "text": "attr",
     "line": 1,
     "column": 7,
@@ -42,7 +42,7 @@
     "offset": -1
   },
   {
-    "type": "NAME",
+    "type": "ATTR_NAME",
     "text": "value",
     "line": 1,
     "column": 12,

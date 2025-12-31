@@ -7,7 +7,7 @@
     "offset": 0
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "elem",
     "line": 1,
     "column": 2,
@@ -21,7 +21,7 @@
     "offset": 5
   },
   {
-    "type": "NAME",
+    "type": "ATTR_NAME",
     "text": "attr",
     "line": 1,
     "column": 7,
@@ -42,7 +42,7 @@
     "offset": -1
   },
   {
-    "type": "NAME",
+    "type": "ATTR_NAME",
     "text": "value",
     "line": 1,
     "column": 12,
@@ -77,7 +77,7 @@
     "offset": 19
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "elem",
     "line": 2,
     "column": 2,
@@ -91,7 +91,7 @@
     "offset": 24
   },
   {
-    "type": "NAME",
+    "type": "ATTR_NAME",
     "text": "attr",
     "line": 2,
     "column": 7,
@@ -112,7 +112,7 @@
     "offset": -1
   },
   {
-    "type": "NAME",
+    "type": "ATTR_NAME",
     "text": "value",
     "line": 2,
     "column": 12,
@@ -154,7 +154,7 @@
     "offset": 39
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "elem",
     "line": 3,
     "column": 2,
@@ -168,7 +168,7 @@
     "offset": 44
   },
   {
-    "type": "NAME",
+    "type": "ATTR_NAME",
     "text": "attr",
     "line": 3,
     "column": 7,
@@ -189,7 +189,7 @@
     "offset": -1
   },
   {
-    "type": "NAME",
+    "type": "ATTR_NAME",
     "text": "value",
     "line": 3,
     "column": 12,
@@ -217,7 +217,7 @@
     "offset": 56
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "elem",
     "line": 3,
     "column": 20,
@@ -245,7 +245,7 @@
     "offset": 64
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME",
     "text": "elem",
     "line": 4,
     "column": 2,
@@ -259,7 +259,7 @@
     "offset": 69
   },
   {
-    "type": "NAME",
+    "type": "ATTR_NAME",
     "text": "attr",
     "line": 4,
     "column": 7,
@@ -280,7 +280,7 @@
     "offset": -1
   },
   {
-    "type": "NAME",
+    "type": "ATTR_NAME",
     "text": "value",
     "line": 4,
     "column": 12,
