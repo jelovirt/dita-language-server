@@ -49,7 +49,7 @@ public class XmlFilter extends AbstractXmlFilter {
               pushPeekToBuffer();
             }
             case WHITESPACE -> {
-              clearPeek();
+              pushPeekToBuffer();
               switch (peek()) {
                 case ELEMENT_END -> {
                   pushPeekToBuffer();
