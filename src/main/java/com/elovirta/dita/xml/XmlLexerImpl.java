@@ -125,7 +125,7 @@ public class XmlLexerImpl implements XmlLexer {
         } else if (isWhitespace(ch)) {
           return scanWhitespace();
         } else if (isNameStartChar(ch)) {
-          return scanName(TokenType.ELEMENT_NAME);
+          return scanName(TokenType.ELEMENT_NAME_START);
         } else {
           return scanCharData();
         }
@@ -149,7 +149,7 @@ public class XmlLexerImpl implements XmlLexer {
         } else if (ch == '&') {
           return scanReference();
         } else if (isNameStartChar(ch)) {
-          return scanName(TokenType.ELEMENT_NAME);
+          return scanName(TokenType.ELEMENT_NAME_START);
         } else {
           return scanCharData();
         }
@@ -167,7 +167,7 @@ public class XmlLexerImpl implements XmlLexer {
           //          state = State.ATTR_VALUE;
           //          return scanAttrValueOpen();
         } else if (isNameStartChar(ch)) {
-          return scanName(TokenType.ELEMENT_NAME);
+          return scanName(TokenType.ELEMENT_NAME_START);
         } else {
           pos--;
           return scanElementEnd();
@@ -213,7 +213,7 @@ public class XmlLexerImpl implements XmlLexer {
         } else if (ch == '>') {
           return scanElementEnd();
         } else if (isNameStartChar(ch)) {
-          return scanName(TokenType.ELEMENT_NAME);
+          return scanName(TokenType.ELEMENT_NAME_END);
         } else if (ch == '<') {
           return scanElementStart();
         } else {

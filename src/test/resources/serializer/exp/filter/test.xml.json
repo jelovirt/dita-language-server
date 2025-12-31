@@ -14,7 +14,7 @@
     "offset": 5
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "version",
     "line": 1,
     "column": 7,
@@ -56,7 +56,7 @@
     "offset": 31
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "topic",
     "line": 2,
     "column": 11,
@@ -70,7 +70,7 @@
     "offset": 37
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "PUBLIC",
     "line": 2,
     "column": 17,
@@ -154,7 +154,7 @@
     "offset": 89
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "root",
     "line": 3,
     "column": 2,
@@ -224,7 +224,7 @@
     "offset": 111
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "child",
     "line": 4,
     "column": 4,
@@ -301,7 +301,7 @@
     "offset": 148
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_END",
     "text": "child",
     "line": 6,
     "column": 14,
@@ -357,7 +357,7 @@
     "offset": 176
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_END",
     "text": "root",
     "line": 8,
     "column": 3,

@@ -7,7 +7,7 @@
     "offset": 0
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "elem",
     "line": 1,
     "column": 2,

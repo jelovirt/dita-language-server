@@ -7,7 +7,7 @@
     "offset": 0
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "elem",
     "line": 1,
     "column": 2,
@@ -70,7 +70,7 @@
     "offset": 18
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_END",
     "text": "elem",
     "line": 1,
     "column": 21,
@@ -98,7 +98,7 @@
     "offset": 26
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "elem",
     "line": 2,
     "column": 2,
@@ -161,7 +161,7 @@
     "offset": 44
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_END",
     "text": "elem",
     "line": 2,
     "column": 21,
@@ -189,7 +189,7 @@
     "offset": 52
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "elem",
     "line": 3,
     "column": 2,
@@ -259,7 +259,7 @@
     "offset": 71
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_END",
     "text": "elem",
     "line": 4,
     "column": 3,
@@ -287,7 +287,7 @@
     "offset": 79
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "elem",
     "line": 5,
     "column": 2,
@@ -350,7 +350,7 @@
     "offset": 96
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_END",
     "text": "elem",
     "line": 5,
     "column": 20,

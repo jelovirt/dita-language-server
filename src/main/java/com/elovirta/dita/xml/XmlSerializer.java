@@ -54,7 +54,8 @@ public class XmlSerializer {
         case ELEMENT_CLOSE:
         case ELEMENT_END:
         case EMPTY_ELEMENT_END:
-        case ELEMENT_NAME:
+        case ELEMENT_NAME_START:
+        case ELEMENT_NAME_END:
         case ATTR_NAME:
         case PI_NAME:
         case EQUALS:
@@ -132,7 +133,7 @@ public class XmlSerializer {
     }
 
     XmlLexerImpl.TokenType type = lexer.next();
-    if (type != XmlLexerImpl.TokenType.ELEMENT_NAME) {
+    if (type != XmlLexerImpl.TokenType.ELEMENT_NAME_START) {
       writer.write(lexer.getText());
       return;
     }

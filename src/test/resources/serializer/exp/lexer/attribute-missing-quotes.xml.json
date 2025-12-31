@@ -7,7 +7,7 @@
     "offset": 0
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "elem",
     "line": 1,
     "column": 2,
@@ -63,7 +63,7 @@
     "offset": 19
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "elem",
     "line": 2,
     "column": 2,
@@ -126,7 +126,7 @@
     "offset": 39
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "elem",
     "line": 3,
     "column": 2,
@@ -175,7 +175,7 @@
     "offset": 56
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_END",
     "text": "elem",
     "line": 3,
     "column": 20,
@@ -203,7 +203,7 @@
     "offset": 64
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "elem",
     "line": 4,
     "column": 2,

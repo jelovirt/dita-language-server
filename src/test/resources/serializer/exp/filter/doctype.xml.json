@@ -14,7 +14,7 @@
     "offset": 9
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "elem",
     "line": 1,
     "column": 11,
@@ -49,7 +49,7 @@
     "offset": 25
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "elem",
     "line": 2,
     "column": 11,
@@ -63,7 +63,7 @@
     "offset": 30
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "SYSTEM",
     "line": 2,
     "column": 16,
@@ -126,7 +126,7 @@
     "offset": 59
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "elem",
     "line": 3,
     "column": 11,
@@ -140,7 +140,7 @@
     "offset": 64
   },
   {
-    "type": "ELEMENT_NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "PUBLIC",
     "line": 3,
     "column": 16,

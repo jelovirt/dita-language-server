@@ -42,7 +42,7 @@ public class XmlFilter extends AbstractXmlFilter {
       }
     } else if (getType() == XmlLexerImpl.TokenType.ELEMENT_CLOSE) {
       switch (peek()) {
-        case ELEMENT_NAME -> {
+        case ELEMENT_NAME_END -> {
           pushPeekToBuffer();
           switch (peek()) {
             case ELEMENT_END -> {
