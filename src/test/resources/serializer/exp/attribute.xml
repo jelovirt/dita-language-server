@@ -1,9 +1,9 @@
-<foo xmlns:loc="loc:" xmlns:loc-xml="loc:http://www.w3.org/XML/1998/namespace" xmlns:loc-xmlns="loc:http://www.w3.org/2000/xmlns/" loc:elem="1:2-1:5" bar="foo" loc:attr-bar="1:11-1:13"/>
-<foo loc:elem="2:2-2:5" bar='foo' loc:attr-bar="2:11-2:13"/>
-<foo loc:elem="3:2-3:5" bar ="foo"  loc:attr-bar="3:13-3:15"/>
-<foo loc:elem="4:2-4:5" bar ='foo'  loc:attr-bar="4:13-4:15"/>
-<foo loc:elem="5:2-5:5" bar="'" loc:attr-bar="5:11-5:11"/>
-<foo loc:elem="6:2-6:5" bar='"' loc:attr-bar="6:11-6:11"/>
-<foo loc:elem="7:2-7:5" bar=">" loc:attr-bar="7:11-7:11"/>
-<foo loc:elem="8:2-8:5" bar="=" loc:attr-bar="8:11-8:11"/>
-<foo loc:elem="9:2-9:5"
+<elem xmlns:loc="loc:" xmlns:loc-xml="loc:http://www.w3.org/XML/1998/namespace" xmlns:loc-xmlns="loc:http://www.w3.org/2000/xmlns/" loc:elem="1:2-1:6" attr="value" loc:attr-attr="1:13-1:17"/>
+<elem loc:elem="2:2-2:6" attr='value' loc:attr-attr="2:13-2:17"/>
+<elem loc:elem="3:2-3:6" attr ="value"  loc:attr-attr="3:15-3:19"/>
+<elem loc:elem="4:2-4:6" attr ='value'  loc:attr-attr="4:15-4:19"/>
+<elem loc:elem="5:2-5:6" attr="'" loc:attr-attr="5:13-5:13"/>
+<elem loc:elem="6:2-6:6" attr='"' loc:attr-attr="6:13-6:13"/>
+<elem loc:elem="7:2-7:6" attr=">" loc:attr-attr="7:13-7:13"/>
+<elem loc:elem="8:2-8:6" attr="=" loc:attr-attr="8:13-8:13"/>
+<elem loc:elem="9:2-9:6"

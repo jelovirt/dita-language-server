@@ -1,9 +1,9 @@
-<foo bar="foo"/>
-<foo bar='foo'/>
-<foo bar = "foo" />
-<foo bar = 'foo' />
-<foo bar="'"/>
-<foo bar='"'/>
-<foo bar=">"/>
-<foo bar="="/>
-<foo bar="&lt;"/>
+<elem attr="value"/>
+<elem attr='value'/>
+<elem attr = "value" />
+<elem attr = 'value' />
+<elem attr="'"/>
+<elem attr='"'/>
+<elem attr=">"/>
+<elem attr="="/>
+<elem attr="&lt;"/>

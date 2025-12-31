@@ -8,7 +8,7 @@
   },
   {
     "type": "NAME",
-    "text": "p",
+    "text": "elem",
     "line": 1,
     "column": 2,
     "offset": 1
@@ -17,22 +17,22 @@
     "type": "ELEMENT_END",
     "text": ">",
     "line": 1,
-    "column": 3,
-    "offset": 2
+    "column": 6,
+    "offset": 5
   },
   {
     "type": "ELEMENT_CLOSE",
     "text": "</",
     "line": 1,
-    "column": 4,
-    "offset": 3
+    "column": 7,
+    "offset": 6
   },
   {
     "type": "NAME",
-    "text": "p",
+    "text": "elem",
     "line": 1,
-    "column": 6,
-    "offset": 5
+    "column": 9,
+    "offset": 8
   },
   {
     "type": "ELEMENT_END",
@@ -46,35 +46,35 @@
     "text": "<",
     "line": 2,
     "column": 1,
-    "offset": 7
+    "offset": 13
   },
   {
     "type": "NAME",
-    "text": "pre",
+    "text": "elem",
     "line": 2,
     "column": 2,
-    "offset": 8
+    "offset": 14
   },
   {
     "type": "ELEMENT_END",
     "text": ">",
     "line": 2,
-    "column": 5,
-    "offset": 11
+    "column": 6,
+    "offset": 18
   },
   {
     "type": "ELEMENT_CLOSE",
     "text": "</",
     "line": 2,
-    "column": 6,
-    "offset": 12
+    "column": 7,
+    "offset": 19
   },
   {
     "type": "NAME",
-    "text": "pr",
+    "text": "el",
     "line": 2,
-    "column": 8,
-    "offset": 14
+    "column": 9,
+    "offset": 21
   },
   {
     "type": "ELEMENT_END",
@@ -87,7 +87,7 @@
     "type": "EOF",
     "text": "",
     "line": 2,
-    "column": 10,
-    "offset": 16
+    "column": 11,
+    "offset": 23
   }
 ]
