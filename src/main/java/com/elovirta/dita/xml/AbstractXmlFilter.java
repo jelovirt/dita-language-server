@@ -25,6 +25,8 @@ public abstract class AbstractXmlFilter implements XmlLexer {
   private int peekColumn;
   private int peekOffset;
 
+  Deque<char[]> elementStack = new ArrayDeque<>();
+
   public AbstractXmlFilter(XmlLexer parent) {
     this.parent = parent;
   }
@@ -51,6 +53,13 @@ public abstract class AbstractXmlFilter implements XmlLexer {
           lineBuffer.removeFirst(),
           columnBuffer.removeFirst(),
           offsetBuffer.removeFirst());
+      if (currentType == TokenType.ELEMENT_NAME_START) {
+        elementStack.push(currentText);
+      } else if (currentType == TokenType.ELEMENT_NAME_END) {
+        elementStack.pop();
+      } else if (currentType == TokenType.EMPTY_ELEMENT_END) {
+        elementStack.pop();
+      }
       return currentType;
     }
 
@@ -61,6 +70,13 @@ public abstract class AbstractXmlFilter implements XmlLexer {
         parent.getLine(),
         parent.getColumn(),
         parent.getOffset());
+    if (currentType == TokenType.ELEMENT_NAME_START) {
+      elementStack.push(currentText);
+    } else if (currentType == TokenType.ELEMENT_NAME_END) {
+      elementStack.pop();
+    } else if (currentType == TokenType.EMPTY_ELEMENT_END) {
+      elementStack.pop();
+    }
 
     filter();
 
@@ -92,13 +108,21 @@ public abstract class AbstractXmlFilter implements XmlLexer {
     return currentOffset;
   }
 
+  char[] getPeekText() {
+    return peekText;
+  }
+
+  void setPeekText(char[] peekText) {
+    this.peekText = peekText;
+  }
+
   private void setCurrentToken(
       XmlLexerImpl.TokenType type, char[] text, int line, int column, int offset) {
-    this.currentType = type;
-    this.currentText = text;
-    this.currentLine = line;
-    this.currentColumn = column;
-    this.currentOffset = offset;
+    currentType = type;
+    currentText = text;
+    currentLine = line;
+    currentColumn = column;
+    currentOffset = offset;
   }
 
   abstract void filter();

@@ -5,6 +5,7 @@ import static javax.xml.XMLConstants.NULL_NS_URI;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.function.Predicate;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmNode;
@@ -125,5 +126,20 @@ public class Utils {
 
   public static Predicate<XdmNode> isEmptyAttribute() {
     return attr -> attr.getStringValue().isEmpty();
+  }
+
+  public static boolean startsWith(char[] arr, char[] prefix) {
+    if (prefix.length == arr.length) {
+      return Arrays.equals(arr, prefix);
+    }
+    if (prefix.length > arr.length) {
+      return false;
+    }
+    for (int i = 0; i < prefix.length; i++) {
+      if (arr[i] != prefix[i]) {
+        return false;
+      }
+    }
+    return true;
   }
 }

@@ -78,7 +78,7 @@
   },
   {
     "type": "ELEMENT_NAME_END",
-    "text": "el",
+    "text": "elem",
     "line": 2,
     "column": 9,
     "offset": 21
