@@ -14,8 +14,11 @@
     <xsl:apply-templates select="$submap/*/*"/>
   </xsl:template>
 
-  <xsl:template match="@href">
-    <xsl:attribute name="{name()}" select="dita-ot:relativize($root-base-uri, resolve-uri(., base-uri()))"/>
+  <xsl:template match="*[(empty(@format) or @format = 'dita') and
+                         not(@format = 'external')]/@href">
+    <xsl:attribute name="{name()}"
+                   select="dita-ot:relativize(dita-ot:abs($root-base-uri),
+                                              dita-ot:abs(resolve-uri(., base-uri())))"/>
   </xsl:template>
 
   <xsl:template match="@* | node()" priority="-10">
@@ -25,6 +28,15 @@
   </xsl:template>
 
   <!-- uri-utils.xsl -->
+
+  <xsl:function name="dita-ot:abs" as="xs:anyURI">
+    <xsl:param name="uri" as="xs:anyURI"/>
+    <xsl:sequence select="if (starts-with($uri, 'file:///'))
+                          then $uri
+                          else if (starts-with($uri, 'file:/'))
+                          then xs:anyURI(concat('file:///', substring($uri, 7)))
+                          else $uri"/>
+  </xsl:function>
 
   <xsl:function name="dita-ot:relativize" as="xs:anyURI">
     <xsl:param name="base" as="xs:anyURI"/>
