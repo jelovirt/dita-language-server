@@ -27,6 +27,7 @@ It provides features like completion and goto definition for many code editors, 
 * Keyref and conkeyref validation (missing keys, undefined targets, missing element IDs)
 * Cross-reference validation (missing targets, missing topic/element IDs, invalid URIs)
 * Profiling attribute value validation against subject scheme
+* Validation against build-in Schematron schema
 
 ### Code Completion
 
