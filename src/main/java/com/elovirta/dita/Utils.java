@@ -1,11 +1,11 @@
 package com.elovirta.dita;
 
-import static com.elovirta.dita.xml.XmlSerializer.LOC_NAMESPACE;
-import static com.elovirta.dita.xml.XmlSerializer.LOC_PREFIX;
+import static com.elovirta.dita.xml.XmlSerializer.*;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.function.Predicate;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmNode;
@@ -61,7 +61,10 @@ public class Utils {
     var loc =
         attr.getParent()
             .getAttributeValue(
-                new QName(LOC_PREFIX, LOC_NAMESPACE, "attr-" + attr.getNodeName().getLocalName()));
+                new QName(
+                    LOC_PREFIX,
+                    LOC_NAMESPACE,
+                    LOC_ATTR_PREFIX + attr.getNodeName().getLocalName()));
     return parseRange(loc);
   }
 
@@ -123,5 +126,20 @@ public class Utils {
 
   public static Predicate<XdmNode> isEmptyAttribute() {
     return attr -> attr.getStringValue().isEmpty();
+  }
+
+  public static boolean startsWith(char[] arr, char[] prefix) {
+    if (prefix.length == arr.length) {
+      return Arrays.equals(arr, prefix);
+    }
+    if (prefix.length > arr.length) {
+      return false;
+    }
+    for (int i = 0; i < prefix.length; i++) {
+      if (arr[i] != prefix[i]) {
+        return false;
+      }
+    }
+    return true;
   }
 }

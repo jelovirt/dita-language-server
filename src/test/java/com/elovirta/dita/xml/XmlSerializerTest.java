@@ -20,6 +20,7 @@ public class XmlSerializerTest {
       strings = {
         "test.xml",
         "element.xml",
+        "element-invalid.xml",
         "attribute.xml",
         "attribute-missing-end-quote.xml",
         "attribute-missing-quotes.xml",

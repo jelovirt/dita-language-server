@@ -11,7 +11,10 @@ public interface XmlLexer extends Iterator<XmlLexer.TokenType> {
     EMPTY_ELEMENT_END, // '/>'
 
     // Names and values
-    NAME, // Element or attribute name
+    ELEMENT_NAME_START, // Element name
+    ELEMENT_NAME_END, // Element name
+    ATTR_NAME, // Attribute name
+    PI_NAME, // PI name
     EQUALS, // '='
     ATTR_QUOTE, // '"' or '\''
     ATTR_VALUE, // Attribute value (without quotes)

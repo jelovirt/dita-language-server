@@ -7,8 +7,8 @@
     "offset": 0
   },
   {
-    "type": "NAME",
-    "text": "foo",
+    "type": "ELEMENT_NAME_START",
+    "text": "elem",
     "line": 1,
     "column": 2,
     "offset": 1
@@ -17,56 +17,56 @@
     "type": "WHITESPACE",
     "text": " ",
     "line": 1,
-    "column": 5,
-    "offset": 4
-  },
-  {
-    "type": "NAME",
-    "text": "bar",
-    "line": 1,
     "column": 6,
     "offset": 5
+  },
+  {
+    "type": "ATTR_NAME",
+    "text": "attr",
+    "line": 1,
+    "column": 7,
+    "offset": 6
   },
   {
     "type": "EQUALS",
     "text": "=",
     "line": 1,
-    "column": 9,
-    "offset": 8
+    "column": 11,
+    "offset": 10
   },
   {
-    "type": "NAME",
-    "text": "foo",
+    "type": "ATTR_NAME",
+    "text": "value",
     "line": 1,
-    "column": 10,
-    "offset": 9
-  },
-  {
-    "type": "ATTR_QUOTE",
-    "text": "\"",
-    "line": 1,
-    "column": 13,
-    "offset": 12
+    "column": 12,
+    "offset": 11
   },
   {
     "type": "ATTR_QUOTE",
     "text": "\"",
     "line": 1,
-    "column": 14,
-    "offset": 13
+    "column": 17,
+    "offset": 16
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 1,
+    "column": 18,
+    "offset": 17
   },
   {
     "type": "EMPTY_ELEMENT_END",
     "text": "/>",
     "line": 1,
-    "column": 14,
-    "offset": 13
+    "column": 18,
+    "offset": 17
   },
   {
     "type": "EOF",
     "text": "",
     "line": 1,
-    "column": 16,
-    "offset": 15
+    "column": 20,
+    "offset": 19
   }
 ]

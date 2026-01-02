@@ -1,8 +1,19 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url "https://dev.saxonica.com/maven" }
+    }
+    dependencies {
+        classpath group: 'net.sf.saxon', name: 'Saxon-HE', version: '12.1'
+    }
+}
+
 plugins {
     id 'java'
     id 'application'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'com.diffplug.spotless' version '6.25.0'
+    id 'com.nwalsh.gradle.saxon.saxon-gradle' version '0.10.7'
 }
 
 group = 'com.elovirta'
@@ -50,8 +61,14 @@ tasks.register('generateVersionProperties') {
         }
     }
 }
+
+tasks.register('copyTranspileXsl', Copy) {
+    from 'schxslt2/src/main/resources/content/transpile.xsl'
+    into layout.buildDirectory.dir('resources/main/xslt')
+}
+
 tasks.named('processResources') {
-    dependsOn('generateVersionProperties')
+    dependsOn 'generateVersionProperties', 'copyTranspileXsl'
 }
 
 shadowJar {

@@ -69,4 +69,20 @@ class UtilsTest {
   void getExtension_noExtension(String uri) {
     assertNull(Utils.getExtension(uri));
   }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"a", "ab", "abc"})
+  void startsWith_success(String src) {
+    var prefix = src.toCharArray();
+
+    assertTrue(Utils.startsWith(new char[] {'a', 'b', 'c'}, prefix));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"b", "abcd"})
+  void startsWith_failure(String src) {
+    var prefix = src.toCharArray();
+
+    assertFalse(Utils.startsWith(new char[] {'a', 'b', 'c'}, prefix));
+  }
 }

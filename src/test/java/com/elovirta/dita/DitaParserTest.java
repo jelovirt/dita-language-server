@@ -16,7 +16,7 @@ public class DitaParserTest {
 
     var act = parser.parse(src, getClass().getResource("/topics/valid.dita").toURI());
 
-    System.out.println(act.toString());
+    //    System.out.println(act.toString());
   }
 
   @Test
@@ -25,7 +25,7 @@ public class DitaParserTest {
 
     var act = parser.parse(src, getClass().getResource("/root.ditamap").toURI());
 
-    System.out.println(act.toString());
+    //    System.out.println(act.toString());
   }
 
   private String readResource(String path) {

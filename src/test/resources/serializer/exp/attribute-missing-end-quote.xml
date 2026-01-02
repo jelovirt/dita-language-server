@@ -1,5 +1,5 @@
-<foo xmlns:loc="loc:" xmlns:loc-xml="loc:http://www.w3.org/XML/1998/namespace" xmlns:loc-xmlns="loc:http://www.w3.org/2000/xmlns/" loc:elem="1:2-1:5" bar="foo" loc:attr-bar="1:11-1:13"></foo>
-<foo loc:elem="2:2-2:5" bar="foo" loc:attr-bar="2:11-2:13"></foo>
-<foo loc:elem="3:2-3:5" bar="foo" loc:attr-bar="3:11-3:13">
-</foo>
-<foo loc:elem="5:2-5:5" bar="foo" loc:attr-bar="5:11-5:13"></foo>
+<elem xmlns:loc="loc:" xmlns:loc-xml="loc:http://www.w3.org/XML/1998/namespace" xmlns:loc-xmlns="loc:http://www.w3.org/2000/xmlns/" loc:elem="1:2-1:6" attr="value" loc:attr-attr="1:13-1:17"></elem>
+<elem loc:elem="2:2-2:6" attr="value" loc:attr-attr="2:13-2:17"></elem>
+<elem loc:elem="3:2-3:6" attr="value" loc:attr-attr="3:13-3:17">
+</elem>
+<elem loc:elem="5:2-5:6" attr="value" loc:attr-attr="5:13-5:17"></elem>

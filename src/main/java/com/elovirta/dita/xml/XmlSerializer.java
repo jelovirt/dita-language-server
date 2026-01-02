@@ -11,6 +11,7 @@ public class XmlSerializer {
 
   public static final String LOC_NAMESPACE = "loc:";
   public static final String LOC_PREFIX = "loc";
+  public static final String LOC_ATTR_PREFIX = "attr-";
 
   private final XmlLexer lexer;
   private Writer writer;
@@ -53,7 +54,10 @@ public class XmlSerializer {
         case ELEMENT_CLOSE:
         case ELEMENT_END:
         case EMPTY_ELEMENT_END:
-        case NAME:
+        case ELEMENT_NAME_START:
+        case ELEMENT_NAME_END:
+        case ATTR_NAME:
+        case PI_NAME:
         case EQUALS:
         case ATTR_QUOTE:
         case ATTR_VALUE:
@@ -129,7 +133,7 @@ public class XmlSerializer {
     }
 
     XmlLexerImpl.TokenType type = lexer.next();
-    if (type != XmlLexerImpl.TokenType.NAME) {
+    if (type != XmlLexerImpl.TokenType.ELEMENT_NAME_START) {
       writer.write(lexer.getText());
       return;
     }
@@ -236,7 +240,7 @@ public class XmlSerializer {
         // Write closing '>' or '/>'
         writer.write(lexer.getText());
         break;
-      } else if (type == XmlLexerImpl.TokenType.NAME) {
+      } else if (type == XmlLexerImpl.TokenType.ATTR_NAME) {
         String attrName = new String(lexer.getText());
         bufferedContent.append(lexer.getText());
 

@@ -1,3 +1,3 @@
-<!DOCTYPE name>
-<!DOCTYPE name SYSTEM "name.dtd">
-<!DOCTYPE name PUBLIC "-//EXAMPLE//Name//EN" "name.dtd">
+<!DOCTYPE elem>
+<!DOCTYPE elem SYSTEM "name.dtd">
+<!DOCTYPE elem PUBLIC "-//EXAMPLE//Name//EN" "name.dtd">

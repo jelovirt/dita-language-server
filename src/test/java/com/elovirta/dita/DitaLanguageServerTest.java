@@ -3,11 +3,13 @@ package com.elovirta.dita;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 class DitaLanguageServerTest {
@@ -78,6 +80,9 @@ class DitaLanguageServerTest {
 
   @Test
   void testDidChange() {
+    var valueCapture = ArgumentCaptor.forClass(PublishDiagnosticsParams.class);
+    doNothing().when(mockClient).publishDiagnostics(valueCapture.capture());
+
     // Open document
     var openParams = new DidOpenTextDocumentParams();
     var document = new TextDocumentItem();
@@ -96,10 +101,10 @@ class DitaLanguageServerTest {
     change.setText("<topic id=\"test\"><title>New Title</title></topic>");
     changeParams.getContentChanges().add(change);
 
-    assertDoesNotThrow(() -> server.getTextDocumentService().didChange(changeParams));
+    server.getTextDocumentService().didChange(changeParams);
 
-    // Verify diagnostics were published again
-    verify(mockClient, atLeast(1)).publishDiagnostics(any(PublishDiagnosticsParams.class));
+    assertEquals(
+        new PublishDiagnosticsParams("file:///test.dita", List.of()), valueCapture.getValue());
   }
 
   @Test

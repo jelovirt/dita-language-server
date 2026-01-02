@@ -14,7 +14,7 @@
     "offset": 5
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "version",
     "line": 1,
     "column": 7,
@@ -56,7 +56,7 @@
     "offset": 27
   },
   {
-    "type": "NAME",
+    "type": "ELEMENT_NAME_START",
     "text": "version",
     "line": 2,
     "column": 7,

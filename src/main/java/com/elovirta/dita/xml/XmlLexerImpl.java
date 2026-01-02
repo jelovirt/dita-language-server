@@ -14,6 +14,7 @@ public class XmlLexerImpl implements XmlLexer {
     PI,
     START_ELEM,
     END_ELEM,
+    ATTRS,
     ATTR_VALUE
   }
 
@@ -114,7 +115,7 @@ public class XmlLexerImpl implements XmlLexer {
         } else if (isWhitespace(ch)) {
           return scanWhitespace();
         } else if (isNameStartChar(ch)) {
-          return scanName();
+          return scanName(TokenType.PI_NAME);
         } else {
           return scanCharData();
         }
@@ -124,7 +125,7 @@ public class XmlLexerImpl implements XmlLexer {
         } else if (isWhitespace(ch)) {
           return scanWhitespace();
         } else if (isNameStartChar(ch)) {
-          return scanName();
+          return scanName(TokenType.ELEMENT_NAME_START);
         } else {
           return scanCharData();
         }
@@ -148,11 +149,31 @@ public class XmlLexerImpl implements XmlLexer {
         } else if (ch == '&') {
           return scanReference();
         } else if (isNameStartChar(ch)) {
-          return scanName();
+          return scanName(TokenType.ELEMENT_NAME_START);
         } else {
           return scanCharData();
         }
       case START_ELEM:
+        if (isWhitespace(ch)) {
+          state = State.ATTRS;
+          return scanWhitespace();
+        } else if (ch == '>') {
+          return scanElementEnd();
+        } else if (ch == '/' && peek(1) == '>') {
+          return scanEmptyElementEnd();
+          //        } else if (ch == '=') {
+          //          return scanEquals();
+          //        } else if (ch == '"' || ch == '\'') {
+          //          state = State.ATTR_VALUE;
+          //          return scanAttrValueOpen();
+        } else if (isNameStartChar(ch)) {
+          return scanName(TokenType.ELEMENT_NAME_START);
+        } else {
+          pos--;
+          return scanElementEnd();
+          //          throw new IllegalStateException();
+        }
+      case ATTRS:
         if (isWhitespace(ch)) {
           return scanWhitespace();
         } else if (ch == '>') {
@@ -165,7 +186,7 @@ public class XmlLexerImpl implements XmlLexer {
           state = State.ATTR_VALUE;
           return scanAttrValueOpen();
         } else if (isNameStartChar(ch)) {
-          return scanName();
+          return scanName(TokenType.ATTR_NAME);
         } else {
           pos--;
           return scanElementEnd();
@@ -173,7 +194,7 @@ public class XmlLexerImpl implements XmlLexer {
         }
       case ATTR_VALUE:
         if (ch == attrValueQuote) {
-          state = State.START_ELEM;
+          state = State.ATTRS;
           return scanAttrValueClose();
         } else if (errorCorrection && ch == '>' && peek(1) == '<' || peek(1) == '\n') {
           return attrValueEnd();
@@ -192,9 +213,11 @@ public class XmlLexerImpl implements XmlLexer {
         } else if (ch == '>') {
           return scanElementEnd();
         } else if (isNameStartChar(ch)) {
-          return scanName();
+          return scanName(TokenType.ELEMENT_NAME_END);
+        } else if (ch == '<') {
+          return scanElementStart();
         } else {
-          throw new IllegalStateException();
+          throw new IllegalStateException("Unsupported character: " + ch);
         }
       case CONTENT:
         if (ch == '<') {
@@ -223,7 +246,7 @@ public class XmlLexerImpl implements XmlLexer {
           return scanCharData();
         }
       default:
-        throw new IllegalStateException();
+        throw new IllegalStateException("Unsupported character: " + ch);
     }
   }
 
@@ -298,7 +321,7 @@ public class XmlLexerImpl implements XmlLexer {
         TokenType.EMPTY_ELEMENT_END, new char[] {'/', '>'}, startLine, startCol, startPos);
   }
 
-  private TokenType scanName() {
+  private TokenType scanName(TokenType type) {
     int startPos = pos;
     int startLine = line;
     int startCol = column;
@@ -318,7 +341,7 @@ public class XmlLexerImpl implements XmlLexer {
       advance();
     }
 
-    return setCurrentToken(TokenType.NAME, copyRange(startPos, pos), startLine, startCol, startPos);
+    return setCurrentToken(type, copyRange(startPos, pos), startLine, startCol, startPos);
   }
 
   private TokenType scanEquals() {

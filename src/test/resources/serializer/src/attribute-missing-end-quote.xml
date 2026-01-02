@@ -1,5 +1,5 @@
-<foo bar="foo></foo>
-<foo bar="foo></foo>
-<foo bar="foo>
-</foo>
-<foo bar="foo</foo>
+<elem attr="value></elem>
+<elem attr="value></elem>
+<elem attr="value>
+</elem>
+<elem attr="value</elem>

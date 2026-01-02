@@ -2,10 +2,10 @@ package com.elovirta.dita;
 
 import static com.elovirta.dita.Utils.*;
 import static net.sf.saxon.s9api.streams.Predicates.*;
-import static net.sf.saxon.s9api.streams.Steps.attribute;
-import static net.sf.saxon.s9api.streams.Steps.descendant;
+import static net.sf.saxon.s9api.streams.Steps.*;
 
 import com.elovirta.dita.KeyManager.KeyDefinition;
+import com.elovirta.dita.validator.SchematronValidator;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -13,11 +13,10 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
-import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.*;
 import net.sf.saxon.s9api.streams.Steps;
 import org.eclipse.lsp4j.*;
+import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
@@ -45,6 +44,7 @@ public class DitaTextDocumentService implements TextDocumentService {
   private final KeyManager keyManager;
   private final SubjectSchemeManager subjectSchemeManager;
   private final SmartDebouncer debouncer;
+  private final SchematronValidator schematronValidator;
 
   private URI rootMapUri;
   private XdmNode rootMap;
@@ -58,6 +58,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     this.subjectSchemeManager = new SubjectSchemeManager();
     this.debouncer = debouncer;
     this.LOCALE = ResourceBundle.getBundle("copy", Locale.ENGLISH);
+    this.schematronValidator = new SchematronValidator(parser.getProcessor());
   }
 
   public void setLocale(Locale locale) {
@@ -398,6 +399,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     }
     validateCrossReferences(content, documentUri, diagnostics);
     validateProfilingAttributes(content, diagnostics);
+    schematronValidator.validate(content, diagnostics);
 
     return diagnostics;
   }
@@ -591,7 +593,7 @@ public class DitaTextDocumentService implements TextDocumentService {
               var elementIds =
                   topic
                       .select(
-                          Steps.child()
+                          child()
                               .where(not(TOPIC_TOPIC))
                               .then(Steps.descendantOrSelf().then(attribute(ATTR_ID))))
                       .toList();

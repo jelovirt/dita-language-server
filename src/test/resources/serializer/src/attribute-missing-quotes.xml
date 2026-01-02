@@ -1,4 +1,4 @@
-<foo bar=foo/>
-<foo bar=foo />
-<foo bar=foo></foo>
-<foo bar=foo
+<elem attr=value/>
+<elem attr=value />
+<elem attr=value></elem>
+<elem attr=value
