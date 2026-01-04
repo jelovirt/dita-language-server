@@ -1,9 +1,15 @@
 package com.elovirta.dita;
 
+import static net.sf.saxon.sapling.Saplings.elem;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
+import net.sf.saxon.Configuration;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.SaxonApiException;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.junit.jupiter.api.Test;
@@ -13,6 +19,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class UtilsTest {
+  private final Configuration config = new Configuration();
+  private final Processor processor = new Processor(config);
 
   @Test
   void parseRange() {
@@ -84,5 +92,46 @@ class UtilsTest {
     var prefix = src.toCharArray();
 
     assertFalse(Utils.startsWith(new char[] {'a', 'b', 'c'}, prefix));
+  }
+
+  @ParameterizedTest
+  @MethodSource("isLocalDitaArguments")
+  void isLocalDita(String format, String scope) throws SaxonApiException {
+    var src = elem("foo");
+    if (format != null) {
+      src = src.withAttr("format", format);
+    }
+    if (scope != null) {
+      src = src.withAttr("scope", scope);
+    }
+    assertTrue(Utils.isLocalDita().test(src.toXdmNode(processor)));
+  }
+
+  @ParameterizedTest
+  @MethodSource("isNotLocalDitaArguments")
+  void isNotLocalDita(String format, String scope) throws SaxonApiException {
+    var src = elem("foo");
+    if (format != null) {
+      src = src.withAttr("format", format);
+    }
+    if (scope != null) {
+      src = src.withAttr("scope", scope);
+    }
+    assertFalse(Utils.isLocalDita().test(src.toXdmNode(processor)));
+  }
+
+  static Stream<Arguments> isLocalDitaArguments() {
+    return permutations(Arrays.asList(null, "dita"), Arrays.asList(null, "local", "peer"));
+  }
+
+  static Stream<Arguments> isNotLocalDitaArguments() {
+    return Stream.concat(
+        permutations(List.of("html"), Arrays.asList(null, "local", "peer")),
+        permutations(Arrays.asList(null, "dita"), List.of("external")));
+  }
+
+  static Stream<Arguments> permutations(List<String> formats, List<String> scopes) {
+    return formats.stream()
+        .flatMap(format -> scopes.stream().map(scope -> Arguments.arguments(format, scope)));
   }
 }

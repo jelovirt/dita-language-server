@@ -3,11 +3,14 @@ package com.elovirta.dita;
 import static com.elovirta.dita.xml.XmlSerializer.*;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Predicate;
 import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.streams.Steps;
 import net.sf.saxon.type.Type;
@@ -141,5 +144,22 @@ public class Utils {
       }
     }
     return true;
+  }
+
+  public static Predicate<XdmItem> isLocalDita() {
+    return item -> {
+      if (item instanceof XdmNode node) {
+        var scope = node.attribute("scope");
+        if (Objects.equals(scope, "external")) {
+          return false;
+        }
+        var format = node.attribute("format");
+        if (!(format == null || format.equals("dita"))) {
+          return false;
+        }
+        return true;
+      }
+      return false;
+    };
   }
 }
