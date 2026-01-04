@@ -95,7 +95,7 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
 
   public void setCurrentRootMapUri(String uri) {
     textDocumentService.setRootMapUri(URI.create(uri));
-    textDocumentService.revalidateAllOpenDocuments();
+    //    textDocumentService.revalidateAllOpenDocuments();
   }
 
   @Override
