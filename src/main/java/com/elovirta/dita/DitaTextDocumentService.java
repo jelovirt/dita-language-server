@@ -38,6 +38,7 @@ public class DitaTextDocumentService implements TextDocumentService {
   private static final Set<String> CROSS_REFERENCE_ATTRS = Set.of(HREF_ATTR, CONREF_ATTR);
 
   public static final String SOURCE = "dita-validator";
+  public static final String EMAIL_SCOPE_MISSING = "email_scope_missing";
 
   private final DitaLanguageServer server;
   private final DitaParser parser;
@@ -254,6 +255,49 @@ public class DitaTextDocumentService implements TextDocumentService {
       }
     }
     return CompletableFuture.completedFuture(null);
+  }
+
+  @Override
+  public CompletableFuture<List<Either<Command, CodeAction>>> codeAction(CodeActionParams params) {
+    return CompletableFuture.supplyAsync(
+        () -> {
+          List<Either<Command, CodeAction>> actions = new ArrayList<>();
+
+          for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
+            if (diagnostic.getCode() != null) {
+              String code = diagnostic.getCode().getLeft();
+              if (EMAIL_SCOPE_MISSING.equals(code)) {
+                actions.add(
+                    Either.forRight(
+                        createAddMissingExternalScope(
+                            diagnostic, params.getTextDocument().getUri())));
+              }
+            }
+          }
+
+          return actions;
+        });
+  }
+
+  private CodeAction createAddMissingExternalScope(Diagnostic diagnostic, String uri) {
+    CodeAction action = new CodeAction("Add external scope");
+    action.setKind(CodeActionKind.QuickFix);
+    action.setDiagnostics(List.of(diagnostic));
+
+    WorkspaceEdit edit = new WorkspaceEdit();
+    Map<String, List<TextEdit>> changes = new HashMap<>();
+    changes.put(uri, List.of(new TextEdit(after(diagnostic.getRange()), " scope=\"external\"")));
+    edit.setChanges(changes);
+    action.setEdit(edit);
+    action.setIsPreferred(true);
+
+    return action;
+  }
+
+  private Range after(Range range) {
+    var src = range.getEnd();
+    var res = new Position(src.getLine(), src.getCharacter() + 1);
+    return new Range(res, res);
   }
 
   @Override
@@ -587,7 +631,7 @@ public class DitaTextDocumentService implements TextDocumentService {
                           .formatted(attr.getStringValue()),
                       DiagnosticSeverity.Error,
                       SOURCE,
-                      "email_scope_missing"));
+                      EMAIL_SCOPE_MISSING));
             });
 
     return diagnostics;
