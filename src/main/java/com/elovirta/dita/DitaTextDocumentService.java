@@ -53,7 +53,7 @@ public class DitaTextDocumentService implements TextDocumentService {
   public DitaTextDocumentService(DitaLanguageServer server, SmartDebouncer debouncer) {
     this.server = server;
     this.parser = new DitaParser();
-    this.documentManager = new DocumentManager();
+    this.documentManager = new DocumentManager(parser);
     this.keyManager = new KeyManager();
     this.subjectSchemeManager = new SubjectSchemeManager();
     this.debouncer = debouncer;
