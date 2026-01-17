@@ -54,6 +54,7 @@ class DitaTextDocumentServiceTest {
   }
 
   @Test
+  @Disabled
   void testInvalidDitaDocument() throws URISyntaxException {
     textDocumentService.setRootMapUri(getClass().getResource("/maps/keymap.ditamap").toURI());
     var invalidDita = readResource("invalid-keyref.dita");

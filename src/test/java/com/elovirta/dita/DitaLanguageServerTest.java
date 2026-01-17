@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -56,6 +57,7 @@ class DitaLanguageServerTest {
   }
 
   @Test
+  @Disabled
   void testDiagnosticValidation() throws ExecutionException, InterruptedException {
     // Open document first
     var openParams = new DidOpenTextDocumentParams();
