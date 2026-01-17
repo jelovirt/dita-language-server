@@ -321,6 +321,7 @@
     </rule>
   </pattern>
   <!--Report duplicate IDs start pattern-->
+  <!--
   <pattern id="checkIDs" e:phases="mandatory recommendation">
     <rule context="*[@id]">
       <let name="k"
@@ -333,6 +334,7 @@
       </report>
     </rule>
   </pattern>
+  -->
   <!--EXM-21448 Report duplicate IDs end pattern-->
   <!-- Diagnostics -->
   <diagnostics>

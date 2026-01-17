@@ -11,6 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.launch.LSPLauncher;
 import org.eclipse.lsp4j.services.*;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,23 +49,26 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
       textDocumentService.setLocale(Locale.forLanguageTag(params.getLocale()));
     }
 
+    var capabilities = getServerCapabilities();
+    var serverInfo =
+        new ServerInfo(properties.getProperty("description"), properties.getProperty("version"));
+    var result = new InitializeResult(capabilities, serverInfo);
+
+    logger.info("DITA Language Server initialized");
+    return CompletableFuture.completedFuture(result);
+  }
+
+  private static @NotNull ServerCapabilities getServerCapabilities() {
     var capabilities = new ServerCapabilities();
     capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
-    capabilities.setDiagnosticProvider(new DiagnosticRegistrationOptions());
+    //    capabilities.setDiagnosticProvider(new DiagnosticRegistrationOptions());
     capabilities.setCompletionProvider(new CompletionOptions());
     capabilities.setDefinitionProvider(new DefinitionOptions());
     capabilities.setHoverProvider(new HoverOptions());
 
     var commandOptions = new ExecuteCommandOptions(List.of("dita.setRootMap"));
     capabilities.setExecuteCommandProvider(commandOptions);
-
-    var serverInfo =
-        new ServerInfo(properties.getProperty("description"), properties.getProperty("version"));
-
-    var result = new InitializeResult(capabilities, serverInfo);
-
-    logger.info("DITA Language Server initialized");
-    return CompletableFuture.completedFuture(result);
+    return capabilities;
   }
 
   @Override

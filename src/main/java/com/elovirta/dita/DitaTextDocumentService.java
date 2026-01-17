@@ -68,18 +68,22 @@ public class DitaTextDocumentService implements TextDocumentService {
   public void setRootMapUri(URI uri) {
     rootMapUri = uri;
     logger.info("Setting root map URI: {}", uri);
-    try {
-      var content = Files.readString(Paths.get(uri));
-      // XXX: Should everything below be done async?
-      rootMap = parser.mergeMap(parser.parse(content, uri));
+    CompletableFuture.runAsync(
+        () -> {
+          try {
+            var content = Files.readString(Paths.get(uri));
+            handleRootMap(uri, parser.parse(content, uri));
+          } catch (Exception e) {
+            logger.error("Failed to parse map document", e);
+          }
+        });
+  }
 
-      keyManager.read(uri, rootMap);
-      subjectSchemeManager.read(uri, rootMap);
-
-      revalidateAllOpenDocuments();
-    } catch (Exception e) {
-      logger.error("Failed to parse map document", e);
-    }
+  private void handleRootMap(URI uri, XdmNode content) {
+    rootMap = parser.mergeMap(content);
+    keyManager.read(uri, rootMap);
+    subjectSchemeManager.read(uri, rootMap);
+    revalidateAllOpenDocuments();
   }
 
   @Override
@@ -252,55 +256,6 @@ public class DitaTextDocumentService implements TextDocumentService {
   }
 
   @Override
-  public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
-    var report = new DocumentDiagnosticReport(new RelatedFullDocumentDiagnosticReport());
-    return CompletableFuture.completedFuture(report);
-    //    String uri = params.getTextDocument().getUri();
-    //
-    //    // Get the content from storage
-    //    //    XdmNode content = openDocuments.get(uri);
-    //    //    if (content == null) {
-    //    //      // Document not opened yet, return empty diagnostics
-    //    //      return CompletableFuture.completedFuture(
-    //    //          new DocumentDiagnosticReport(
-    //    //              new RelatedFullDocumentDiagnosticReport(Collections.emptyList())));
-    //    //    }
-    //
-    //    if (uri.equals(rootMapUri) && rootMap != null) {
-    //      logger.info("Root map changed, do async validate");
-    //
-    //      FullDocumentDiagnosticReport fullReport = new FullDocumentDiagnosticReport();
-    //      RelatedFullDocumentDiagnosticReport report =
-    //          new RelatedFullDocumentDiagnosticReport(fullReport.getItems());
-    //
-    //      var diagnostics =
-    //          openDocuments.entrySet().stream()
-    //              .filter(entry -> !entry.getKey().equals(rootMap))
-    //              .map(
-    //                  entry ->
-    //                      Map.entry(
-    //                          entry.getKey(),
-    //                          Either
-    //                              .<FullDocumentDiagnosticReport,
-    // UnchangedDocumentDiagnosticReport>
-    //                                  forLeft(
-    //                                      new FullDocumentDiagnosticReport(
-    //                                          doSlowValidation(entry.getValue())))))
-    //              .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
-    ////      logger.info(diagnostics);
-    //      report.setRelatedDocuments(diagnostics);
-    //
-    //      return CompletableFuture.completedFuture(new DocumentDiagnosticReport(report));
-    //    } else {
-    //      System.err.printf("Async validate %s skipped%n", uri);
-    //      //          var fullReport = new FullDocumentDiagnosticReport();
-    //      // fullReport.getItems()
-    //      var report = new RelatedFullDocumentDiagnosticReport();
-    //      return CompletableFuture.completedFuture(new DocumentDiagnosticReport(report));
-    //    }
-  }
-
-  @Override
   public void didOpen(DidOpenTextDocumentParams params) {
     URI uri = URI.create(params.getTextDocument().getUri());
     String text = params.getTextDocument().getText();
@@ -335,14 +290,7 @@ public class DitaTextDocumentService implements TextDocumentService {
                 if (Objects.equals(rootMapUri, uri)) {
                   logger.info("Root map changed, do debounced key read and validate all");
                   try {
-                    debouncer.debounce(
-                        uri.toString(),
-                        () -> {
-                          var merged = parser.mergeMap(doc);
-                          keyManager.read(uri, merged);
-                          subjectSchemeManager.read(uri, merged);
-                          revalidateAllOpenDocuments();
-                        });
+                    debouncer.debounce(uri.toString(), () -> handleRootMap(rootMapUri, doc));
                   } catch (Exception e) {
                     logger.error("Failed to debounced validate", e);
                   }
