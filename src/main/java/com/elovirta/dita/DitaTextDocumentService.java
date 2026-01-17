@@ -31,6 +31,7 @@ public class DitaTextDocumentService implements TextDocumentService {
   private static final String CONKEYREF_ATTR = "conkeyref";
   private static final String CONREF_ATTR = "conref";
   private static final String HREF_ATTR = "href";
+  private static final String SCOPE_ATTR = "scope";
   private static final String ID_ATTR = "id";
   private static final QName AUDIENCE_ATTR = QName.fromClarkName("audience");
 
@@ -564,6 +565,29 @@ public class DitaTextDocumentService implements TextDocumentService {
                   }
                 }
               }
+            });
+
+    // Missing @scope
+    doc.select(
+            descendant()
+                .then(
+                    attribute(HREF_ATTR)
+                        .where(
+                            attr ->
+                                attr.getStringValue().startsWith("email:")
+                                    && !Objects.equals(
+                                        attr.getParent().attribute(SCOPE_ATTR), "external"))))
+        .forEach(
+            attr -> {
+              diagnostics.add(
+                  new Diagnostic(
+                      Utils.getAttributeRange(attr),
+                      LOCALE
+                          .getString("error.email_scope_missing")
+                          .formatted(attr.getStringValue()),
+                      DiagnosticSeverity.Error,
+                      SOURCE,
+                      "email_scope_missing"));
             });
 
     return diagnostics;
