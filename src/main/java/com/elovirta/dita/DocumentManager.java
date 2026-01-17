@@ -29,8 +29,12 @@ public class DocumentManager {
 
   private static final Logger logger = LoggerFactory.getLogger(DocumentManager.class);
 
-  private final DitaParser ditaParser = new DitaParser();
+  private final DitaParser ditaParser;
   private final Map<URI, DocumentCache> openDocuments = new ConcurrentHashMap<>();
+
+  public DocumentManager(DitaParser ditaParser) {
+    this.ditaParser = ditaParser;
+  }
 
   public record DocumentCache(
       XdmNode document,
