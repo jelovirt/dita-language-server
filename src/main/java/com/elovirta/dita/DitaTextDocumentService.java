@@ -31,12 +31,14 @@ public class DitaTextDocumentService implements TextDocumentService {
   private static final String CONKEYREF_ATTR = "conkeyref";
   private static final String CONREF_ATTR = "conref";
   private static final String HREF_ATTR = "href";
+  private static final String SCOPE_ATTR = "scope";
   private static final String ID_ATTR = "id";
   private static final QName AUDIENCE_ATTR = QName.fromClarkName("audience");
 
   private static final Set<String> CROSS_REFERENCE_ATTRS = Set.of(HREF_ATTR, CONREF_ATTR);
 
   public static final String SOURCE = "dita-validator";
+  public static final String EMAIL_SCOPE_MISSING = "email_scope_missing";
 
   private final DitaLanguageServer server;
   private final DitaParser parser;
@@ -253,6 +255,49 @@ public class DitaTextDocumentService implements TextDocumentService {
       }
     }
     return CompletableFuture.completedFuture(null);
+  }
+
+  @Override
+  public CompletableFuture<List<Either<Command, CodeAction>>> codeAction(CodeActionParams params) {
+    return CompletableFuture.supplyAsync(
+        () -> {
+          List<Either<Command, CodeAction>> actions = new ArrayList<>();
+
+          for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
+            if (diagnostic.getCode() != null) {
+              String code = diagnostic.getCode().getLeft();
+              if (EMAIL_SCOPE_MISSING.equals(code)) {
+                actions.add(
+                    Either.forRight(
+                        createAddMissingExternalScope(
+                            diagnostic, params.getTextDocument().getUri())));
+              }
+            }
+          }
+
+          return actions;
+        });
+  }
+
+  private CodeAction createAddMissingExternalScope(Diagnostic diagnostic, String uri) {
+    CodeAction action = new CodeAction("Add external scope");
+    action.setKind(CodeActionKind.QuickFix);
+    action.setDiagnostics(List.of(diagnostic));
+
+    WorkspaceEdit edit = new WorkspaceEdit();
+    Map<String, List<TextEdit>> changes = new HashMap<>();
+    changes.put(uri, List.of(new TextEdit(after(diagnostic.getRange()), " scope=\"external\"")));
+    edit.setChanges(changes);
+    action.setEdit(edit);
+    action.setIsPreferred(true);
+
+    return action;
+  }
+
+  private Range after(Range range) {
+    var src = range.getEnd();
+    var res = new Position(src.getLine(), src.getCharacter() + 1);
+    return new Range(res, res);
   }
 
   @Override
@@ -564,6 +609,29 @@ public class DitaTextDocumentService implements TextDocumentService {
                   }
                 }
               }
+            });
+
+    // Missing @scope
+    doc.select(
+            descendant()
+                .then(
+                    attribute(HREF_ATTR)
+                        .where(
+                            attr ->
+                                attr.getStringValue().startsWith("email:")
+                                    && !Objects.equals(
+                                        attr.getParent().attribute(SCOPE_ATTR), "external"))))
+        .forEach(
+            attr -> {
+              diagnostics.add(
+                  new Diagnostic(
+                      Utils.getAttributeRange(attr),
+                      LOCALE
+                          .getString("error.email_scope_missing")
+                          .formatted(attr.getStringValue()),
+                      DiagnosticSeverity.Error,
+                      SOURCE,
+                      EMAIL_SCOPE_MISSING));
             });
 
     return diagnostics;
