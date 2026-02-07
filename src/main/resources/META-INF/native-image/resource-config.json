@@ -1,0 +1,12 @@
+{
+  "resources": {
+    "includes": [
+      {"pattern": ".*\\.xsl"},
+      {"pattern": ".*\\.xml"},
+      {"pattern": ".*\\.dtd"},
+      {"pattern": ".*\\.ent"},
+      {"pattern": ".*\\.mod"},
+      {"pattern": "META-INF/services/.*"}
+    ]
+  }
+}

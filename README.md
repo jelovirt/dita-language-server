@@ -75,8 +75,19 @@ Format code
 
 ## Distribution
 
-Build distribution JAR file
+Build a distribution JAR file.
 
 ```shell
 ./gradlew clean shadowJar
+```
+
+### Native image
+
+Build a distribution native image using GraalVM.
+
+```shell
+$ sdk use java 25.0.1-graalce
+$ java -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image \
+     -cp build/libs/*.jar com.elovirta.dita.DitaLanguageServer
+$ native-image -jar build/libs/*.jar -o build/libs/dls --future-defaults=all -march=native
 ```

@@ -1,0 +1,14 @@
+[
+  {
+    "name": "org.apache.xerces.impl.dv.dtd.DTDDVFactoryImpl",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.apache.xerces.impl.dv.xs.SchemaDVFactoryImpl",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true
+  }
+]

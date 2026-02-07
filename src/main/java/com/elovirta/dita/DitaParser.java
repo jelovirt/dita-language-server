@@ -6,13 +6,23 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.lib.*;
 import net.sf.saxon.lib.ResourceRequest;
 import net.sf.saxon.s9api.*;
+import org.apache.xerces.jaxp.SAXParserFactoryImpl;
+import org.apache.xerces.parsers.SAXParser;
+import org.apache.xerces.parsers.XIncludeAwareParserConfiguration;
+import org.apache.xerces.parsers.XML11Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 import org.xmlresolver.*;
 import org.xmlresolver.logging.DefaultLogger;
 
@@ -36,7 +46,19 @@ public class DitaParser {
     config.setFeature(ResolverFeature.CATALOG_FILES, List.of("classpath:/schemas/catalog.xml"));
     this.catalogResolver = new Resolver(config);
 
-    Configuration configuration = Configuration.newConfiguration();
+//    Configuration configuration = Configuration.newConfiguration();
+    Configuration configuration = new Configuration();
+    ParseOptions options = new ParseOptions();
+//    SAXParserFactory saxParserFactory = new SAXParserFactoryImpl();
+//    try {
+//      XMLReader xmlReader = saxParserFactory.newSAXParser().getXMLReader();
+      XMLReader xmlReader = new SAXParser(new XML11Configuration());
+      xmlReader.setEntityResolver(catalogResolver);
+      options.withXMLReader(xmlReader);
+//    } catch (ParserConfigurationException | SAXException e) {
+//        throw new RuntimeException(e);
+//    }
+    configuration.setParseOptions(options);
     //    configuration.setResourceResolver(new CatalogResourceResolver(catalogResolver));
     var resolver = new CatalogResourceResolver(catalogResolver);
     configuration.setResourceResolver(
@@ -58,8 +80,11 @@ public class DitaParser {
         });
     this.processor = new Processor(configuration);
     try (var in = getClass().getResourceAsStream("/xslt/merge.xsl")) {
+      InputSource inputSource = new InputSource(in);
+      inputSource.setSystemId("classpath:/xslt/merge.xsl");
       this.mergeExecutable =
-          processor.newXsltCompiler().compile(new StreamSource(in, "classpath:/xslt/merge.xsl"));
+//          processor.newXsltCompiler().compile(new StreamSource(in, "classpath:/xslt/merge.xsl"));
+          processor.newXsltCompiler().compile(new SAXSource(xmlReader, inputSource));
     } catch (SaxonApiException | IOException e) {
       throw new RuntimeException("Failed to parse classpath:/xslt/merge.xsl", e);
     }
