@@ -26,13 +26,12 @@ repositories {
 }
 
 dependencies {
-    compileOnly group: 'org.jetbrains', name: 'annotations', version: '26.0.2'
+    compileOnly 'org.jetbrains:annotations:26.0.2'
     implementation 'org.eclipse.lsp4j:org.eclipse.lsp4j:0.24.0'
-    implementation 'org.slf4j:slf4j-api:2.0.17'
-    implementation 'ch.qos.logback:logback-classic:1.5.21'
-    implementation group: 'xerces', name: 'xercesImpl', version: '2.12.2'
-    implementation group: 'xml-apis', name: 'xml-apis', version: '1.4.01'
-    implementation group: 'net.sf.saxon', name: 'Saxon-HE', version: '12.9'
+    implementation 'ch.qos.logback:logback-classic:1.5.27'
+    implementation 'xerces:xercesImpl:2.12.2'
+    implementation 'net.sf.saxon:Saxon-HE:12.9'
+    implementation 'org.xmlresolver:xmlresolver:6.0.21'
     testImplementation 'org.junit.jupiter:junit-jupiter:6.0.1'
     testImplementation 'org.mockito:mockito-core:5.20.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.20.0'
@@ -75,7 +74,7 @@ shadowJar {
     archiveClassifier.set('all')
     archiveVersion.set(project.version.toString())
     manifest {
-        attributes 'Main-Class': 'com.example.dita.DitaLanguageServer'
+        attributes 'Main-Class': 'com.elovirta.dita.DitaLanguageServer'
     }
 }
 
