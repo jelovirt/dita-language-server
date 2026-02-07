@@ -25,6 +25,7 @@ public class XmlSerializerTest {
         "attribute-missing-end-quote.xml",
         "attribute-missing-quotes.xml",
         "attribute-missing-start-quote.xml",
+        "attribute-missing-equals.xml",
         "attribute-ns.xml",
         "comment.xml",
         "doctype.xml",

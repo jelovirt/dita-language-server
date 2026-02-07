@@ -1,0 +1,44 @@
+[
+  {
+    "type": "ELEMENT_START",
+    "text": "<",
+    "line": 1,
+    "column": 1,
+    "offset": 0
+  },
+  {
+    "type": "ELEMENT_NAME_START",
+    "text": "elem",
+    "line": 1,
+    "column": 2,
+    "offset": 1
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 1,
+    "column": 6,
+    "offset": 5
+  },
+  {
+    "type": "ATTR_NAME",
+    "text": "attr",
+    "line": 1,
+    "column": 7,
+    "offset": 6
+  },
+  {
+    "type": "EMPTY_ELEMENT_END",
+    "text": "/>",
+    "line": 1,
+    "column": 11,
+    "offset": 10
+  },
+  {
+    "type": "EOF",
+    "text": "",
+    "line": 1,
+    "column": 13,
+    "offset": 12
+  }
+]
