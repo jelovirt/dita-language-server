@@ -53,12 +53,9 @@ public abstract class AbstractXmlFilter implements XmlLexer {
           lineBuffer.removeFirst(),
           columnBuffer.removeFirst(),
           offsetBuffer.removeFirst());
-      if (currentType == TokenType.ELEMENT_NAME_START) {
-        elementStack.push(currentText);
-      } else if (currentType == TokenType.ELEMENT_NAME_END) {
-        elementStack.pop();
-      } else if (currentType == TokenType.EMPTY_ELEMENT_END) {
-        elementStack.pop();
+      switch (currentType) {
+        case ELEMENT_NAME_START -> elementStack.push(currentText);
+        case ELEMENT_NAME_END, EMPTY_ELEMENT_END -> elementStack.pop();
       }
       return currentType;
     }
@@ -70,15 +67,17 @@ public abstract class AbstractXmlFilter implements XmlLexer {
         parent.getLine(),
         parent.getColumn(),
         parent.getOffset());
-    if (currentType == TokenType.ELEMENT_NAME_START) {
-      elementStack.push(currentText);
-    } else if (currentType == TokenType.ELEMENT_NAME_END) {
-      elementStack.pop();
-    } else if (currentType == TokenType.EMPTY_ELEMENT_END) {
-      elementStack.pop();
+    switch (currentType) {
+      case ELEMENT_NAME_START -> elementStack.push(currentText);
+        // case ELEMENT_NAME_END, EMPTY_ELEMENT_END -> elementStack.pop();
     }
 
     filter();
+
+    switch (currentType) {
+        // case ELEMENT_NAME_START -> elementStack.push(currentText);
+      case ELEMENT_NAME_END, EMPTY_ELEMENT_END -> elementStack.pop();
+    }
 
     return currentType;
   }
