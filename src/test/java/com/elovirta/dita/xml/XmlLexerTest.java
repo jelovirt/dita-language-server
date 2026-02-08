@@ -28,6 +28,8 @@ public class XmlLexerTest {
         "element-invalid.xml",
         "attribute.xml",
         "attribute-missing-end-quote.xml",
+        "attribute-missing-end-quote-empty-element.xml",
+        "attribute-missing-end-quote-missing-gt.xml",
         "attribute-missing-quotes.xml",
         "attribute-missing-start-quote.xml",
         "attribute-missing-equals.xml",
