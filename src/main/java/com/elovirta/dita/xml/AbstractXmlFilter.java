@@ -55,8 +55,16 @@ public abstract class AbstractXmlFilter implements XmlLexer {
           offsetBuffer.removeFirst());
       switch (currentType) {
         case ELEMENT_NAME_START -> elementStack.push(currentText);
+          //        case ELEMENT_NAME_END, EMPTY_ELEMENT_END -> elementStack.pop();
+      }
+
+      filter();
+
+      switch (currentType) {
+          //        case ELEMENT_NAME_START -> elementStack.push(currentText);
         case ELEMENT_NAME_END, EMPTY_ELEMENT_END -> elementStack.pop();
       }
+
       return currentType;
     }
 

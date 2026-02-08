@@ -95,8 +95,8 @@ class AbstractXmlFilterTest {
     assertEquals(TokenType.WHITESPACE, filter.next());
     assertEquals(TokenType.ATTR_NAME, filter.next());
     assertEquals(TokenType.EQUALS, filter.next());
-    //    assertEquals(TokenType.ATTR_QUOTE, filter.next());
-    //    assertEquals(TokenType.ATTR_QUOTE, filter.next());
+    assertEquals(TokenType.ATTR_QUOTE, filter.next());
+    assertEquals(TokenType.ATTR_QUOTE, filter.next());
     assertEquals(TokenType.EMPTY_ELEMENT_END, filter.next());
   }
 
