@@ -10,7 +10,7 @@ class AbstractXmlFilterTest {
   @Test
   void filterNothing() {
     var parent =
-        new DummynewXmlLexer(
+        new FixtureXmlLexer(
             TokenType.ELEMENT_START, TokenType.ELEMENT_NAME_START, TokenType.EMPTY_ELEMENT_END);
     var filter =
         new AbstractXmlFilter(parent) {
@@ -28,7 +28,7 @@ class AbstractXmlFilterTest {
   @Test
   void ignorePeekedToken() {
     var parent =
-        new DummynewXmlLexer(
+        new FixtureXmlLexer(
             TokenType.ELEMENT_START, TokenType.ELEMENT_NAME_START,
             TokenType.WHITESPACE, TokenType.EMPTY_ELEMENT_END);
     var filter =
@@ -50,7 +50,7 @@ class AbstractXmlFilterTest {
   @Test
   void ignorePushToken() {
     var parent =
-        new DummynewXmlLexer(
+        new FixtureXmlLexer(
             TokenType.ELEMENT_START, TokenType.ELEMENT_NAME_START, TokenType.EMPTY_ELEMENT_END);
     var filter =
         new AbstractXmlFilter(parent) {
@@ -71,7 +71,7 @@ class AbstractXmlFilterTest {
   @Test
   void ignoreFilterPushedToken() {
     var parent =
-        new DummynewXmlLexer(
+        new FixtureXmlLexer(
             TokenType.ELEMENT_START,
             TokenType.ELEMENT_NAME_START,
             TokenType.WHITESPACE,
@@ -100,12 +100,12 @@ class AbstractXmlFilterTest {
     assertEquals(TokenType.EMPTY_ELEMENT_END, filter.next());
   }
 
-  private static class DummynewXmlLexer implements XmlLexer {
+  private static class FixtureXmlLexer implements XmlLexer {
 
     private final TokenType[] src;
     private int index = -1;
 
-    DummynewXmlLexer(TokenType... src) {
+    FixtureXmlLexer(TokenType... src) {
       this.src = src;
     }
 
