@@ -100,6 +100,10 @@ public abstract class AbstractXmlFilter implements XmlLexer {
     return currentText;
   }
 
+  void setText(char[] text) {
+    currentText = text;
+  }
+
   @Override
   public int getLine() {
     return currentLine;

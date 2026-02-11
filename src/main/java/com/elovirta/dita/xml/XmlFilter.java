@@ -50,34 +50,24 @@ public class XmlFilter extends AbstractXmlFilter {
           }
         }
       }
-      case ELEMENT_CLOSE -> {
+      case ELEMENT_NAME_END -> {
+        var stackName = elementStack.peek();
+        if (!Arrays.equals(getText(), stackName) && Utils.startsWith(stackName, getText())) {
+          logger.debug(
+              "Correct end tag name from {} to {}",
+              String.valueOf(getText()),
+              String.valueOf(stackName));
+          setText(stackName);
+        }
         switch (peek()) {
-          case ELEMENT_NAME_END -> {
-            var stackName = elementStack.peek();
-            if (!Arrays.equals(getPeekText(), stackName)
-                && Utils.startsWith(stackName, getPeekText())) {
-              logger.debug(
-                  "Correct end tag name from {} to {}",
-                  String.valueOf(getPeekText()),
-                  String.valueOf(stackName));
-              setPeekText(stackName);
-            }
+          case ELEMENT_END -> {
+            pushPeekToBuffer();
+          }
+          case WHITESPACE -> {
             pushPeekToBuffer();
             switch (peek()) {
               case ELEMENT_END -> {
                 pushPeekToBuffer();
-              }
-              case WHITESPACE -> {
-                pushPeekToBuffer();
-                switch (peek()) {
-                  case ELEMENT_END -> {
-                    pushPeekToBuffer();
-                  }
-                  default -> {
-                    pushToBuffer(TokenType.ELEMENT_END, new char[] {'>'}, -1, -1, -1);
-                    pushPeekToBuffer();
-                  }
-                }
               }
               default -> {
                 pushToBuffer(TokenType.ELEMENT_END, new char[] {'>'}, -1, -1, -1);
@@ -86,6 +76,7 @@ public class XmlFilter extends AbstractXmlFilter {
             }
           }
           default -> {
+            pushToBuffer(TokenType.ELEMENT_END, new char[] {'>'}, -1, -1, -1);
             pushPeekToBuffer();
           }
         }
