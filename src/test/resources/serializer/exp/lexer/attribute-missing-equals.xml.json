@@ -35,10 +35,269 @@
     "offset": 10
   },
   {
-    "type": "EOF",
-    "text": "",
+    "type": "CHAR_DATA",
+    "text": "\n",
     "line": 1,
     "column": 13,
     "offset": 12
+  },
+  {
+    "type": "ELEMENT_START",
+    "text": "<",
+    "line": 2,
+    "column": 1,
+    "offset": 13
+  },
+  {
+    "type": "ELEMENT_NAME_START",
+    "text": "elem",
+    "line": 2,
+    "column": 2,
+    "offset": 14
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 2,
+    "column": 6,
+    "offset": 18
+  },
+  {
+    "type": "ATTR_NAME",
+    "text": "attr",
+    "line": 2,
+    "column": 7,
+    "offset": 19
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 2,
+    "column": 11,
+    "offset": 23
+  },
+  {
+    "type": "EMPTY_ELEMENT_END",
+    "text": "/>",
+    "line": 2,
+    "column": 12,
+    "offset": 24
+  },
+  {
+    "type": "CHAR_DATA",
+    "text": "\n",
+    "line": 2,
+    "column": 14,
+    "offset": 26
+  },
+  {
+    "type": "ELEMENT_START",
+    "text": "<",
+    "line": 3,
+    "column": 1,
+    "offset": 27
+  },
+  {
+    "type": "ELEMENT_NAME_START",
+    "text": "elem",
+    "line": 3,
+    "column": 2,
+    "offset": 28
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 3,
+    "column": 6,
+    "offset": 32
+  },
+  {
+    "type": "ATTR_NAME",
+    "text": "attr",
+    "line": 3,
+    "column": 7,
+    "offset": 33
+  },
+  {
+    "type": "ELEMENT_END",
+    "text": ">",
+    "line": 3,
+    "column": 11,
+    "offset": 37
+  },
+  {
+    "type": "ELEMENT_CLOSE",
+    "text": "</",
+    "line": 3,
+    "column": 12,
+    "offset": 38
+  },
+  {
+    "type": "ELEMENT_NAME_END",
+    "text": "elem",
+    "line": 3,
+    "column": 14,
+    "offset": 40
+  },
+  {
+    "type": "ELEMENT_END",
+    "text": ">",
+    "line": 3,
+    "column": 18,
+    "offset": 44
+  },
+  {
+    "type": "CHAR_DATA",
+    "text": "\n",
+    "line": 3,
+    "column": 19,
+    "offset": 45
+  },
+  {
+    "type": "ELEMENT_START",
+    "text": "<",
+    "line": 4,
+    "column": 1,
+    "offset": 46
+  },
+  {
+    "type": "ELEMENT_NAME_START",
+    "text": "elem",
+    "line": 4,
+    "column": 2,
+    "offset": 47
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 4,
+    "column": 6,
+    "offset": 51
+  },
+  {
+    "type": "ATTR_NAME",
+    "text": "attr",
+    "line": 4,
+    "column": 7,
+    "offset": 52
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 4,
+    "column": 11,
+    "offset": 56
+  },
+  {
+    "type": "ELEMENT_END",
+    "text": ">",
+    "line": 4,
+    "column": 12,
+    "offset": 57
+  },
+  {
+    "type": "ELEMENT_CLOSE",
+    "text": "</",
+    "line": 4,
+    "column": 13,
+    "offset": 58
+  },
+  {
+    "type": "ELEMENT_NAME_END",
+    "text": "elem",
+    "line": 4,
+    "column": 15,
+    "offset": 60
+  },
+  {
+    "type": "ELEMENT_END",
+    "text": ">",
+    "line": 4,
+    "column": 19,
+    "offset": 64
+  },
+  {
+    "type": "CHAR_DATA",
+    "text": "\n",
+    "line": 4,
+    "column": 20,
+    "offset": 65
+  },
+  {
+    "type": "ELEMENT_START",
+    "text": "<",
+    "line": 5,
+    "column": 1,
+    "offset": 66
+  },
+  {
+    "type": "ELEMENT_NAME_START",
+    "text": "elem",
+    "line": 5,
+    "column": 2,
+    "offset": 67
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 5,
+    "column": 6,
+    "offset": 71
+  },
+  {
+    "type": "ATTR_NAME",
+    "text": "attr",
+    "line": 5,
+    "column": 7,
+    "offset": 72
+  },
+  {
+    "type": "WHITESPACE",
+    "text": " ",
+    "line": 5,
+    "column": 11,
+    "offset": 76
+  },
+  {
+    "type": "ATTR_NAME",
+    "text": "next",
+    "line": 5,
+    "column": 12,
+    "offset": 77
+  },
+  {
+    "type": "EQUALS",
+    "text": "=",
+    "line": 5,
+    "column": 16,
+    "offset": 81
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 5,
+    "column": 17,
+    "offset": 82
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": 5,
+    "column": 18,
+    "offset": 83
+  },
+  {
+    "type": "EMPTY_ELEMENT_END",
+    "text": "/>",
+    "line": 5,
+    "column": 19,
+    "offset": 84
+  },
+  {
+    "type": "EOF",
+    "text": "",
+    "line": 5,
+    "column": 21,
+    "offset": 86
   }
 ]
