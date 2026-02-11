@@ -112,6 +112,20 @@
     "offset": 30
   },
   {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": -1,
+    "column": -1,
+    "offset": -1
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": -1,
+    "column": -1,
+    "offset": -1
+  },
+  {
     "type": "EMPTY_ELEMENT_END",
     "text": "/>",
     "line": 2,
@@ -161,6 +175,20 @@
     "offset": 44
   },
   {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": -1,
+    "column": -1,
+    "offset": -1
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": -1,
+    "column": -1,
+    "offset": -1
+  },
+  {
     "type": "EMPTY_ELEMENT_END",
     "text": "/>",
     "line": 3,
@@ -208,6 +236,20 @@
     "line": 4,
     "column": 11,
     "offset": 59
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": -1,
+    "column": -1,
+    "offset": -1
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": -1,
+    "column": -1,
+    "offset": -1
   },
   {
     "type": "ELEMENT_END",
@@ -278,6 +320,20 @@
     "line": 5,
     "column": 11,
     "offset": 79
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": -1,
+    "column": -1,
+    "offset": -1
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": -1,
+    "column": -1,
+    "offset": -1
   },
   {
     "type": "ELEMENT_END",

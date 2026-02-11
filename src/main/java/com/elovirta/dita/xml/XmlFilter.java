@@ -17,25 +17,36 @@ public class XmlFilter extends AbstractXmlFilter {
   void filter() {
     switch (getType()) {
       case EQUALS -> {
-        switch (peek()) {
-          case WHITESPACE -> {
-            clearPeek();
-          }
-          case ATTR_NAME -> {
-            pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
-            pushPeekToBuffer();
-            switch (peek()) {
-              case ATTR_QUOTE -> {
-                pushPeekToBuffer();
-              }
-              default -> {
-                pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
-                pushPeekToBuffer();
-              }
+        while (true) {
+          switch (peek()) {
+            case WHITESPACE -> {
+              clearPeek();
+              continue;
             }
-          }
-          default -> {
-            pushPeekToBuffer();
+            case ATTR_NAME -> {
+              pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
+              pushPeekToBuffer();
+              switch (peek()) {
+                case ATTR_QUOTE -> {
+                  pushPeekToBuffer();
+                }
+                default -> {
+                  pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
+                  pushPeekToBuffer();
+                }
+              }
+              return;
+            }
+            case ELEMENT_END, EMPTY_ELEMENT_END -> {
+              pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
+              pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
+              pushPeekToBuffer();
+              return;
+            }
+            default -> {
+              pushPeekToBuffer();
+              return;
+            }
           }
         }
       }
