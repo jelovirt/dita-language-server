@@ -1,5 +1,7 @@
 package com.elovirta.dita.xml;
 
+import static com.elovirta.dita.xml.XmlLexer.TokenType.ATTR_VALUE;
+
 import com.elovirta.dita.Utils;
 import java.util.Arrays;
 import org.slf4j.Logger;
@@ -25,21 +27,22 @@ public class XmlFilter extends AbstractXmlFilter {
             }
             case ATTR_NAME -> {
               pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
-              pushPeekToBuffer();
-              switch (peek()) {
-                case ATTR_QUOTE -> {
-                  pushPeekToBuffer();
-                }
-                default -> {
-                  pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
-                  pushPeekToBuffer();
-                }
-              }
+              pushPeekToBufferAs(ATTR_VALUE);
               return;
+              //              switch (peek()) {
+              //                case ATTR_QUOTE -> {
+              //                  pushPeekToBuffer();
+              //                }
+              //                default -> {
+              //                  pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -2);
+              //                  pushPeekToBuffer();
+              //                }
+              //              }
+              //              return;
             }
             case ELEMENT_END, EMPTY_ELEMENT_END -> {
-              pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
-              pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
+              pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -3);
+              pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -4);
               pushPeekToBuffer();
               return;
             }
@@ -62,7 +65,7 @@ public class XmlFilter extends AbstractXmlFilter {
               return;
             }
             default -> {
-              pushToBuffer(TokenType.EQUALS, new char[] {'='}, -1, -1, -1);
+              pushToBuffer(TokenType.EQUALS, new char[] {'='}, -1, -1, -5);
               pushPeekToBuffer();
               return;
             }
@@ -75,7 +78,7 @@ public class XmlFilter extends AbstractXmlFilter {
             pushPeekToBuffer();
           }
           default -> {
-            pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
+            pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -6);
             pushPeekToBuffer();
           }
         }
@@ -100,7 +103,7 @@ public class XmlFilter extends AbstractXmlFilter {
               continue;
             }
             default -> {
-              pushToBuffer(TokenType.ELEMENT_END, new char[] {'>'}, -1, -1, -1);
+              pushToBuffer(TokenType.ELEMENT_END, new char[] {'>'}, -1, -1, -7);
               pushPeekToBuffer();
               return;
             }

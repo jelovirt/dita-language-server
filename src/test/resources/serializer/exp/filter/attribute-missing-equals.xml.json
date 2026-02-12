@@ -32,21 +32,21 @@
     "text": "=",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -5
   },
   {
     "type": "ATTR_QUOTE",
     "text": "\"",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -3
   },
   {
     "type": "ATTR_QUOTE",
     "text": "\"",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -4
   },
   {
     "type": "EMPTY_ELEMENT_END",
@@ -95,21 +95,21 @@
     "text": "=",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -5
   },
   {
     "type": "ATTR_QUOTE",
     "text": "\"",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -3
   },
   {
     "type": "ATTR_QUOTE",
     "text": "\"",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -4
   },
   {
     "type": "EMPTY_ELEMENT_END",
@@ -158,21 +158,21 @@
     "text": "=",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -5
   },
   {
     "type": "ATTR_QUOTE",
     "text": "\"",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -3
   },
   {
     "type": "ATTR_QUOTE",
     "text": "\"",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -4
   },
   {
     "type": "ELEMENT_END",
@@ -242,21 +242,21 @@
     "text": "=",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -5
   },
   {
     "type": "ATTR_QUOTE",
     "text": "\"",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -3
   },
   {
     "type": "ATTR_QUOTE",
     "text": "\"",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -4
   },
   {
     "type": "ELEMENT_END",
@@ -326,21 +326,7 @@
     "text": "=",
     "line": -1,
     "column": -1,
-    "offset": -1
-  },
-  {
-    "type": "ATTR_NAME",
-    "text": "next",
-    "line": 5,
-    "column": 12,
-    "offset": 77
-  },
-  {
-    "type": "EQUALS",
-    "text": "=",
-    "line": -1,
-    "column": -1,
-    "offset": -1
+    "offset": -5
   },
   {
     "type": "ATTR_QUOTE",
@@ -348,6 +334,20 @@
     "line": -1,
     "column": -1,
     "offset": -1
+  },
+  {
+    "type": "ATTR_VALUE",
+    "text": "next",
+    "line": 5,
+    "column": 12,
+    "offset": 77
+  },
+  {
+    "type": "ATTR_QUOTE",
+    "text": "\"",
+    "line": -1,
+    "column": -1,
+    "offset": -6
   },
   {
     "type": "EQUALS",

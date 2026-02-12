@@ -155,6 +155,20 @@ public abstract class AbstractXmlFilter implements XmlLexer {
     clearPeek();
   }
 
+  /**
+   * Push peeked token to buffer but change token type.
+   *
+   * @param type new token type
+   */
+  void pushPeekToBufferAs(TokenType type) {
+    typeBuffer.addLast(type);
+    textBuffer.addLast(peekText);
+    lineBuffer.addLast(peekLine);
+    columnBuffer.addLast(peekColumn);
+    offsetBuffer.addLast(peekOffset);
+    clearPeek();
+  }
+
   void clearPeek() {
     peekType = null;
     peekText = null;

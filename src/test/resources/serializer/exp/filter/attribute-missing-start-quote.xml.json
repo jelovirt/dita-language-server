@@ -35,25 +35,18 @@
     "offset": 10
   },
   {
-    "type": "ATTR_NAME",
-    "text": "value",
-    "line": 1,
-    "column": 12,
-    "offset": 11
-  },
-  {
-    "type": "EQUALS",
-    "text": "=",
-    "line": -1,
-    "column": -1,
-    "offset": -1
-  },
-  {
     "type": "ATTR_QUOTE",
     "text": "\"",
     "line": -1,
     "column": -1,
     "offset": -1
+  },
+  {
+    "type": "ATTR_VALUE",
+    "text": "value",
+    "line": 1,
+    "column": 12,
+    "offset": 11
   },
   {
     "type": "ATTR_QUOTE",
@@ -123,14 +116,14 @@
     "text": "\"",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -3
   },
   {
     "type": "ATTR_QUOTE",
     "text": "\"",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -4
   },
   {
     "type": "EMPTY_ELEMENT_END",
@@ -186,14 +179,14 @@
     "text": "\"",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -3
   },
   {
     "type": "ATTR_QUOTE",
     "text": "\"",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -4
   },
   {
     "type": "EMPTY_ELEMENT_END",
@@ -249,14 +242,14 @@
     "text": "\"",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -3
   },
   {
     "type": "ATTR_QUOTE",
     "text": "\"",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -4
   },
   {
     "type": "ELEMENT_END",
@@ -333,14 +326,14 @@
     "text": "\"",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -3
   },
   {
     "type": "ATTR_QUOTE",
     "text": "\"",
     "line": -1,
     "column": -1,
-    "offset": -1
+    "offset": -4
   },
   {
     "type": "ELEMENT_END",
