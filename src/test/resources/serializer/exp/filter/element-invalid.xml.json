@@ -35,13 +35,6 @@
     "offset": 8
   },
   {
-    "type": "WHITESPACE",
-    "text": "\n",
-    "line": 1,
-    "column": 13,
-    "offset": 12
-  },
-  {
     "type": "ELEMENT_END",
     "text": ">",
     "line": -1,

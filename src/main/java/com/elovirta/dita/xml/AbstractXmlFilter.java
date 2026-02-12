@@ -164,16 +164,21 @@ public abstract class AbstractXmlFilter implements XmlLexer {
   }
 
   XmlLexerImpl.TokenType peek() {
+    if (!typeBuffer.isEmpty()) {
+      peekType = typeBuffer.pop();
+      peekText = textBuffer.removeFirst();
+      peekLine = lineBuffer.removeFirst();
+      peekColumn = columnBuffer.removeFirst();
+      peekOffset = offsetBuffer.removeFirst();
+      return peekType;
+    }
     parent.next();
-    var type = parent.getType();
-
-    peekType = type;
+    peekType = parent.getType();
     peekText = parent.getText();
     peekLine = parent.getLine();
     peekColumn = parent.getColumn();
     peekOffset = parent.getOffset();
-
-    return type;
+    return peekType;
   }
 
   XmlLexerImpl.TokenType popLast() {
