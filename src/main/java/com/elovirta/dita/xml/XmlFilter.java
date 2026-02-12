@@ -50,25 +50,25 @@ public class XmlFilter extends AbstractXmlFilter {
           }
         }
       }
-//      case ATTR_NAME -> {
-//        while (true) {
-//          switch (peek()) {
-//            case WHITESPACE -> {
-//              clearPeek();
-//              continue;
-//            }
-//            case EQUALS -> {
-//              pushPeekToBuffer();
-//              return;
-//            }
-//            default -> {
-//              pushToBuffer(TokenType.EQUALS, new char[] {'='}, -1, -1, -1);
-//              pushPeekToBuffer();
-//              return;
-//            }
-//          }
-//        }
-//      }
+      case ATTR_NAME -> {
+        while (true) {
+          switch (peek()) {
+            case WHITESPACE -> {
+              clearPeek();
+              continue;
+            }
+            case EQUALS -> {
+              pushPeekToBuffer();
+              return;
+            }
+            default -> {
+              pushToBuffer(TokenType.EQUALS, new char[] {'='}, -1, -1, -1);
+              pushPeekToBuffer();
+              return;
+            }
+          }
+        }
+      }
       case ATTR_VALUE -> {
         switch (peek()) {
           case ATTR_QUOTE -> {
@@ -89,7 +89,7 @@ public class XmlFilter extends AbstractXmlFilter {
               String.valueOf(stackName));
           setText(stackName);
         }
-        while(true) {
+        while (true) {
           switch (peek()) {
             case ELEMENT_END -> {
               pushPeekToBuffer();
@@ -100,7 +100,7 @@ public class XmlFilter extends AbstractXmlFilter {
               continue;
             }
             default -> {
-              pushToBuffer(TokenType.ELEMENT_END, new char[]{'>'}, -1, -1, -1);
+              pushToBuffer(TokenType.ELEMENT_END, new char[] {'>'}, -1, -1, -1);
               pushPeekToBuffer();
               return;
             }
