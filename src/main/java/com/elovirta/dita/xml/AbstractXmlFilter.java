@@ -7,19 +7,19 @@ public abstract class AbstractXmlFilter implements XmlLexer {
 
   private final XmlLexer parent;
 
-  private final Deque<XmlLexerImpl.TokenType> typeBuffer = new ArrayDeque<>();
+  private final Deque<XmlLexer.TokenType> typeBuffer = new ArrayDeque<>();
   private final Deque<char[]> textBuffer = new ArrayDeque<>();
   private final Deque<Integer> lineBuffer = new ArrayDeque<>();
   private final Deque<Integer> columnBuffer = new ArrayDeque<>();
   private final Deque<Integer> offsetBuffer = new ArrayDeque<>();
 
-  private XmlLexerImpl.TokenType currentType;
+  private XmlLexer.TokenType currentType;
   private char[] currentText;
   private int currentLine;
   private int currentColumn;
   private int currentOffset;
 
-  private XmlLexerImpl.TokenType peekType;
+  private XmlLexer.TokenType peekType;
   private char[] peekText;
   private int peekLine;
   private int peekColumn;
@@ -45,7 +45,7 @@ public abstract class AbstractXmlFilter implements XmlLexer {
   }
 
   @Override
-  public XmlLexerImpl.TokenType next() {
+  public XmlLexer.TokenType next() {
     if (!typeBuffer.isEmpty()) {
       setCurrentToken(
           typeBuffer.removeFirst(),
@@ -91,7 +91,7 @@ public abstract class AbstractXmlFilter implements XmlLexer {
   }
 
   @Override
-  public XmlLexerImpl.TokenType getType() {
+  public XmlLexer.TokenType getType() {
     return currentType;
   }
 
@@ -128,7 +128,7 @@ public abstract class AbstractXmlFilter implements XmlLexer {
   }
 
   private void setCurrentToken(
-      XmlLexerImpl.TokenType type, char[] text, int line, int column, int offset) {
+      XmlLexer.TokenType type, char[] text, int line, int column, int offset) {
     currentType = type;
     currentText = text;
     currentLine = line;
@@ -138,7 +138,7 @@ public abstract class AbstractXmlFilter implements XmlLexer {
 
   abstract void filter();
 
-  void pushToBuffer(XmlLexerImpl.TokenType type, char[] text, int line, int column, int offset) {
+  void pushToBuffer(XmlLexer.TokenType type, char[] text, int line, int column, int offset) {
     typeBuffer.addLast(type);
     textBuffer.addLast(text);
     lineBuffer.addLast(line);
@@ -177,7 +177,7 @@ public abstract class AbstractXmlFilter implements XmlLexer {
     peekOffset = -1;
   }
 
-  XmlLexerImpl.TokenType peek() {
+  XmlLexer.TokenType peek() {
     if (!typeBuffer.isEmpty()) {
       peekType = typeBuffer.pop();
       peekText = textBuffer.removeFirst();
@@ -195,7 +195,7 @@ public abstract class AbstractXmlFilter implements XmlLexer {
     return peekType;
   }
 
-  XmlLexerImpl.TokenType popLast() {
+  XmlLexer.TokenType popLast() {
     var type = typeBuffer.pop();
     textBuffer.removeFirst();
     lineBuffer.removeFirst();

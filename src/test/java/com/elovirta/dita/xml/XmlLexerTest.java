@@ -74,8 +74,7 @@ public class XmlLexerTest {
     }
   }
 
-  private record Event(
-      XmlLexerImpl.TokenType type, String text, int line, int column, int offset) {}
+  private record Event(XmlLexer.TokenType type, String text, int line, int column, int offset) {}
 
   private String readResource(String name) {
     try (InputStream in = getClass().getResourceAsStream(name)) {

@@ -35,7 +35,7 @@ class AbstractXmlFilterTest {
         new AbstractXmlFilter(parent) {
           @Override
           void filter() {
-            if (getType() == XmlLexerImpl.TokenType.ELEMENT_NAME_START) {
+            if (getType() == XmlLexer.TokenType.ELEMENT_NAME_START) {
               peek();
               clearPeek();
             }
@@ -56,7 +56,7 @@ class AbstractXmlFilterTest {
         new AbstractXmlFilter(parent) {
           @Override
           void filter() {
-            if (getType() == XmlLexerImpl.TokenType.ELEMENT_NAME_START) {
+            if (getType() == XmlLexer.TokenType.ELEMENT_NAME_START) {
               pushToBuffer(TokenType.WHITESPACE, new char[] {' '}, -1, -1, -1);
             }
           }
