@@ -17,7 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 public class XmlFilterTest {
 
-  private final XmlFilter lexer = new XmlFilter(new XmlLexerImpl(true));
+  private final XmlLexer lexer = new XmlFilter(new XmlLexerImpl(true));
   final Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
   @ParameterizedTest
@@ -28,8 +28,14 @@ public class XmlFilterTest {
         "element-invalid.xml",
         "attribute.xml",
         "attribute-missing-end-quote.xml",
+        "attribute-missing-end-quote-empty-element.xml",
+        "attribute-missing-end-quote-missing-gt.xml",
         "attribute-missing-quotes.xml",
+        "attribute-missing-quotes-empty-element.xml",
+        "attribute-missing-quotes-empty-element-with-space.xml",
+        "attribute-missing-quotes-missing-gt.xml",
         "attribute-missing-start-quote.xml",
+        "attribute-missing-equals.xml",
         "attribute-ns.xml",
         "comment.xml",
         "doctype.xml",
@@ -68,8 +74,7 @@ public class XmlFilterTest {
     }
   }
 
-  private record Event(
-      XmlLexerImpl.TokenType type, String text, int line, int column, int offset) {}
+  private record Event(XmlLexer.TokenType type, String text, int line, int column, int offset) {}
 
   private String readResource(String name) {
     try (InputStream in = getClass().getResourceAsStream(name)) {

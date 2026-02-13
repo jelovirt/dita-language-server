@@ -36,7 +36,7 @@ public class XmlSerializer {
     lexer.setInput(input);
 
     while (lexer.hasNext()) {
-      XmlLexerImpl.TokenType type = lexer.next();
+      XmlLexer.TokenType type = lexer.next();
 
       switch (type) {
         case XML_DECL_START:
@@ -96,8 +96,8 @@ public class XmlSerializer {
 
   private void skipXmlDecl() {
     while (lexer.hasNext()) {
-      XmlLexerImpl.TokenType type = lexer.next();
-      if (type == XmlLexerImpl.TokenType.XML_DECL_END) {
+      XmlLexer.TokenType type = lexer.next();
+      if (type == XmlLexer.TokenType.XML_DECL_END) {
         break;
       }
     }
@@ -105,8 +105,8 @@ public class XmlSerializer {
 
   private void skipComment() {
     while (lexer.hasNext()) {
-      XmlLexerImpl.TokenType type = lexer.next();
-      if (type == XmlLexerImpl.TokenType.COMMENT_END) {
+      XmlLexer.TokenType type = lexer.next();
+      if (type == XmlLexer.TokenType.COMMENT_END) {
         break;
       }
     }
@@ -116,10 +116,10 @@ public class XmlSerializer {
     writer.write(lexer.getText());
 
     while (lexer.hasNext()) {
-      XmlLexerImpl.TokenType type = lexer.next();
+      XmlLexer.TokenType type = lexer.next();
       writer.write(lexer.getText());
 
-      if (type == XmlLexerImpl.TokenType.DOCTYPE_END) {
+      if (type == XmlLexer.TokenType.DOCTYPE_END) {
         break;
       }
     }
@@ -132,8 +132,8 @@ public class XmlSerializer {
       return;
     }
 
-    XmlLexerImpl.TokenType type = lexer.next();
-    if (type != XmlLexerImpl.TokenType.ELEMENT_NAME_START) {
+    XmlLexer.TokenType type = lexer.next();
+    if (type != XmlLexer.TokenType.ELEMENT_NAME_START) {
       writer.write(lexer.getText());
       return;
     }
@@ -195,8 +195,7 @@ public class XmlSerializer {
     while (lexer.hasNext()) {
       type = lexer.next();
 
-      if (type == XmlLexerImpl.TokenType.ELEMENT_END
-          || type == XmlLexerImpl.TokenType.EMPTY_ELEMENT_END) {
+      if (type == XmlLexer.TokenType.ELEMENT_END || type == XmlLexer.TokenType.EMPTY_ELEMENT_END) {
         // Write all buffered content
         writer.write(bufferedContent.toString());
 
@@ -240,7 +239,7 @@ public class XmlSerializer {
         // Write closing '>' or '/>'
         writer.write(lexer.getText());
         break;
-      } else if (type == XmlLexerImpl.TokenType.ATTR_NAME) {
+      } else if (type == XmlLexer.TokenType.ATTR_NAME) {
         String attrName = new String(lexer.getText());
         bufferedContent.append(lexer.getText());
 
@@ -258,12 +257,12 @@ public class XmlSerializer {
           type = lexer.next();
           bufferedContent.append(lexer.getText());
 
-          if (type == XmlLexerImpl.TokenType.ATTR_QUOTE) {
+          if (type == XmlLexer.TokenType.ATTR_QUOTE) {
             if (!foundValue) {
               // Opening quote - next token should be the value
               if (lexer.hasNext()) {
                 type = lexer.next();
-                if (type == XmlLexerImpl.TokenType.ATTR_VALUE) {
+                if (type == XmlLexer.TokenType.ATTR_VALUE) {
                   // Record location of attribute value
                   valueStartLine = lexer.getLine();
                   valueStartColumn = lexer.getColumn();
@@ -274,7 +273,7 @@ public class XmlSerializer {
                     namespaceUri.append(lexer.getText());
                   }
                   foundValue = true;
-                } else if (type == XmlLexerImpl.TokenType.ATTR_QUOTE) {
+                } else if (type == XmlLexer.TokenType.ATTR_QUOTE) {
                   // Empty attribute value
                   valueStartLine = lexer.getLine();
                   valueStartColumn = lexer.getColumn();
@@ -291,15 +290,13 @@ public class XmlSerializer {
               }
               break;
             }
-          } else if (type == XmlLexerImpl.TokenType.ENTITY_REF
-              || type == XmlLexerImpl.TokenType.CHAR_REF) {
+          } else if (type == XmlLexer.TokenType.ENTITY_REF || type == XmlLexer.TokenType.CHAR_REF) {
             // References in attribute values - update end position
             if (foundValue) {
               valueEndLine = lexer.getLine();
               valueEndColumn = lexer.getColumn() + lexer.getText().length - 1;
             }
-          } else if (type == XmlLexerImpl.TokenType.EQUALS
-              || type == XmlLexerImpl.TokenType.WHITESPACE) {
+          } else if (type == XmlLexer.TokenType.EQUALS || type == XmlLexer.TokenType.WHITESPACE) {
             // Continue
           } else {
             // Something else, break out

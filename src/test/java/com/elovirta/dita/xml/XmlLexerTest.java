@@ -28,8 +28,14 @@ public class XmlLexerTest {
         "element-invalid.xml",
         "attribute.xml",
         "attribute-missing-end-quote.xml",
+        "attribute-missing-end-quote-empty-element.xml",
+        "attribute-missing-end-quote-missing-gt.xml",
         "attribute-missing-quotes.xml",
+        "attribute-missing-quotes-empty-element.xml",
+        "attribute-missing-quotes-empty-element-with-space.xml",
+        "attribute-missing-quotes-missing-gt.xml",
         "attribute-missing-start-quote.xml",
+        "attribute-missing-equals.xml",
         "attribute-ns.xml",
         "comment.xml",
         "doctype.xml",
@@ -68,8 +74,7 @@ public class XmlLexerTest {
     }
   }
 
-  private record Event(
-      XmlLexerImpl.TokenType type, String text, int line, int column, int offset) {}
+  private record Event(XmlLexer.TokenType type, String text, int line, int column, int offset) {}
 
   private String readResource(String name) {
     try (InputStream in = getClass().getResourceAsStream(name)) {

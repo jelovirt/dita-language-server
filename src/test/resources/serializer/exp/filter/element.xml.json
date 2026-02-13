@@ -91,13 +91,6 @@
     "offset": 23
   },
   {
-    "type": "WHITESPACE",
-    "text": " ",
-    "line": 2,
-    "column": 14,
-    "offset": 27
-  },
-  {
     "type": "ELEMENT_END",
     "text": ">",
     "line": 2,

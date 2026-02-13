@@ -1,5 +1,7 @@
 package com.elovirta.dita.xml;
 
+import static com.elovirta.dita.xml.XmlLexer.TokenType.ATTR_VALUE;
+
 import com.elovirta.dita.Utils;
 import java.util.Arrays;
 import org.slf4j.Logger;
@@ -15,75 +17,97 @@ public class XmlFilter extends AbstractXmlFilter {
 
   @Override
   void filter() {
-    if (getType() == XmlLexerImpl.TokenType.EQUALS) {
-      switch (peek()) {
-        case WHITESPACE -> {
-          clearPeek();
-        }
-        case ATTR_NAME -> {
-          pushToBuffer(XmlLexerImpl.TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
-          pushPeekToBuffer();
+    switch (getType()) {
+      case EQUALS -> {
+        while (true) {
           switch (peek()) {
-            case ATTR_QUOTE -> {
+            case WHITESPACE -> {
+              clearPeek();
+              continue;
+            }
+            case ATTR_NAME -> {
+              pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
+              pushPeekToBufferAs(ATTR_VALUE);
+              return;
+              //              switch (peek()) {
+              //                case ATTR_QUOTE -> {
+              //                  pushPeekToBuffer();
+              //                }
+              //                default -> {
+              //                  pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -2);
+              //                  pushPeekToBuffer();
+              //                }
+              //              }
+              //              return;
+            }
+            case ELEMENT_END, EMPTY_ELEMENT_END -> {
+              pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -3);
+              pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -4);
               pushPeekToBuffer();
+              return;
             }
             default -> {
-              pushToBuffer(XmlLexerImpl.TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
               pushPeekToBuffer();
+              return;
             }
           }
         }
-        default -> {
-          pushPeekToBuffer();
-        }
       }
-    } else if (getType() == XmlLexerImpl.TokenType.ATTR_VALUE) {
-      switch (peek()) {
-        case ATTR_QUOTE -> {
-          pushPeekToBuffer();
-        }
-        default -> {
-          pushToBuffer(XmlLexerImpl.TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
-          pushPeekToBuffer();
-        }
-      }
-    } else if (getType() == XmlLexerImpl.TokenType.ELEMENT_CLOSE) {
-      switch (peek()) {
-        case ELEMENT_NAME_END -> {
-          var stackName = elementStack.peek();
-          if (!Arrays.equals(getPeekText(), stackName)
-              && Utils.startsWith(stackName, getPeekText())) {
-            logger.debug(
-                "Correct end tag name from {} to {}",
-                String.valueOf(getPeekText()),
-                String.valueOf(stackName));
-            setPeekText(stackName);
+      case ATTR_NAME -> {
+        while (true) {
+          switch (peek()) {
+            case WHITESPACE -> {
+              clearPeek();
+              continue;
+            }
+            case EQUALS -> {
+              pushPeekToBuffer();
+              return;
+            }
+            default -> {
+              pushToBuffer(TokenType.EQUALS, new char[] {'='}, -1, -1, -5);
+              pushPeekToBuffer();
+              return;
+            }
           }
-          pushPeekToBuffer();
+        }
+      }
+      case ATTR_VALUE -> {
+        switch (peek()) {
+          case ATTR_QUOTE -> {
+            pushPeekToBuffer();
+          }
+          default -> {
+            pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -6);
+            pushPeekToBuffer();
+          }
+        }
+      }
+      case ELEMENT_NAME_END -> {
+        var stackName = elementStack.peek();
+        if (!Arrays.equals(getText(), stackName) && Utils.startsWith(stackName, getText())) {
+          logger.debug(
+              "Correct end tag name from {} to {}",
+              String.valueOf(getText()),
+              String.valueOf(stackName));
+          setText(stackName);
+        }
+        while (true) {
           switch (peek()) {
             case ELEMENT_END -> {
               pushPeekToBuffer();
+              return;
             }
             case WHITESPACE -> {
-              pushPeekToBuffer();
-              switch (peek()) {
-                case ELEMENT_END -> {
-                  pushPeekToBuffer();
-                }
-                default -> {
-                  pushToBuffer(TokenType.ELEMENT_END, new char[] {'>'}, -1, -1, -1);
-                  pushPeekToBuffer();
-                }
-              }
+              clearPeek();
+              continue;
             }
             default -> {
-              pushToBuffer(TokenType.ELEMENT_END, new char[] {'>'}, -1, -1, -1);
+              pushToBuffer(TokenType.ELEMENT_END, new char[] {'>'}, -1, -1, -7);
               pushPeekToBuffer();
+              return;
             }
           }
-        }
-        default -> {
-          pushPeekToBuffer();
         }
       }
     }

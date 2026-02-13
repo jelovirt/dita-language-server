@@ -56,38 +56,10 @@
     "offset": -6
   },
   {
-    "type": "ELEMENT_END",
-    "text": ">",
-    "line": 1,
-    "column": 17,
-    "offset": 16
-  },
-  {
-    "type": "ELEMENT_CLOSE",
-    "text": "</",
-    "line": 1,
-    "column": 18,
-    "offset": 17
-  },
-  {
-    "type": "ELEMENT_NAME_END",
-    "text": "elem",
-    "line": 1,
-    "column": 20,
-    "offset": 19
-  },
-  {
-    "type": "ELEMENT_END",
-    "text": ">",
-    "line": 1,
-    "column": 24,
-    "offset": 23
-  },
-  {
     "type": "EOF",
     "text": "",
     "line": 1,
-    "column": 25,
-    "offset": 24
+    "column": 17,
+    "offset": 16
   }
 ]

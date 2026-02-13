@@ -1,0 +1,5 @@
+<elem attr/>
+<elem attr />
+<elem attr></elem>
+<elem attr ></elem>
+<elem attr next=""/>
