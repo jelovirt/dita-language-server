@@ -1,7 +1,13 @@
 package com.elovirta.dita.xml;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 
 public abstract class AbstractXmlFilter implements XmlLexer {
 
@@ -26,6 +32,8 @@ public abstract class AbstractXmlFilter implements XmlLexer {
   private int peekOffset;
 
   Deque<char[]> elementStack = new ArrayDeque<>();
+
+  private final List<Diagnostic> diagnostics = new ArrayList<>();
 
   public AbstractXmlFilter(XmlLexer parent) {
     this.parent = parent;
@@ -119,12 +127,37 @@ public abstract class AbstractXmlFilter implements XmlLexer {
     return currentOffset;
   }
 
+  public List<Diagnostic> getDiagnostics() {
+    return diagnostics;
+  }
+
+  void diagnostic(String msg, int line, int column, int pos) {
+    Diagnostic diagnostic = new Diagnostic();
+    diagnostic.setMessage(msg);
+    diagnostic.setSeverity(DiagnosticSeverity.Error);
+    // FIXME
+    diagnostic.setRange(new Range(new Position(line, column), new Position(line, column)));
+    // diagnostics.add(diagnostic);
+  }
+
   char[] getPeekText() {
     return peekText;
   }
 
   void setPeekText(char[] peekText) {
     this.peekText = peekText;
+  }
+
+  int getPeekLine() {
+    return peekLine;
+  }
+
+  int getPeekColumn() {
+    return peekColumn;
+  }
+
+  int getPeekOffset() {
+    return peekOffset;
   }
 
   private void setCurrentToken(

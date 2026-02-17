@@ -1,6 +1,8 @@
 package com.elovirta.dita.xml;
 
+import java.util.List;
 import java.util.NoSuchElementException;
+import org.eclipse.lsp4j.Diagnostic;
 
 public class XmlLexerImpl implements XmlLexer {
 
@@ -93,6 +95,11 @@ public class XmlLexerImpl implements XmlLexer {
   @Override
   public int getOffset() {
     return currentOffset;
+  }
+
+  @Override
+  public List<Diagnostic> getDiagnostics() {
+    throw new UnsupportedOperationException();
   }
 
   private TokenType nextToken() {

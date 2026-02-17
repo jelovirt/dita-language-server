@@ -27,23 +27,23 @@ public class XmlFilter extends AbstractXmlFilter {
             }
             case ATTR_NAME -> {
               pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -1);
+              diagnostic(
+                  "Open quote is expected for attribute",
+                  getPeekLine(),
+                  getPeekColumn(),
+                  getPeekOffset());
               pushPeekToBufferAs(ATTR_VALUE);
               return;
-              //              switch (peek()) {
-              //                case ATTR_QUOTE -> {
-              //                  pushPeekToBuffer();
-              //                }
-              //                default -> {
-              //                  pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -2);
-              //                  pushPeekToBuffer();
-              //                }
-              //              }
-              //              return;
             }
             case ELEMENT_END, EMPTY_ELEMENT_END -> {
               pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -3);
               pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -4);
               pushPeekToBuffer();
+              diagnostic(
+                  "Open quote is expected for attribute",
+                  getPeekLine(),
+                  getPeekColumn(),
+                  getPeekOffset());
               return;
             }
             default -> {
@@ -67,6 +67,11 @@ public class XmlFilter extends AbstractXmlFilter {
             default -> {
               pushToBuffer(TokenType.EQUALS, new char[] {'='}, -1, -1, -5);
               pushPeekToBuffer();
+              diagnostic(
+                  "1 Attribute must be followed by '=' character",
+                  getPeekLine(),
+                  getPeekColumn(),
+                  getPeekOffset());
               return;
             }
           }
@@ -79,6 +84,11 @@ public class XmlFilter extends AbstractXmlFilter {
           }
           default -> {
             pushToBuffer(TokenType.ATTR_QUOTE, new char[] {'"'}, -1, -1, -6);
+            diagnostic(
+                "Close quote is expected for attribute",
+                getPeekLine(),
+                getPeekColumn(),
+                getPeekOffset());
             pushPeekToBuffer();
           }
         }
@@ -86,6 +96,11 @@ public class XmlFilter extends AbstractXmlFilter {
       case ELEMENT_NAME_END -> {
         var stackName = elementStack.peek();
         if (!Arrays.equals(getText(), stackName) && Utils.startsWith(stackName, getText())) {
+          diagnostic(
+              "End element name doesn't match start element name",
+              getLine(),
+              getColumn(),
+              getOffset());
           logger.debug(
               "Correct end tag name from {} to {}",
               String.valueOf(getText()),
@@ -105,6 +120,11 @@ public class XmlFilter extends AbstractXmlFilter {
             default -> {
               pushToBuffer(TokenType.ELEMENT_END, new char[] {'>'}, -1, -1, -7);
               pushPeekToBuffer();
+              diagnostic(
+                  "End element name must be followed by '>' character",
+                  getPeekLine(),
+                  getPeekColumn(),
+                  getPeekOffset());
               return;
             }
           }

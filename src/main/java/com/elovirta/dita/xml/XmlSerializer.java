@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.*;
+import org.eclipse.lsp4j.Diagnostic;
 
 public class XmlSerializer {
 
@@ -88,6 +89,10 @@ public class XmlSerializer {
     }
 
     writer.flush();
+  }
+
+  public List<Diagnostic> getDiagnostics() {
+    return lexer.getDiagnostics();
   }
 
   private void writeToken() throws IOException {
