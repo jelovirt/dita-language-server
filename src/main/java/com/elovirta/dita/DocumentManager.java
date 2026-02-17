@@ -8,6 +8,7 @@ import static net.sf.saxon.s9api.streams.Predicates.*;
 import static net.sf.saxon.s9api.streams.Steps.attribute;
 import static net.sf.saxon.s9api.streams.Steps.descendant;
 
+import com.elovirta.dita.DitaParser.ParseResult;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -18,6 +19,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.streams.Steps;
+import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +41,8 @@ public class DocumentManager {
   public record DocumentCache(
       XdmNode document,
       Map<String, List<String>> ids,
-      TreeMap<PositionKey, RangeValue<XdmNode>> attributeRanges) {
+      TreeMap<PositionKey, RangeValue<XdmNode>> attributeRanges,
+      List<Diagnostic> diagnostics) {
     public DocumentCache {
       Objects.requireNonNull(document);
       Objects.requireNonNull(ids);
@@ -61,8 +64,10 @@ public class DocumentManager {
             u -> {
               try {
                 logger.info("Parsing {}", u);
-                var doc = ditaParser.parse(Files.readString(Paths.get(u)), uri);
-                return new DocumentCache(doc, readIds(doc), readAttributeLocations(doc));
+                var res = ditaParser.parse(Files.readString(Paths.get(u)), uri);
+                var doc = res.document();
+                return new DocumentCache(
+                    doc, readIds(doc), readAttributeLocations(doc), res.diagnostics());
               } catch (IOException e) {
                 logger.error("Error parsing {}", u, e);
                 return null;
@@ -74,16 +79,18 @@ public class DocumentManager {
     return documentCache;
   }
 
-  public void put(URI uri, XdmNode doc) {
-    openDocuments.put(uri, new DocumentCache(doc, readIds(doc), readAttributeLocations(doc)));
+  public void put(URI uri, XdmNode doc, List<Diagnostic> diagnostics) {
+    openDocuments.put(
+        uri, new DocumentCache(doc, readIds(doc), readAttributeLocations(doc), diagnostics));
   }
 
   public void remove(URI uri) {
     openDocuments.remove(uri);
   }
 
-  public void forEach(BiConsumer<URI, XdmNode> action) {
-    openDocuments.forEach((uri, cache) -> action.accept(uri, cache.document()));
+  public void forEach(BiConsumer<URI, ParseResult> action) {
+    openDocuments.forEach(
+        (uri, cache) -> action.accept(uri, new ParseResult(cache.document(), cache.diagnostics())));
   }
 
   public Collection<String> listIds(URI uri) {
@@ -195,7 +202,9 @@ public class DocumentManager {
                     .ifPresent(
                         a -> {
                           var range = Utils.parseRange(attr.getStringValue());
-                          res.put(new PositionKey(range.getStart()), new RangeValue<>(range, a));
+                          if (range != null) {
+                            res.put(new PositionKey(range.getStart()), new RangeValue<>(range, a));
+                          }
                         }));
     return res;
   }

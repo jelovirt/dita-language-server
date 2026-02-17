@@ -21,7 +21,7 @@ class DocumentManagerTest {
     try (var in = getClass().getClassLoader().getResourceAsStream("topics/valid.dita")) {
       documentManager = new DocumentManager(new DitaParser());
       var doc = new Processor().newDocumentBuilder().build(new StreamSource(in));
-      documentManager.put(URI.create("file:///topics/valid.dita"), doc);
+      documentManager.put(URI.create("file:///topics/valid.dita"), doc, null);
     } catch (SaxonApiException | IOException e) {
       throw new RuntimeException(e);
     }

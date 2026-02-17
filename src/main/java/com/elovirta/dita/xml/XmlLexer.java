@@ -1,6 +1,8 @@
 package com.elovirta.dita.xml;
 
 import java.util.Iterator;
+import java.util.List;
+import org.eclipse.lsp4j.Diagnostic;
 
 public interface XmlLexer extends Iterator<XmlLexer.TokenType> {
   enum TokenType {
@@ -65,4 +67,6 @@ public interface XmlLexer extends Iterator<XmlLexer.TokenType> {
   int getColumn();
 
   int getOffset();
+
+  List<Diagnostic> getDiagnostics();
 }

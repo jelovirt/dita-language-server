@@ -19,7 +19,7 @@ class SubjectSchemeManagerTest {
     var uri = URI.create("classpath:maps/subjectScheme.ditamap");
     var doc = ditaParser.parse(readResource("/maps/subjectScheme.ditamap"), uri);
     subjectSchemeManager = new SubjectSchemeManager();
-    subjectSchemeManager.read(uri, doc);
+    subjectSchemeManager.read(uri, doc.document());
   }
 
   @Test

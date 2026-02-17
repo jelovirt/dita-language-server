@@ -30,8 +30,9 @@ class SchematronValidatorTest {
   @BeforeEach
   void setUp() {
     doc =
-        parser.parse(
-            """
+        parser
+            .parse(
+                """
             <topic xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/"
                    ditaarch:DITAArchVersion="1.3"
                    id="topic">
@@ -39,7 +40,8 @@ class SchematronValidatorTest {
              <body/>
             </topic>
             """,
-            URI.create("file:///topic.dita"));
+                URI.create("file:///topic.dita"))
+            .document();
   }
 
   @Test
@@ -56,7 +58,7 @@ class SchematronValidatorTest {
   //    schematronValidator.setSchematron(URI.create("classpath:topic.sch"));
   //    var act = new ArrayList<Diagnostic>();
   //
-  //    schematronValidator.validate(doc, act);
+  //    schematronValidator.validate(document, act);
   //
   //    assertEquals(
   //        List.of(

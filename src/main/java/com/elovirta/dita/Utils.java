@@ -72,6 +72,9 @@ public class Utils {
   }
 
   public static Range parseRange(String loc) {
+    if (loc == null || loc.charAt(0) == '-') {
+      return null;
+    }
     var tokens = loc.split("[:\\-]");
 
     return new Range(

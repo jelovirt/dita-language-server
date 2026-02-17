@@ -74,7 +74,7 @@ public class DitaTextDocumentService implements TextDocumentService {
         () -> {
           try {
             var content = Files.readString(Paths.get(uri));
-            handleRootMap(uri, parser.parse(content, uri));
+            handleRootMap(uri, parser.parse(content, uri).document());
           } catch (Exception e) {
             logger.error("Failed to parse map document", e);
           }
@@ -305,10 +305,9 @@ public class DitaTextDocumentService implements TextDocumentService {
     URI uri = URI.create(params.getTextDocument().getUri());
     String text = params.getTextDocument().getText();
     try {
-      XdmNode doc = parser.parse(text, uri);
-      documentManager.put(uri, doc);
-
-      validateDocument(uri, doc);
+      var res = parser.parse(text, uri);
+      documentManager.put(uri, res.document(), res.diagnostics());
+      validateDocument(uri, res.document(), res.diagnostics());
     } catch (Exception e) {
       logger.error("Failed to parse document", e);
     }
@@ -324,18 +323,19 @@ public class DitaTextDocumentService implements TextDocumentService {
 
     CompletableFuture.supplyAsync(
             () -> {
-              var doc = parser.parse(text, uri);
-              documentManager.put(uri, doc);
-              return doc;
+              var res = parser.parse(text, uri);
+              documentManager.put(uri, res.document(), res.diagnostics());
+              return res;
             })
         .thenAccept(
             doc -> {
               if (doc != null) {
-                validateDocument(uri, doc);
+                validateDocument(uri, doc.document(), doc.diagnostics());
                 if (Objects.equals(rootMapUri, uri)) {
                   logger.info("Root map changed, do debounced key read and validate all");
                   try {
-                    debouncer.debounce(uri.toString(), () -> handleRootMap(rootMapUri, doc));
+                    debouncer.debounce(
+                        uri.toString(), () -> handleRootMap(rootMapUri, doc.document()));
                   } catch (Exception e) {
                     logger.error("Failed to debounced validate", e);
                   }
@@ -361,13 +361,15 @@ public class DitaTextDocumentService implements TextDocumentService {
   public void revalidateAllOpenDocuments() {
     try {
       logger.info("Revalidating all open documents");
-      documentManager.forEach(this::validateDocument);
+      documentManager.forEach(
+          (uri, parseResult) ->
+              validateDocument(uri, parseResult.document(), parseResult.diagnostics()));
     } catch (Exception e) {
       logger.error("Failed to revalidate all open documents", e);
     }
   }
 
-  private void validateDocument(URI uri, XdmNode content) {
+  private void validateDocument(URI uri, XdmNode content, List<Diagnostic> parseErrors) {
     try {
       LanguageClient client = server.getClient();
       if (client == null) {
@@ -377,6 +379,9 @@ public class DitaTextDocumentService implements TextDocumentService {
 
       var diagnostics = doValidation(content);
       diagnostics.addAll(doSlowValidation(content, uri));
+      if (parseErrors != null && !parseErrors.isEmpty()) {
+        diagnostics.addAll(parseErrors);
+      }
 
       var publishParams = new PublishDiagnosticsParams(uri.toString(), diagnostics);
       client.publishDiagnostics(publishParams);

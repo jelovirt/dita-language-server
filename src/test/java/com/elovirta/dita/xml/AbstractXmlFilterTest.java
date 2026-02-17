@@ -3,6 +3,8 @@ package com.elovirta.dita.xml;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.elovirta.dita.xml.XmlLexer.TokenType;
+import java.util.List;
+import org.eclipse.lsp4j.Diagnostic;
 import org.junit.jupiter.api.Test;
 
 class AbstractXmlFilterTest {
@@ -137,6 +139,11 @@ class AbstractXmlFilterTest {
     @Override
     public int getOffset() {
       return index;
+    }
+
+    @Override
+    public List<Diagnostic> getDiagnostics() {
+      throw new UnsupportedOperationException();
     }
 
     @Override
