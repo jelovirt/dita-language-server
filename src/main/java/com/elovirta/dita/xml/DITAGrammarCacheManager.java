@@ -97,6 +97,7 @@ public class DITAGrammarCacheManager {
     this.pool = new ArrayBlockingQueue<>(capacity);
   }
 
+  /** Acquire a parser from a parser pool. */
   public <T, E extends Exception> T withParser(CheckedFunction<SAXParser, T, E> task) throws E {
     SAXParser parser = acquire();
     try {
@@ -112,7 +113,11 @@ public class DITAGrammarCacheManager {
    */
   private SAXParser createParser() throws SAXNotSupportedException, SAXNotRecognizedException {
     SAXParser parser = new SAXParser();
-    parser.setProperty("http://apache.org/xml/properties/internal/grammar-pool", sharedPool);
+    var grammarPool = new XMLGrammarPoolImpl();
+    grammarPool.cacheGrammars(
+        XMLGrammarDescription.XML_DTD,
+        sharedPool.retrieveInitialGrammarSet(XMLGrammarDescription.XML_DTD));
+    parser.setProperty("http://apache.org/xml/properties/internal/grammar-pool", grammarPool);
     parser.setFeature("http://xml.org/sax/features/validation", true);
     parser.setFeature("http://xml.org/sax/features/namespaces", true);
     //      parser.setFeature("http://apache.org/xml/sax/features/external-general-entities",
@@ -177,6 +182,7 @@ public class DITAGrammarCacheManager {
       return;
     }
     parser.reset();
+    // TODO: Check if this parser parsed any new grammars and add them to shared pool
     boolean returned = pool.offer(parser);
     if (!returned) {
       logger.info("Pool is full, discard parser");
