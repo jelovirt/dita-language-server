@@ -106,15 +106,11 @@ public class DitaParser {
     try (var in = new CharArrayReader(contentWithLocation)) {
       var inputSource = new InputSource(in);
       inputSource.setSystemId(uri.toString());
-      var parser = cacheManager.createParser();
-      return new ParseResult(
-          processor
-              .newDocumentBuilder()
-              .build(
-                  new SAXSource(parser, inputSource)
-                  //                  new StreamSource(in, uri.toString())
-                  ),
-          serializer.getDiagnostics());
+      return cacheManager.withParser(
+          parser ->
+              new ParseResult(
+                  processor.newDocumentBuilder().build(new SAXSource(parser, inputSource)),
+                  serializer.getDiagnostics()));
     } catch (SaxonApiException e) {
       throw new RuntimeException(e);
     }
