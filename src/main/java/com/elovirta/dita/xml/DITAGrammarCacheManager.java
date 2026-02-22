@@ -36,6 +36,10 @@ public class DITAGrammarCacheManager {
   private static final List<XMLDTDDescription> DESCRIPTIONS =
       List.of(
           new XMLDTDDescription("-//OASIS//DTD DITA Topic//EN", null, null, null, "topic"),
+          new XMLDTDDescription("-//OASIS//DTD DITA Concept//EN", null, null, null, "concept"),
+          new XMLDTDDescription("-//OASIS//DTD DITA Task//EN", null, null, null, "task"),
+          new XMLDTDDescription("-//OASIS//DTD DITA Reference//EN", null, null, null, "reference"),
+          new XMLDTDDescription("-//OASIS//DTD DITA Map//EN", null, null, null, "map"),
           new XMLDTDDescription(
               "-//OASIS//DTD DITA Subject Scheme Map//EN", null, null, null, "subjectScheme"));
 
