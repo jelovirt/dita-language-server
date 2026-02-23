@@ -3,7 +3,7 @@ package com.elovirta.dita;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.*;
-import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import net.sf.saxon.s9api.QName;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,8 +15,8 @@ class SubjectSchemeManagerTest {
   private final DitaParser ditaParser = new DitaParser();
 
   @BeforeEach
-  void setUp() {
-    var uri = URI.create("classpath:maps/subjectScheme.ditamap");
+  void setUp() throws URISyntaxException {
+    var uri = getClass().getResource("/maps/subjectScheme.ditamap").toURI();
     var doc = ditaParser.parse(readResource("/maps/subjectScheme.ditamap"), uri);
     subjectSchemeManager = new SubjectSchemeManager();
     subjectSchemeManager.read(uri, doc.document());

@@ -1,3 +1,4 @@
+<!DOCTYPE subjectScheme PUBLIC "-//OASIS//DTD DITA Subject Scheme Map//EN" "subjectScheme.dtd">
 <subjectScheme xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/"
   class="- map/map subjectScheme/subjectScheme "
   domains="(map mapgroup-d)                            (map subjectScheme)                            a(props deliveryTarget)                            (topic hazard-d)                            (topic hi-d)                            (topic ut-d)   "

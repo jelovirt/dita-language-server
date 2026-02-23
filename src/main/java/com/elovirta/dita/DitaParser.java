@@ -1,11 +1,13 @@
 package com.elovirta.dita;
 
+import com.elovirta.dita.xml.DITAGrammarCacheManager;
 import com.elovirta.dita.xml.XmlSerializer;
 import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.lib.*;
@@ -14,6 +16,7 @@ import net.sf.saxon.s9api.*;
 import org.eclipse.lsp4j.Diagnostic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.InputSource;
 import org.xmlresolver.*;
 import org.xmlresolver.logging.DefaultLogger;
 
@@ -24,6 +27,7 @@ public class DitaParser {
   private final Resolver catalogResolver;
   private final Processor processor;
   private final XsltExecutable mergeExecutable;
+  private final DITAGrammarCacheManager cacheManager;
 
   public DitaParser() {
     XMLResolverConfiguration config = new XMLResolverConfiguration();
@@ -36,7 +40,7 @@ public class DitaParser {
     config.setFeature(ResolverFeature.LOGGER_LOG_LEVEL, "info");
     config.setFeature(ResolverFeature.CATALOG_FILES, List.of("classpath:/schemas/catalog.xml"));
     this.catalogResolver = new Resolver(config);
-
+    this.cacheManager = new DITAGrammarCacheManager(this.catalogResolver);
     Configuration configuration = Configuration.newConfiguration();
     //    configuration.setResourceResolver(new CatalogResourceResolver(catalogResolver));
     var resolver = new CatalogResourceResolver(catalogResolver);
@@ -100,9 +104,13 @@ public class DitaParser {
       throw new RuntimeException(e);
     }
     try (var in = new CharArrayReader(contentWithLocation)) {
-      return new ParseResult(
-          processor.newDocumentBuilder().build(new StreamSource(in, uri.toString())),
-          serializer.getDiagnostics());
+      var inputSource = new InputSource(in);
+      inputSource.setSystemId(uri.toString());
+      return cacheManager.withParser(
+          parser ->
+              new ParseResult(
+                  processor.newDocumentBuilder().build(new SAXSource(parser, inputSource)),
+                  serializer.getDiagnostics()));
     } catch (SaxonApiException e) {
       throw new RuntimeException(e);
     }

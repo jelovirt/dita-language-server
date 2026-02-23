@@ -5,13 +5,18 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.sax.SAXSource;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
+import org.apache.xerces.parsers.SAXParser;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.xml.sax.InputSource;
+import org.xmlresolver.Resolver;
+import org.xmlresolver.ResolverFeature;
+import org.xmlresolver.XMLResolverConfiguration;
 
 class DocumentManagerTest {
 
@@ -20,7 +25,14 @@ class DocumentManagerTest {
   public DocumentManagerTest() {
     try (var in = getClass().getClassLoader().getResourceAsStream("topics/valid.dita")) {
       documentManager = new DocumentManager(new DitaParser());
-      var doc = new Processor().newDocumentBuilder().build(new StreamSource(in));
+      var inputSource = new InputSource(in);
+      inputSource.setSystemId("file:///topics/valid.dita");
+      var reader = new SAXParser();
+      XMLResolverConfiguration config = new XMLResolverConfiguration();
+      config.setFeature(ResolverFeature.PREFER_PUBLIC, true);
+      config.setFeature(ResolverFeature.CATALOG_FILES, List.of("classpath:/schemas/catalog.xml"));
+      reader.setEntityResolver(new Resolver(config));
+      var doc = new Processor().newDocumentBuilder().build(new SAXSource(reader, inputSource));
       documentManager.put(URI.create("file:///topics/valid.dita"), doc, null);
     } catch (SaxonApiException | IOException e) {
       throw new RuntimeException(e);

@@ -48,6 +48,12 @@ It provides features like completion and goto definition for many code editors, 
 
 * Set root map via `dita.setRootMap` command
 
+### XML Parsing
+
+* DTD validation
+* DTD grammar caching
+* Recover from incomplete XML elements or attributes
+
 ## Development
 
 Prerequisites:

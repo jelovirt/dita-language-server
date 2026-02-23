@@ -4,13 +4,14 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 public class DitaParserTest {
 
   private final DitaParser parser = new DitaParser();
 
-  @Test
+  @RepeatedTest(1)
   void parse() throws URISyntaxException {
     var src = readResource("topics/valid.dita");
 
