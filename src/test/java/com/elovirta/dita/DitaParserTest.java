@@ -21,6 +21,15 @@ public class DitaParserTest {
   }
 
   @Test
+  void parse_invalid() throws URISyntaxException {
+    var src = readResource("topics/invalid.dita");
+
+    var act = parser.parse(src, getClass().getResource("/topics/invalid.dita").toURI());
+
+    System.err.println(act.diagnostics().toString());
+  }
+
+  @Test
   void mergeMap() throws URISyntaxException {
     var src = readResource("root.ditamap");
 

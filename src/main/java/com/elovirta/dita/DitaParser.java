@@ -6,6 +6,7 @@ import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
@@ -14,9 +15,15 @@ import net.sf.saxon.lib.*;
 import net.sf.saxon.lib.ResourceRequest;
 import net.sf.saxon.s9api.*;
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xmlresolver.*;
 import org.xmlresolver.logging.DefaultLogger;
 
@@ -103,17 +110,73 @@ public class DitaParser {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+    System.err.println(contentWithLocation);
     try (var in = new CharArrayReader(contentWithLocation)) {
       var inputSource = new InputSource(in);
       inputSource.setSystemId(uri.toString());
+      var documentBuilder = processor.newDocumentBuilder();
+      documentBuilder.setDTDValidation(true);
+
       return cacheManager.withParser(
-          parser ->
-              new ParseResult(
-                  processor.newDocumentBuilder().build(new SAXSource(parser, inputSource)),
-                  serializer.getDiagnostics()));
+          parser -> {
+            var diagnostics = new ArrayList<Diagnostic>();
+            parser.setErrorHandler(
+                new ErrorHandler() {
+                  @Override
+                  public void warning(SAXParseException exception) throws SAXException {
+                    diagnostics.add(toDiagnostic(exception, DiagnosticSeverity.Warning));
+                  }
+
+                  @Override
+                  public void error(SAXParseException exception) throws SAXException {
+                    if (!exception.getMessage().startsWith("Attribute \"xmlns:loc")
+                        && !exception.getMessage().startsWith("Attribute \"loc")) {
+                      diagnostics.add(toDiagnostic(exception, DiagnosticSeverity.Error));
+                    }
+                  }
+
+                  @Override
+                  public void fatalError(SAXParseException exception) throws SAXException {
+                    //                  throw new SAXException(exception);
+                    if (!exception.getMessage().startsWith("Attribute \"xmlns:loc")
+                        && !exception.getMessage().startsWith("Attribute \"loc")) {
+                      diagnostics.add(toDiagnostic(exception, DiagnosticSeverity.Error));
+                    }
+                    //          logger.error(exception.getMessage(), exception);
+                  }
+                });
+            var doc = documentBuilder.build(new SAXSource(parser, inputSource));
+            diagnostics.addAll(serializer.getDiagnostics());
+            return new ParseResult(doc, diagnostics);
+          });
     } catch (SaxonApiException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private static Diagnostic toDiagnostic(SAXParseException exception, DiagnosticSeverity severity) {
+    var start = new Position(exception.getLineNumber() - 1, exception.getColumnNumber());
+    var end = new Position(exception.getLineNumber() - 1, exception.getColumnNumber());
+    var msg = exception.getMessage();
+    if (msg.startsWith("The content of element type")) {
+      // The content of element type "topic" must match
+      // "(title,titlealts?,(shortdesc|abstract)?,prolog?,body?,related-links?,topic*)".
+      // TODO: position is the close delimiter of end tag. Should be start tag?
+    } else if (msg.startsWith("Element type") && msg.endsWith(" must be declared.")) {
+      // TODO: position is the close delimiter of end tag. Should be start tag?
+    } else if (msg.startsWith("Attribute")
+        && msg.contains("is required and must be specified for element type")) {
+      // Attribute "id" is required and must be specified for element type "topic".
+      // TODO: position is the close delimiter of end tag. Should be start tag?
+    } else if (msg.startsWith("Attribute") && msg.contains("must be declared for element type")) {
+      // Attribute "x" must be declared for element type "topic".
+      // TODO: position is the close delimiter of end tag. Should be start tag?
+    } else if (msg.startsWith("Document root element") && msg.contains("must match DOCTYPE root")) {
+      // Document root element "topic", must match DOCTYPE root "tcopic".
+      // TODO: position is the close delimiter of start tag. Should be start tag?
+    }
+
+    return new Diagnostic(new Range(start, end), msg, severity, exception.getSystemId());
   }
 
   //  private char[] addLocation(char[] content) {

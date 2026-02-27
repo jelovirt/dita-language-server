@@ -19,10 +19,7 @@ import org.apache.xerces.xni.grammars.XMLGrammarDescription;
 import org.apache.xerces.xni.parser.XMLInputSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.*;
 import org.xmlresolver.Resolver;
 
 /**
