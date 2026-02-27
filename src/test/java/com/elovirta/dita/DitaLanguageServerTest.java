@@ -106,7 +106,20 @@ class DitaLanguageServerTest {
     server.getTextDocumentService().didChange(changeParams);
 
     assertEquals(
-        new PublishDiagnosticsParams("file:///test.dita", List.of()), valueCapture.getValue());
+        new PublishDiagnosticsParams(
+            "file:///test.dita",
+            List.of(
+                new Diagnostic(
+                    new Range(new Position(1, 8), new Position(1, 8)),
+                    "Document is invalid: no grammar found.",
+                    DiagnosticSeverity.Error,
+                    "file:///test.dita"),
+                new Diagnostic(
+                    new Range(new Position(1, 8), new Position(1, 8)),
+                    "Document root element \"topic\", must match DOCTYPE root \"null\".",
+                    DiagnosticSeverity.Error,
+                    "file:///test.dita"))),
+        valueCapture.getValue());
   }
 
   @Test
