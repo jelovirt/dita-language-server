@@ -6,6 +6,7 @@ import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
@@ -14,9 +15,15 @@ import net.sf.saxon.lib.*;
 import net.sf.saxon.lib.ResourceRequest;
 import net.sf.saxon.s9api.*;
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xmlresolver.*;
 import org.xmlresolver.logging.DefaultLogger;
 
@@ -103,14 +110,66 @@ public class DitaParser {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+    System.err.println(contentWithLocation);
     try (var in = new CharArrayReader(contentWithLocation)) {
       var inputSource = new InputSource(in);
       inputSource.setSystemId(uri.toString());
+      var documentBuilder = processor.newDocumentBuilder();
+      documentBuilder.setDTDValidation(true);
+
       return cacheManager.withParser(
-          parser ->
-              new ParseResult(
-                  processor.newDocumentBuilder().build(new SAXSource(parser, inputSource)),
-                  serializer.getDiagnostics()));
+          parser -> {
+            var diagnostics = new ArrayList<Diagnostic>();
+            parser.setErrorHandler(
+                new ErrorHandler() {
+                  @Override
+                  public void warning(SAXParseException exception) throws SAXException {
+                    var start =
+                        new Position(exception.getLineNumber(), exception.getColumnNumber());
+                    diagnostics.add(
+                        new Diagnostic(
+                            new Range(start, start),
+                            exception.getMessage(),
+                            DiagnosticSeverity.Warning,
+                            exception.getSystemId()));
+                  }
+
+                  @Override
+                  public void error(SAXParseException exception) throws SAXException {
+                    if (!exception.getMessage().startsWith("Attribute \"xmlns:loc")
+                        && !exception.getMessage().startsWith("Attribute \"loc")) {
+                      var start =
+                          new Position(exception.getLineNumber(), exception.getColumnNumber());
+                      diagnostics.add(
+                          new Diagnostic(
+                              new Range(start, start),
+                              exception.getMessage(),
+                              DiagnosticSeverity.Error,
+                              exception.getSystemId()));
+                    }
+                  }
+
+                  @Override
+                  public void fatalError(SAXParseException exception) throws SAXException {
+                    //                  throw new SAXException(exception);
+                    if (!exception.getMessage().startsWith("Attribute \"xmlns:loc")
+                        && !exception.getMessage().startsWith("Attribute \"loc")) {
+                      var start =
+                          new Position(exception.getLineNumber(), exception.getColumnNumber());
+                      diagnostics.add(
+                          new Diagnostic(
+                              new Range(start, start),
+                              exception.getMessage(),
+                              DiagnosticSeverity.Error,
+                              exception.getSystemId()));
+                    }
+                    //          logger.error(exception.getMessage(), exception);
+                  }
+                });
+            var doc = documentBuilder.build(new SAXSource(parser, inputSource));
+            diagnostics.addAll(serializer.getDiagnostics());
+            return new ParseResult(doc, diagnostics);
+          });
     } catch (SaxonApiException e) {
       throw new RuntimeException(e);
     }
