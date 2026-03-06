@@ -52,9 +52,10 @@ public class DitaTextDocumentService implements TextDocumentService {
   private XdmNode rootMap;
   private ResourceBundle LOCALE;
 
-  public DitaTextDocumentService(DitaLanguageServer server, SmartDebouncer debouncer) {
+  public DitaTextDocumentService(
+      DitaLanguageServer server, SmartDebouncer debouncer, DitaLanguageServer.Options options) {
     this.server = server;
-    this.parser = new DitaParser();
+    this.parser = new DitaParser(options);
     this.documentManager = new DocumentManager(parser);
     this.keyManager = new KeyManager();
     this.subjectSchemeManager = new SubjectSchemeManager();

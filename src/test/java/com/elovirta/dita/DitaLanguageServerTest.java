@@ -3,6 +3,7 @@ package com.elovirta.dita;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.elovirta.dita.DitaLanguageServer.Options;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import org.eclipse.lsp4j.*;
@@ -20,7 +21,7 @@ class DitaLanguageServerTest {
 
   @BeforeEach
   void setUp() {
-    server = new DitaLanguageServer(new SmartDebouncer(0));
+    server = new DitaLanguageServer(new Options(false, 0));
     mockClient = Mockito.mock(LanguageClient.class);
     server.connect(mockClient);
   }
@@ -106,20 +107,7 @@ class DitaLanguageServerTest {
     server.getTextDocumentService().didChange(changeParams);
 
     assertEquals(
-        new PublishDiagnosticsParams(
-            "file:///test.dita",
-            List.of(
-                new Diagnostic(
-                    new Range(new Position(1, 8), new Position(1, 8)),
-                    "Document is invalid: no grammar found.",
-                    DiagnosticSeverity.Error,
-                    "file:///test.dita"),
-                new Diagnostic(
-                    new Range(new Position(1, 8), new Position(1, 8)),
-                    "Document root element \"topic\", must match DOCTYPE root \"null\".",
-                    DiagnosticSeverity.Error,
-                    "file:///test.dita"))),
-        valueCapture.getValue());
+        new PublishDiagnosticsParams("file:///test.dita", List.of()), valueCapture.getValue());
   }
 
   @Test

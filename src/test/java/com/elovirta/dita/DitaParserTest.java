@@ -1,5 +1,6 @@
 package com.elovirta.dita;
 
+import com.elovirta.dita.DitaLanguageServer.Options;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
@@ -9,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 public class DitaParserTest {
 
-  private final DitaParser parser = new DitaParser();
+  private final DitaParser parser = new DitaParser(new Options(true, 0));
 
   @RepeatedTest(1)
   void parse() throws URISyntaxException {

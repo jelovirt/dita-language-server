@@ -1,5 +1,6 @@
 package com.elovirta.dita;
 
+import com.elovirta.dita.DitaLanguageServer.Options;
 import com.elovirta.dita.xml.DITAGrammarCacheManager;
 import com.elovirta.dita.xml.XmlSerializer;
 import java.io.*;
@@ -31,12 +32,14 @@ public class DitaParser {
 
   private static final Logger logger = LoggerFactory.getLogger(DitaParser.class);
 
+  private final Options options;
   private final Resolver catalogResolver;
   private final Processor processor;
   private final XsltExecutable mergeExecutable;
   private final DITAGrammarCacheManager cacheManager;
 
-  public DitaParser() {
+  public DitaParser(Options options) {
+    this.options = options;
     XMLResolverConfiguration config = new XMLResolverConfiguration();
     config.setFeature(ResolverFeature.PREFER_PUBLIC, true);
     //    config.setFeature(ResolverFeature.CACHE_DIRECTORY, null);
@@ -115,7 +118,7 @@ public class DitaParser {
       var inputSource = new InputSource(in);
       inputSource.setSystemId(uri.toString());
       var documentBuilder = processor.newDocumentBuilder();
-      documentBuilder.setDTDValidation(true);
+      documentBuilder.setDTDValidation(options.xmlValidation());
 
       return cacheManager.withParser(
           parser -> {

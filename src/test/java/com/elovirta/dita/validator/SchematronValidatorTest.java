@@ -3,6 +3,7 @@ package com.elovirta.dita.validator;
 import static net.sf.saxon.s9api.streams.Steps.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.elovirta.dita.DitaLanguageServer.Options;
 import com.elovirta.dita.DitaParser;
 import java.net.URI;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ class SchematronValidatorTest {
   private XdmNode doc;
 
   public SchematronValidatorTest() {
-    this.parser = new DitaParser();
+    this.parser = new DitaParser(new Options(true, 0));
     this.schematronValidator = new SchematronValidator(parser.getProcessor());
   }
 

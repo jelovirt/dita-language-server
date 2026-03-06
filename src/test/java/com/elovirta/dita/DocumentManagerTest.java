@@ -2,6 +2,7 @@ package com.elovirta.dita;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.elovirta.dita.DitaLanguageServer.Options;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -24,7 +25,7 @@ class DocumentManagerTest {
 
   public DocumentManagerTest() {
     try (var in = getClass().getClassLoader().getResourceAsStream("topics/valid.dita")) {
-      documentManager = new DocumentManager(new DitaParser());
+      documentManager = new DocumentManager(new DitaParser(new Options(true, 0)));
       var inputSource = new InputSource(in);
       inputSource.setSystemId("file:///topics/valid.dita");
       var reader = new SAXParser();
