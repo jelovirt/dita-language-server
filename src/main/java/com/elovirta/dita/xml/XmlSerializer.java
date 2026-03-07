@@ -188,13 +188,13 @@ public class XmlSerializer {
     writer.write(" ");
     writer.write(LOC_PREFIX);
     writer.write(":elem=\"");
-    writer.write(String.valueOf(lexer.getLine()));
+    writer.write(Integer.toString(lexer.getLine()));
     writer.write(":");
-    writer.write(String.valueOf(lexer.getColumn()));
+    writer.write(Integer.toString(lexer.getColumn()));
     writer.write("-");
-    writer.write(String.valueOf(lexer.getLine()));
+    writer.write(Integer.toString(lexer.getLine()));
     writer.write(":");
-    writer.write(String.valueOf(lexer.getColumn() + lexer.getText().length));
+    writer.write(Integer.toString(lexer.getColumn() + lexer.getText().length));
     writer.write("\"");
 
     // Collect attributes and their locations
@@ -221,13 +221,13 @@ public class XmlSerializer {
           writer.write(":attr-");
           writer.write(loc.localName);
           writer.write("=\"");
-          writer.write(String.valueOf(loc.startLine));
+          writer.write(Integer.toString(loc.startLine));
           writer.write(":");
-          writer.write(String.valueOf(loc.startColumn));
+          writer.write(Integer.toString(loc.startColumn));
           writer.write("-");
-          writer.write(String.valueOf(loc.endLine));
+          writer.write(Integer.toString(loc.endLine));
           writer.write(":");
-          writer.write(String.valueOf(loc.endColumn));
+          writer.write(Integer.toString(loc.endColumn));
           writer.write("\"");
         }
         namespaceDeclarations.forEach(
