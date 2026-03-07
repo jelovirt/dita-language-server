@@ -31,10 +31,13 @@ public class XmlSerializer {
     this.lexer = new XmlFilter(new XmlLexerImpl(true));
   }
 
-  public void serialize(char[] input, Writer writer) throws IOException {
+  public record Features(boolean hasDoctype) {}
+
+  public Features serialize(char[] input, Writer writer) throws IOException {
     this.writer = writer;
     this.isFirstElement = true;
     lexer.setInput(input);
+    boolean hasDoctype = false;
 
     while (lexer.hasNext()) {
       XmlLexer.TokenType type = lexer.next();
@@ -47,6 +50,7 @@ public class XmlSerializer {
           skipComment();
           break;
         case DOCTYPE_START:
+          hasDoctype = true;
           writeDocType();
           break;
         case ELEMENT_START:
@@ -89,6 +93,8 @@ public class XmlSerializer {
     }
 
     writer.flush();
+
+    return new Features(hasDoctype);
   }
 
   public List<Diagnostic> getDiagnostics() {

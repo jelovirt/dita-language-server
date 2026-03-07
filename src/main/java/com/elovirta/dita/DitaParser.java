@@ -107,18 +107,19 @@ public class DitaParser {
     //    var contentWithLocation = addLocation(content);
     char[] contentWithLocation;
     var serializer = new XmlSerializer();
+    XmlSerializer.Features features;
     try (CharArrayWriter output = new CharArrayWriter()) {
-      serializer.serialize(content, output);
+      features = serializer.serialize(content, output);
       contentWithLocation = output.toCharArray();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    System.err.println(contentWithLocation);
+
     try (var in = new CharArrayReader(contentWithLocation)) {
       var inputSource = new InputSource(in);
       inputSource.setSystemId(uri.toString());
       var documentBuilder = processor.newDocumentBuilder();
-      documentBuilder.setDTDValidation(options.xmlValidation());
+      documentBuilder.setDTDValidation(options.xmlValidation() && features.hasDoctype());
 
       return cacheManager.withParser(
           parser -> {
