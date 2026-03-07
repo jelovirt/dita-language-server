@@ -628,17 +628,16 @@ public class DitaTextDocumentService implements TextDocumentService {
                                     && !Objects.equals(
                                         attr.getParent().attribute(SCOPE_ATTR), "external"))))
         .forEach(
-            attr -> {
-              diagnostics.add(
-                  new Diagnostic(
-                      Utils.getAttributeRange(attr),
-                      LOCALE
-                          .getString("error.email_scope_missing")
-                          .formatted(attr.getStringValue()),
-                      DiagnosticSeverity.Error,
-                      SOURCE,
-                      EMAIL_SCOPE_MISSING));
-            });
+            attr ->
+                diagnostics.add(
+                    new Diagnostic(
+                        Utils.getAttributeRange(attr),
+                        LOCALE
+                            .getString("error.email_scope_missing")
+                            .formatted(attr.getStringValue()),
+                        DiagnosticSeverity.Error,
+                        SOURCE,
+                        EMAIL_SCOPE_MISSING)));
 
     return diagnostics;
   }
