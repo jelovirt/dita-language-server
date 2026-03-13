@@ -1,6 +1,6 @@
 # DITA Language Server
 
-dita-language-server (DLS) is an implementation of Language Server Protocol for the DITA markup language.
+DITA Language Server (DLS) is an implementation of Language Server Protocol for the DITA markup language.
 It provides features like completion and goto definition for many code editors, including VS Code, Emacs and Vim.
 
 ## Features
@@ -50,7 +50,7 @@ It provides features like completion and goto definition for many code editors, 
 
 ### XML Parsing
 
-* DTD validation
+* DTD validation for convenience, but this functionality should be provided by a generic XML language server
 * DTD grammar caching
 * Recover from incomplete XML elements or attributes
 
