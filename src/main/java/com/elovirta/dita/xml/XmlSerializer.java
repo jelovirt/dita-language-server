@@ -31,10 +31,13 @@ public class XmlSerializer {
     this.lexer = new XmlFilter(new XmlLexerImpl(true));
   }
 
-  public void serialize(char[] input, Writer writer) throws IOException {
+  public record Features(boolean hasDoctype) {}
+
+  public Features serialize(char[] input, Writer writer) throws IOException {
     this.writer = writer;
     this.isFirstElement = true;
     lexer.setInput(input);
+    boolean hasDoctype = false;
 
     while (lexer.hasNext()) {
       XmlLexer.TokenType type = lexer.next();
@@ -47,6 +50,7 @@ public class XmlSerializer {
           skipComment();
           break;
         case DOCTYPE_START:
+          hasDoctype = true;
           writeDocType();
           break;
         case ELEMENT_START:
@@ -89,6 +93,8 @@ public class XmlSerializer {
     }
 
     writer.flush();
+
+    return new Features(hasDoctype);
   }
 
   public List<Diagnostic> getDiagnostics() {
@@ -182,13 +188,13 @@ public class XmlSerializer {
     writer.write(" ");
     writer.write(LOC_PREFIX);
     writer.write(":elem=\"");
-    writer.write(String.valueOf(lexer.getLine()));
+    writer.write(Integer.toString(lexer.getLine()));
     writer.write(":");
-    writer.write(String.valueOf(lexer.getColumn()));
+    writer.write(Integer.toString(lexer.getColumn()));
     writer.write("-");
-    writer.write(String.valueOf(lexer.getLine()));
+    writer.write(Integer.toString(lexer.getLine()));
     writer.write(":");
-    writer.write(String.valueOf(lexer.getColumn() + lexer.getText().length));
+    writer.write(Integer.toString(lexer.getColumn() + lexer.getText().length));
     writer.write("\"");
 
     // Collect attributes and their locations
@@ -215,13 +221,13 @@ public class XmlSerializer {
           writer.write(":attr-");
           writer.write(loc.localName);
           writer.write("=\"");
-          writer.write(String.valueOf(loc.startLine));
+          writer.write(Integer.toString(loc.startLine));
           writer.write(":");
-          writer.write(String.valueOf(loc.startColumn));
+          writer.write(Integer.toString(loc.startColumn));
           writer.write("-");
-          writer.write(String.valueOf(loc.endLine));
+          writer.write(Integer.toString(loc.endLine));
           writer.write(":");
-          writer.write(String.valueOf(loc.endColumn));
+          writer.write(Integer.toString(loc.endColumn));
           writer.write("\"");
         }
         namespaceDeclarations.forEach(

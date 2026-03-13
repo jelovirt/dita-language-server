@@ -31,7 +31,7 @@ public abstract class AbstractXmlFilter implements XmlLexer {
   private int peekColumn;
   private int peekOffset;
 
-  Deque<char[]> elementStack = new ArrayDeque<>();
+  final Deque<char[]> elementStack = new ArrayDeque<>();
 
   private final List<Diagnostic> diagnostics = new ArrayList<>();
 

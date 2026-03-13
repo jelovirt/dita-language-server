@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 public class XmlFilter extends AbstractXmlFilter {
 
-  private static Logger logger = LoggerFactory.getLogger(XmlFilter.class);
+  private static final Logger logger = LoggerFactory.getLogger(XmlFilter.class);
 
   public XmlFilter(XmlLexerImpl parent) {
     super(parent);

@@ -25,13 +25,11 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
   private final Properties properties;
   private LanguageClient client;
 
-  public DitaLanguageServer() {
-    this(new SmartDebouncer(1_000));
-  }
+  public record Options(boolean xmlValidation, int debounce) {}
 
-  public DitaLanguageServer(SmartDebouncer debouncer) {
-    this.debouncer = debouncer;
-    textDocumentService = new DitaTextDocumentService(this, debouncer);
+  public DitaLanguageServer(Options options) {
+    this.debouncer = new SmartDebouncer(options.debounce());
+    textDocumentService = new DitaTextDocumentService(this, debouncer, options);
     workspaceService = new DitaWorkspaceService(this);
     properties = new Properties();
     try (InputStream input =
@@ -121,7 +119,13 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
   public static void main(String[] args) {
     logger.info("Starting DITA Language Server...");
 
-    var server = new DitaLanguageServer();
+    var options = new Options(true, 1_000);
+    for (String arg : args) {
+      switch (arg) {
+        case "--xml-validation" -> options = new Options(true, options.debounce());
+      }
+    }
+    var server = new DitaLanguageServer(options);
     var launcher = LSPLauncher.createServerLauncher(server, System.in, System.out);
 
     server.connect(launcher.getRemoteProxy());

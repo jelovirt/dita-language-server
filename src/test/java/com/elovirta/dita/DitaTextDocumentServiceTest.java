@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
+import com.elovirta.dita.DitaLanguageServer.Options;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
@@ -32,7 +33,8 @@ class DitaTextDocumentServiceTest {
     mockClient = Mockito.mock(LanguageClient.class);
     when(server.getClient()).thenReturn(mockClient);
 
-    textDocumentService = new DitaTextDocumentService(server, new SmartDebouncer(0));
+    textDocumentService =
+        new DitaTextDocumentService(server, new SmartDebouncer(0), new Options(true, 0));
   }
 
   @AfterEach

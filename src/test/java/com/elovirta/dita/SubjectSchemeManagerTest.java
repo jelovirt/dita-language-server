@@ -2,6 +2,7 @@ package com.elovirta.dita;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.elovirta.dita.DitaLanguageServer.Options;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.Test;
 class SubjectSchemeManagerTest {
 
   private SubjectSchemeManager subjectSchemeManager;
-  private final DitaParser ditaParser = new DitaParser();
+  private final DitaParser ditaParser = new DitaParser(new Options(true, 0));
 
   @BeforeEach
   void setUp() throws URISyntaxException {

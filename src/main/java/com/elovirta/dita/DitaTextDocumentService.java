@@ -52,9 +52,10 @@ public class DitaTextDocumentService implements TextDocumentService {
   private XdmNode rootMap;
   private ResourceBundle LOCALE;
 
-  public DitaTextDocumentService(DitaLanguageServer server, SmartDebouncer debouncer) {
+  public DitaTextDocumentService(
+      DitaLanguageServer server, SmartDebouncer debouncer, DitaLanguageServer.Options options) {
     this.server = server;
-    this.parser = new DitaParser();
+    this.parser = new DitaParser(options);
     this.documentManager = new DocumentManager(parser);
     this.keyManager = new KeyManager();
     this.subjectSchemeManager = new SubjectSchemeManager();
@@ -627,17 +628,16 @@ public class DitaTextDocumentService implements TextDocumentService {
                                     && !Objects.equals(
                                         attr.getParent().attribute(SCOPE_ATTR), "external"))))
         .forEach(
-            attr -> {
-              diagnostics.add(
-                  new Diagnostic(
-                      Utils.getAttributeRange(attr),
-                      LOCALE
-                          .getString("error.email_scope_missing")
-                          .formatted(attr.getStringValue()),
-                      DiagnosticSeverity.Error,
-                      SOURCE,
-                      EMAIL_SCOPE_MISSING));
-            });
+            attr ->
+                diagnostics.add(
+                    new Diagnostic(
+                        Utils.getAttributeRange(attr),
+                        LOCALE
+                            .getString("error.email_scope_missing")
+                            .formatted(attr.getStringValue()),
+                        DiagnosticSeverity.Error,
+                        SOURCE,
+                        EMAIL_SCOPE_MISSING)));
 
     return diagnostics;
   }
