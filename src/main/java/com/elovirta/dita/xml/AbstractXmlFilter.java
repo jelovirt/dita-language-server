@@ -1,5 +1,7 @@
 package com.elovirta.dita.xml;
 
+import static com.elovirta.dita.DitaTextDocumentService.SOURCE;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -132,12 +134,13 @@ public abstract class AbstractXmlFilter implements XmlLexer {
   }
 
   void diagnostic(String msg, int line, int column, int pos) {
-    Diagnostic diagnostic = new Diagnostic();
-    diagnostic.setMessage(msg);
-    diagnostic.setSeverity(DiagnosticSeverity.Error);
-    // FIXME
-    diagnostic.setRange(new Range(new Position(line, column), new Position(line, column)));
-    // diagnostics.add(diagnostic);
+    Diagnostic diagnostic =
+        new Diagnostic(
+            new Range(new Position(line, column), new Position(line, column)),
+            msg,
+            DiagnosticSeverity.Error,
+            SOURCE);
+    diagnostics.add(diagnostic);
   }
 
   char[] getPeekText() {
