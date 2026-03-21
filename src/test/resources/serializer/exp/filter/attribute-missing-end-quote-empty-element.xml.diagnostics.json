@@ -1,0 +1,17 @@
+[
+  {
+    "range": {
+      "start": {
+        "line": 1,
+        "character": 20
+      },
+      "end": {
+        "line": 1,
+        "character": 20
+      }
+    },
+    "severity": "Error",
+    "source": "dita-validator",
+    "message": "Close quote is expected for attribute"
+  }
+]

@@ -1,24 +1,17 @@
 package com.elovirta.dita.xml;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
+import org.eclipse.lsp4j.Diagnostic;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class XmlFilterTest {
+public class XmlFilterTest extends TestUtils {
 
   private final XmlLexer lexer = new XmlFilter(new XmlLexerImpl(true));
-  final Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+
+  public XmlFilterTest() {
+    super("serializer/exp/filter");
+  }
 
   @ParameterizedTest
   @ValueSource(
@@ -55,32 +48,8 @@ public class XmlFilterTest {
                     lexer.getLine(),
                     lexer.getColumn(),
                     lexer.getOffset())));
-    try {
-      var exp =
-          gson.fromJson(
-              readResource("/serializer/exp/filter/" + file + ".json"),
-              new TypeToken<List<Event>>() {}.getType());
 
-      assertEquals(exp, act);
-    } catch (Throwable e) {
-      try (var out =
-          Files.newBufferedWriter(
-              Paths.get("src/test/resources/serializer/exp/filter", file + ".json"))) {
-        gson.toJson(act, out);
-      } catch (IOException ex) {
-        throw new RuntimeException(ex);
-      }
-      throw e;
-    }
-  }
-
-  private record Event(XmlLexer.TokenType type, String text, int line, int column, int offset) {}
-
-  private String readResource(String name) {
-    try (InputStream in = getClass().getResourceAsStream(name)) {
-      return new String(in.readAllBytes(), StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    assertJsonEquals(file, ".json", Event.class, act);
+    assertJsonEquals(file, ".diagnostics.json", Diagnostic.class, lexer.getDiagnostics());
   }
 }
