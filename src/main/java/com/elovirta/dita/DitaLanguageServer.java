@@ -1,5 +1,7 @@
 package com.elovirta.dita;
 
+import com.elovirta.dita.preview.PreviewParams;
+import com.elovirta.dita.preview.PreviewResult;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -9,6 +11,7 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.*;
+import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
 import org.eclipse.lsp4j.launch.LSPLauncher;
 import org.eclipse.lsp4j.services.*;
 import org.jetbrains.annotations.NotNull;
@@ -110,6 +113,13 @@ public class DitaLanguageServer implements LanguageServer, LanguageClientAware {
   @Override
   public void setTrace(SetTraceParams params) {
     logger.info("Trace level set to: {}", params.getValue());
+  }
+
+  @JsonRequest("dita/preview")
+  public CompletableFuture<PreviewResult> preview(PreviewParams params) {
+    logger.debug("Preview for {}", params.getTextDocument().getUri());
+    var uri = URI.create(params.getTextDocument().getUri());
+    return textDocumentService.getPreview(uri);
   }
 
   public LanguageClient getClient() {
