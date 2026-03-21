@@ -641,4 +641,20 @@ public class DitaTextDocumentService implements TextDocumentService {
 
     return diagnostics;
   }
+
+  public CompletableFuture<PreviewResult> getPreview(URI uri) {
+    return CompletableFuture.supplyAsync(
+        () -> {
+          var html = generatePreview(documentManager.get(uri).document());
+          var result = new PreviewResult();
+          result.setHtml(html);
+          return result;
+        });
+  }
+
+  private String generatePreview(XdmNode doc) {
+    return "<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'></head><body><pre>"
+        + doc.toString().replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+        + "</pre></body></html>";
+  }
 }
