@@ -65,7 +65,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     this.debouncer = debouncer;
     this.LOCALE = ResourceBundle.getBundle("copy", Locale.ENGLISH);
     this.schematronValidator = new SchematronValidator(parser.getProcessor());
-    this.preview = new Preview(parser.getProcessor());
+    this.preview = new Preview(parser.getProcessor(), keyManager);
   }
 
   public void setLocale(Locale locale) {
