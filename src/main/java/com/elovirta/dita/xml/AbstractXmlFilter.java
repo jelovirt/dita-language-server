@@ -1,5 +1,7 @@
 package com.elovirta.dita.xml;
 
+import static com.elovirta.dita.DitaTextDocumentService.SOURCE;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -31,7 +33,7 @@ public abstract class AbstractXmlFilter implements XmlLexer {
   private int peekColumn;
   private int peekOffset;
 
-  final Deque<char[]> elementStack = new ArrayDeque<>();
+  final Deque<StackEntry> elementStack = new ArrayDeque<>();
 
   private final List<Diagnostic> diagnostics = new ArrayList<>();
 
@@ -62,7 +64,10 @@ public abstract class AbstractXmlFilter implements XmlLexer {
           columnBuffer.removeFirst(),
           offsetBuffer.removeFirst());
       switch (currentType) {
-        case ELEMENT_NAME_START -> elementStack.push(currentText);
+        case ELEMENT_NAME_START ->
+            elementStack.push(
+                new StackEntry(
+                    currentText, currentLine, currentColumn, currentColumn + currentText.length));
           //        case ELEMENT_NAME_END, EMPTY_ELEMENT_END -> elementStack.pop();
       }
 
@@ -84,7 +89,10 @@ public abstract class AbstractXmlFilter implements XmlLexer {
         parent.getColumn(),
         parent.getOffset());
     switch (currentType) {
-      case ELEMENT_NAME_START -> elementStack.push(currentText);
+      case ELEMENT_NAME_START ->
+          elementStack.push(
+              new StackEntry(
+                  currentText, currentLine, currentColumn, currentColumn + currentText.length));
         // case ELEMENT_NAME_END, EMPTY_ELEMENT_END -> elementStack.pop();
     }
 
@@ -131,13 +139,18 @@ public abstract class AbstractXmlFilter implements XmlLexer {
     return diagnostics;
   }
 
-  void diagnostic(String msg, int line, int column, int pos) {
-    Diagnostic diagnostic = new Diagnostic();
-    diagnostic.setMessage(msg);
-    diagnostic.setSeverity(DiagnosticSeverity.Error);
-    // FIXME
-    diagnostic.setRange(new Range(new Position(line, column), new Position(line, column)));
-    // diagnostics.add(diagnostic);
+  void diagnostic(String msg, int line, int startColumn) {
+    diagnostic(msg, line, startColumn, startColumn);
+  }
+
+  void diagnostic(String msg, int line, int startColumn, int endColumn) {
+    Diagnostic diagnostic =
+        new Diagnostic(
+            new Range(new Position(line, startColumn), new Position(line, endColumn)),
+            msg,
+            DiagnosticSeverity.Error,
+            SOURCE);
+    diagnostics.add(diagnostic);
   }
 
   char[] getPeekText() {
@@ -236,4 +249,6 @@ public abstract class AbstractXmlFilter implements XmlLexer {
     offsetBuffer.removeFirst();
     return type;
   }
+
+  record StackEntry(char[] name, int row, int startColumn, int endColumn) {}
 }

@@ -1,0 +1,167 @@
+[
+  {
+    "range": {
+      "start": {
+        "line": -1,
+        "character": -1
+      },
+      "end": {
+        "line": -1,
+        "character": -1
+      }
+    },
+    "severity": "Error",
+    "source": "dita-validator",
+    "message": "1 Attribute must be followed by '=' character"
+  },
+  {
+    "range": {
+      "start": {
+        "line": -1,
+        "character": -1
+      },
+      "end": {
+        "line": -1,
+        "character": -1
+      }
+    },
+    "severity": "Error",
+    "source": "dita-validator",
+    "message": "Open quote is expected for attribute"
+  },
+  {
+    "range": {
+      "start": {
+        "line": -1,
+        "character": -1
+      },
+      "end": {
+        "line": -1,
+        "character": -1
+      }
+    },
+    "severity": "Error",
+    "source": "dita-validator",
+    "message": "1 Attribute must be followed by '=' character"
+  },
+  {
+    "range": {
+      "start": {
+        "line": -1,
+        "character": -1
+      },
+      "end": {
+        "line": -1,
+        "character": -1
+      }
+    },
+    "severity": "Error",
+    "source": "dita-validator",
+    "message": "Open quote is expected for attribute"
+  },
+  {
+    "range": {
+      "start": {
+        "line": -1,
+        "character": -1
+      },
+      "end": {
+        "line": -1,
+        "character": -1
+      }
+    },
+    "severity": "Error",
+    "source": "dita-validator",
+    "message": "1 Attribute must be followed by '=' character"
+  },
+  {
+    "range": {
+      "start": {
+        "line": -1,
+        "character": -1
+      },
+      "end": {
+        "line": -1,
+        "character": -1
+      }
+    },
+    "severity": "Error",
+    "source": "dita-validator",
+    "message": "Open quote is expected for attribute"
+  },
+  {
+    "range": {
+      "start": {
+        "line": -1,
+        "character": -1
+      },
+      "end": {
+        "line": -1,
+        "character": -1
+      }
+    },
+    "severity": "Error",
+    "source": "dita-validator",
+    "message": "1 Attribute must be followed by '=' character"
+  },
+  {
+    "range": {
+      "start": {
+        "line": -1,
+        "character": -1
+      },
+      "end": {
+        "line": -1,
+        "character": -1
+      }
+    },
+    "severity": "Error",
+    "source": "dita-validator",
+    "message": "Open quote is expected for attribute"
+  },
+  {
+    "range": {
+      "start": {
+        "line": -1,
+        "character": -1
+      },
+      "end": {
+        "line": -1,
+        "character": -1
+      }
+    },
+    "severity": "Error",
+    "source": "dita-validator",
+    "message": "1 Attribute must be followed by '=' character"
+  },
+  {
+    "range": {
+      "start": {
+        "line": 5,
+        "character": 12
+      },
+      "end": {
+        "line": 5,
+        "character": 12
+      }
+    },
+    "severity": "Error",
+    "source": "dita-validator",
+    "message": "Open quote is expected for attribute"
+  },
+  {
+    "range": {
+      "start": {
+        "line": 5,
+        "character": 16
+      },
+      "end": {
+        "line": 5,
+        "character": 16
+      }
+    },
+    "severity": "Error",
+    "source": "dita-validator",
+    "message": "Close quote is expected for attribute"
+  }
+]

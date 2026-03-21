@@ -1,0 +1,47 @@
+[
+  {
+    "range": {
+      "start": {
+        "line": -1,
+        "character": -1
+      },
+      "end": {
+        "line": -1,
+        "character": -1
+      }
+    },
+    "severity": "Error",
+    "source": "dita-validator",
+    "message": "End element name must be followed by '>' character"
+  },
+  {
+    "range": {
+      "start": {
+        "line": 1,
+        "character": 1
+      },
+      "end": {
+        "line": 1,
+        "character": 5
+      }
+    },
+    "severity": "Error",
+    "source": "dita-validator",
+    "message": "End element name doesn't match start element name"
+  },
+  {
+    "range": {
+      "start": {
+        "line": -1,
+        "character": -1
+      },
+      "end": {
+        "line": -1,
+        "character": -1
+      }
+    },
+    "severity": "Error",
+    "source": "dita-validator",
+    "message": "End element name must be followed by '>' character"
+  }
+]

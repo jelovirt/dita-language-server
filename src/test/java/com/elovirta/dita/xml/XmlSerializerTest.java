@@ -3,17 +3,19 @@ package com.elovirta.dita.xml;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class XmlSerializerTest {
+public class XmlSerializerTest extends TestUtils {
 
   private final XmlSerializer serializer = new XmlSerializer();
+
+  public XmlSerializerTest() {
+    super("serializer/exp");
+  }
 
   @ParameterizedTest
   @ValueSource(
@@ -44,20 +46,12 @@ public class XmlSerializerTest {
       serializer.serialize(input.toCharArray(), output);
       act = output.toString();
 
-      assertEquals(readResource("/serializer/exp/" + file), act);
+      assertEquals(readResource("/" + path + "/" + file), act);
     } catch (Throwable e) {
       if (act != null) {
-        Files.writeString(Paths.get("src/test/resources/serializer/exp", file), act);
+        Files.writeString(Paths.get("src/test/resources/" + path, file), act);
       }
       throw e;
-    }
-  }
-
-  private String readResource(String name) {
-    try (InputStream in = getClass().getResourceAsStream(name)) {
-      return new String(in.readAllBytes(), StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
     }
   }
 }
