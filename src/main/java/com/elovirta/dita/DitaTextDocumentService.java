@@ -5,6 +5,8 @@ import static net.sf.saxon.s9api.streams.Predicates.*;
 import static net.sf.saxon.s9api.streams.Steps.*;
 
 import com.elovirta.dita.KeyManager.KeyDefinition;
+import com.elovirta.dita.preview.Preview;
+import com.elovirta.dita.preview.PreviewResult;
 import com.elovirta.dita.validator.SchematronValidator;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -47,6 +49,7 @@ public class DitaTextDocumentService implements TextDocumentService {
   private final SubjectSchemeManager subjectSchemeManager;
   private final SmartDebouncer debouncer;
   private final SchematronValidator schematronValidator;
+  private final Preview preview;
 
   private URI rootMapUri;
   private XdmNode rootMap;
@@ -62,6 +65,7 @@ public class DitaTextDocumentService implements TextDocumentService {
     this.debouncer = debouncer;
     this.LOCALE = ResourceBundle.getBundle("copy", Locale.ENGLISH);
     this.schematronValidator = new SchematronValidator(parser.getProcessor());
+    this.preview = new Preview(parser.getProcessor());
   }
 
   public void setLocale(Locale locale) {
@@ -645,16 +649,11 @@ public class DitaTextDocumentService implements TextDocumentService {
   public CompletableFuture<PreviewResult> getPreview(URI uri) {
     return CompletableFuture.supplyAsync(
         () -> {
-          var html = generatePreview(documentManager.get(uri).document());
+          var documentCache = documentManager.get(uri);
+          var html = preview.generatePreview(documentCache.document());
           var result = new PreviewResult();
           result.setHtml(html);
           return result;
         });
-  }
-
-  private String generatePreview(XdmNode doc) {
-    return "<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'></head><body><pre>"
-        + doc.toString().replaceAll("&", "&amp;").replaceAll("<", "&lt;")
-        + "</pre></body></html>";
   }
 }

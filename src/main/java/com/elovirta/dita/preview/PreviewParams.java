@@ -1,4 +1,4 @@
-package com.elovirta.dita;
+package com.elovirta.dita.preview;
 
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 

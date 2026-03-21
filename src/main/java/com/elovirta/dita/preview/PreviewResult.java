@@ -1,4 +1,4 @@
-package com.elovirta.dita;
+package com.elovirta.dita.preview;
 
 public class PreviewResult {
   private String html;

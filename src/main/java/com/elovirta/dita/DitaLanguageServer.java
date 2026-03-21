@@ -1,5 +1,7 @@
 package com.elovirta.dita;
 
+import com.elovirta.dita.preview.PreviewParams;
+import com.elovirta.dita.preview.PreviewResult;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
