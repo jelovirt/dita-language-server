@@ -19,7 +19,7 @@
           .keyref:before {
             content: "🔑";
           }
-          .conkeyref:before {
+          .conref:before {
             content: "📎";
           }
           .generated {
@@ -47,7 +47,31 @@
         </style>
       </head>
       <body>
-        <xsl:apply-templates/>
+        <xsl:variable name="keyref-resolved" as="document-node()">
+          <xsl:choose>
+            <xsl:when test="exists($keyrefs) and //*[@keyref or @conkeyref]">
+              <xsl:document>
+                <xsl:apply-templates mode="keyref"/>
+              </xsl:document>    
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:sequence select="/"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+        <xsl:variable name="coderef-resolved" as="document-node()">
+          <xsl:choose>
+            <xsl:when test="$keyref-resolved//*[contains(@class, ' pr-d/coderef ')]">
+              <xsl:document>
+                <xsl:apply-templates select="$keyref-resolved/*" mode="coderef"/>
+              </xsl:document>    
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:sequence select="$keyref-resolved"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+        <xsl:apply-templates select="$coderef-resolved/*"/>
       </body>
     </html>
   </xsl:template>
@@ -140,60 +164,136 @@
 
   <xsl:template match="*[contains(@class, ' topic/keyword ')]">
     <span>
-      <xsl:choose>
-        <xsl:when test="@keyref">
-          <xsl:variable name="keyref" select="$keyrefs/keyrefs/keyref[@key = current()/@keyref]" as="element()?"/>
-          <xsl:attribute name="class">keyref</xsl:attribute>
-          <xsl:text>[</xsl:text>
-          <xsl:value-of select="@keyref"/>
-          <xsl:text>]</xsl:text>
-          <xsl:choose>
-            <xsl:when test="node()">
-              <xsl:apply-templates/>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:apply-templates select="$keyref/node()"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:apply-templates/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:if test="@keyref | @conref">
+        <xsl:call-template name="class"/>
+        <xsl:apply-templates select="." mode="prefix"/>
+      </xsl:if>
+      <xsl:apply-templates/>
     </span>
   </xsl:template>
 
   <xsl:template match="*[contains(@class, ' topic/xref ')]">
     <a>
+      <xsl:attribute name="href" select="@href"/>
+      <xsl:call-template name="class"/>
+      <xsl:apply-templates select="." mode="prefix"/>
       <xsl:choose>
-        <xsl:when test="@keyref">
-          <xsl:variable name="keyref" select="$keyrefs/keyrefs/keyref[@key = current()/@keyref]" as="element()?"/>
-          <xsl:attribute name="class">keyref</xsl:attribute>
-          <xsl:text>[</xsl:text>
-          <xsl:value-of select="@keyref"/>
-          <xsl:text>]</xsl:text>
-          <xsl:choose>
-            <xsl:when test="node()">
-              <xsl:apply-templates/>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:apply-templates select="$keyref/node()"/>
-            </xsl:otherwise>
-          </xsl:choose>
+        <xsl:when test="node()">
+          <xsl:apply-templates/>    
         </xsl:when>
-        <xsl:when test="@href">
-          <xsl:attribute name="href" select="@href"/>
-          <xsl:choose>
-            <xsl:when test="node()">
-              <xsl:apply-templates/>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:value-of select="@href"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="@href"/>
+        </xsl:otherwise>
       </xsl:choose>
     </a>
   </xsl:template>
-
+  
+  <xsl:template match="*[contains(@class, ' topic/indexterm ')]"/>
+  
+  <!-- Class attribute templates -->
+  
+  <xsl:template name="class">
+    <xsl:variable name="classes" as="xs:string*">
+      <xsl:apply-templates select="." mode="class"/>
+    </xsl:variable>
+    <xsl:if test="exists($classes)">
+      <xsl:attribute name="class" select="string-join($classes, ' ')"/>
+    </xsl:if>
+  </xsl:template>
+  
+  <xsl:mode name="class" on-no-match="deep-skip"/>
+  
+  <xsl:template match="*[@keyref]" mode="class">
+    <xsl:text>keyref</xsl:text>
+    <xsl:next-match/>
+  </xsl:template>
+  
+  <xsl:template match="*[@conref]" mode="class">
+    <xsl:text>conref</xsl:text>
+    <xsl:next-match/>
+  </xsl:template>
+  
+  <!-- Prefix templates -->
+  
+  <xsl:mode name="prefix" on-no-match="deep-skip"/>
+  
+  <xsl:template match="*[@keyref]" mode="prefix">
+    <xsl:text>[</xsl:text>
+    <xsl:value-of select="@keyref"/>
+    <xsl:text>]</xsl:text>
+    <xsl:next-match/>
+  </xsl:template>
+  
+  <xsl:template match="*[@conref]" mode="prefix">
+    <xsl:text>[</xsl:text>
+    <xsl:value-of select="@conref"/>
+    <xsl:text>]</xsl:text>
+    <xsl:next-match/>
+  </xsl:template>
+  
+  <!-- Key reference resolution templates -->
+  
+  <xsl:mode name="keyref" on-no-match="shallow-copy"/>
+  
+  <xsl:key name="keys" match="keyref" use="@key"/>
+  
+  <xsl:template match="*[@keyref]" mode="keyref">
+    <xsl:variable name="key" select="key('keys', @keyref, $keyrefs)" as="element()?"/>
+    <xsl:copy>
+      <xsl:copy-of select="$key/@href"/>
+      <xsl:apply-templates select="@*" mode="#current"/>
+       <xsl:choose>
+         <xsl:when test="node()">
+           <xsl:apply-templates mode="#current"/>
+         </xsl:when>
+         <xsl:otherwise>
+           <xsl:apply-templates select="$key/node()" mode="#current"/>
+         </xsl:otherwise>
+       </xsl:choose>
+    </xsl:copy>
+  </xsl:template>
+  
+  <xsl:template match="*[@conkeyref]" mode="keyref">
+    <xsl:variable name="keyref" select="if (contains(@conkeyref, '/'))
+                                        then substring-before(@conkeyref, '/')
+                                        else @conkeyref"/>
+    <xsl:variable name="key" select="key('keys', $keyref, $keyrefs)" as="element()?"/>
+    <xsl:variable name="href" select="if (contains($key/@href, '#'))
+                                      then $key/@href
+                                      else concat($key/@href, '#.')"/>
+    <xsl:copy>
+      <xsl:attribute name="conref" select="if (contains(@conkeyref, '/'))
+                                           then concat($href, '/', substring-after(@conkeyref, '/'))
+                                           else $href"/>
+      <xsl:apply-templates select="@*" mode="#current"/>
+      <xsl:choose>
+        <xsl:when test="node()">
+          <xsl:apply-templates mode="#current"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:apply-templates select="$key/node()" mode="#current"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:copy>
+  </xsl:template>
+  
+  <!-- Code reference templates -->
+  
+  <xsl:mode name="coderef" on-no-match="shallow-copy"/>
+  
+  <xsl:template match="*[contains(@class, ' pr-d/coderef ')]" mode="coderef">
+    <xsl:choose>
+      <xsl:when test="doc-available(@href)">
+        <xsl:value-of select="unparsed-text(@href)"/>        
+      </xsl:when>
+      <xsl:otherwise>
+        <span class="coderef">
+          <xsl:text>[</xsl:text>
+          <xsl:value-of select="@href"/>
+          <xsl:text>]</xsl:text>
+        </span>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
 </xsl:stylesheet>

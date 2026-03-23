@@ -35,46 +35,49 @@ public class Preview {
 
   public String generatePreview(XdmNode doc) {
     var previewTransformer = previewCompiler.load30();
+
     Set<Map.Entry<String, KeyManager.KeyDefinition>> keys = keyManager.keys();
-    logger.info("Generating preview for {} keys", keys.size());
+    //    logger.info("Generating preview for {} keys", keys.size());
     //    var keys =
     // doc.select(Steps.descendantOrSelf(Predicates.isElement()).then(Steps.attribute("keyref")))
     //            .map(XdmItem::getStringValue)
     //            .flatMap(value -> Stream.of(value.trim().split("\\s+")))
     //            .collect(Collectors.toSet());
-    var keysElem = Saplings.elem("keyrefs");
-    logger.info(
-        "Found {} keyrefs",
-        doc.select(Steps.descendantOrSelf(Predicates.isElement()).then(Steps.attribute("keyref")))
-            .count());
-    if (doc.select(Steps.descendantOrSelf(Predicates.isElement()).then(Steps.attribute("keyref")))
-        .exists()) {
-      keysElem =
-          keysElem.withChild(
-              keys.stream()
-                  .map(Map.Entry::getValue)
-                  .map(
-                      key -> {
-                        SaplingElement keyref = Saplings.elem("keyref").withAttr("key", key.key());
-                        if (key.navtitle() != null) {
-                          keyref = keyref.withText(key.navtitle());
-                        } else if (key.text() != null) {
-                          keyref = keyref.withText(key.text());
-                        }
-                        if (key.target() != null) {
-                          keyref = keyref.withAttr("href", key.target().toString());
-                        }
-                        return keyref;
-                      })
-                  .toArray(SaplingElement[]::new));
-    }
+    var keysElems =
+        doc.select(
+                    Steps.descendantOrSelf(Predicates.isElement())
+                        .where(
+                            Predicates.hasAttribute("keyref")
+                                .or(Predicates.hasAttribute("conkeyref"))))
+                .exists()
+            ? keys.stream()
+                .map(Map.Entry::getValue)
+                .map(
+                    key -> {
+                      SaplingElement keyref = Saplings.elem("keyref").withAttr("key", key.key());
+                      if (key.navtitle() != null) {
+                        keyref = keyref.withText(key.navtitle());
+                      } else if (key.text() != null) {
+                        keyref = keyref.withText(key.text());
+                      }
+                      if (key.target() != null) {
+                        keyref = keyref.withAttr("href", key.target().toString());
+                      }
+                      return keyref;
+                    })
+                .toArray(SaplingElement[]::new)
+            : null;
+
     try (var out = new StringWriter()) {
       var serializer = processor.newSerializer(out);
-      var keyrefDoc = Saplings.doc().withChild(keysElem).toXdmNode(processor);
-      logger.info("Generated keyrefs {}", keyrefDoc.toString());
-
-      previewTransformer.setStylesheetParameters(
-          Map.of(QName.fromClarkName("{}keyrefs"), keyrefDoc));
+      if (keysElems != null && keysElems.length > 0) {
+        var keyrefDoc =
+            Saplings.doc()
+                .withChild(Saplings.elem("keyrefs").withChild(keysElems))
+                .toXdmNode(processor);
+        previewTransformer.setStylesheetParameters(
+            Map.of(QName.fromClarkName("{}keyrefs"), keyrefDoc));
+      }
       previewTransformer.transform(doc.asSource(), serializer);
       return out.toString();
     } catch (SaxonApiException | IOException e) {
