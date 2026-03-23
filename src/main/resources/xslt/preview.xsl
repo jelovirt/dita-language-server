@@ -17,7 +17,8 @@
             content: "🔗";
           }
           .keyref:before {
-            content: "🔑";
+            content: "🔑[" attr(data-keyref) "]";
+            background-color: transparent;
           }
           .conref:before {
             content: "📎";
@@ -38,9 +39,15 @@
             pre {
               background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, white);
             }
+            .replaced {
+              background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, white);
+            }
           }
           @media (prefers-color-scheme: light) {
             pre {
+              background-color: color-mix(in srgb, var(--vscode-editor-background) 10%, black);
+            }
+            .replaced {
               background-color: color-mix(in srgb, var(--vscode-editor-background) 10%, black);
             }
           }
@@ -196,8 +203,8 @@
     <xsl:variable name="classes" as="xs:string*">
       <xsl:apply-templates select="." mode="class"/>
     </xsl:variable>
-    <xsl:if test="exists($classes)">
-      <xsl:attribute name="class" select="string-join($classes, ' ')"/>
+    <xsl:if test="exists($classes) or exists(@outputclass)">
+      <xsl:attribute name="class" select="string-join(($classes, @outputclass), ' ')"/>
     </xsl:if>
   </xsl:template>
   
@@ -218,16 +225,12 @@
   <xsl:mode name="prefix" on-no-match="deep-skip"/>
   
   <xsl:template match="*[@keyref]" mode="prefix">
-    <xsl:text>[</xsl:text>
-    <xsl:value-of select="@keyref"/>
-    <xsl:text>]</xsl:text>
+    <xsl:attribute name="data-keyref" select="@keyref"/>
     <xsl:next-match/>
   </xsl:template>
   
   <xsl:template match="*[@conref]" mode="prefix">
-    <xsl:text>[</xsl:text>
-    <xsl:value-of select="@conref"/>
-    <xsl:text>]</xsl:text>
+    <xsl:attribute name="data-keyref" select="@keyref"/>
     <xsl:next-match/>
   </xsl:template>
   
@@ -247,6 +250,7 @@
            <xsl:apply-templates mode="#current"/>
          </xsl:when>
          <xsl:otherwise>
+           <xsl:attribute name="outputclass" select="string-join((@outputclass, 'replaced'), ' ')"/>
            <xsl:apply-templates select="$key/node()" mode="#current"/>
          </xsl:otherwise>
        </xsl:choose>
