@@ -206,9 +206,9 @@
     </span>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/xref ')]">
+  <xsl:template match="*[contains(@class, ' topic/xref ')]" name="xref">
     <a>
-      <xsl:attribute name="href" select="@href"/>
+      <xsl:attribute name="href" select="resolve-uri(@href, base-uri(.))"/>
       <xsl:call-template name="class"/>
       <xsl:apply-templates select="." mode="prefix"/>
       <xsl:choose>
