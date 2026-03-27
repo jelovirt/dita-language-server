@@ -98,7 +98,7 @@
     </p>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/title ')]">
+  <xsl:template match="*[contains(@class, ' topic/topic ')]/*[contains(@class, ' topic/title ')]">
     <xsl:element name="h{count(ancestor::*[contains(@class, ' topic/topic ')])}">
       <xsl:apply-templates/>
     </xsl:element>
@@ -115,6 +115,33 @@
     <xsl:apply-templates/>
   </xsl:template>
 
+  <xsl:template match="*[contains(@class, ' topic/fig ')]">
+    <figure>
+      <xsl:apply-templates/>
+    </figure>
+  </xsl:template>
+
+  <xsl:template match="*[contains(@class, ' topic/fig ')]/*[contains(@class, ' topic/title ')]">
+    <figcaption>
+      <xsl:apply-templates/>
+    </figcaption>
+  </xsl:template>
+
+  <xsl:template match="*[contains(@class, ' topic/image ')]">
+    <img src="{resolve-uri(@href, base-uri(.))}">
+      <xsl:choose>
+        <xsl:when test="*[contains(@class, ' topic/alt ')]">
+          <xsl:attribute name="alt">
+            <xsl:apply-templates select="*[contains(@class, ' topic/alt ')]/node()" mode="text-only"/>
+          </xsl:attribute>
+        </xsl:when>
+        <xsl:when test="@alt">
+          <xsl:attribute name="alt" select="@alt"/>
+        </xsl:when>
+      </xsl:choose>
+    </img>
+  </xsl:template>
+
   <xsl:template match="*[contains(@class, ' topic/pre ')]">
     <pre>
       <xsl:apply-templates/>
@@ -124,7 +151,7 @@
   <xsl:template match="*[contains(@class, ' topic/note ')]">
     <div class="note">
       <b class="label">
-        <xsl:value-of select="@type"/>
+        <xsl:value-of select="(@type/string(), 'note')[1]"/>
         <xsl:text>: </xsl:text>
       </b>
       <xsl:apply-templates/>
@@ -196,7 +223,11 @@
   </xsl:template>
   
   <xsl:template match="*[contains(@class, ' topic/indexterm ')]"/>
-  
+
+  <!-- Text only templates -->
+
+  <xsl:mode name="text-only" on-no-match="text-only-copy"/>
+
   <!-- Class attribute templates -->
   
   <xsl:template name="class">
