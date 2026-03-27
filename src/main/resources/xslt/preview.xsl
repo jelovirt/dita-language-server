@@ -10,6 +10,31 @@
   <xsl:param name="keyrefs" as="document-node()?"/>
 
   <xsl:template match="/">
+    <xsl:variable name="keyref-resolved" as="document-node()">
+      <xsl:choose>
+        <xsl:when test="exists($keyrefs) and //*[@keyref or @conkeyref]">
+          <xsl:document>
+            <xsl:apply-templates mode="keyref"/>
+          </xsl:document>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:sequence select="/"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="coderef-resolved" as="document-node()">
+      <xsl:choose>
+        <xsl:when test="$keyref-resolved//*[contains(@class, ' pr-d/coderef ')]">
+          <xsl:document>
+            <xsl:apply-templates select="$keyref-resolved/*" mode="coderef"/>
+          </xsl:document>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:sequence select="$keyref-resolved"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
     <html>
       <head>
         <style type="text/css">
@@ -54,37 +79,16 @@
         </style>
       </head>
       <body>
-        <xsl:variable name="keyref-resolved" as="document-node()">
-          <xsl:choose>
-            <xsl:when test="exists($keyrefs) and //*[@keyref or @conkeyref]">
-              <xsl:document>
-                <xsl:apply-templates mode="keyref"/>
-              </xsl:document>    
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:sequence select="/"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:variable>
-        <xsl:variable name="coderef-resolved" as="document-node()">
-          <xsl:choose>
-            <xsl:when test="$keyref-resolved//*[contains(@class, ' pr-d/coderef ')]">
-              <xsl:document>
-                <xsl:apply-templates select="$keyref-resolved/*" mode="coderef"/>
-              </xsl:document>    
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:sequence select="$keyref-resolved"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:variable>
         <xsl:apply-templates select="$coderef-resolved/*"/>
       </body>
     </html>
   </xsl:template>
 
   <xsl:template match="*[contains(@class, ' topic/topic ')]">
-    <xsl:apply-templates select="* except *[contains(@class, ' topic/prolog ')]"/>
+    <article>
+      <xsl:apply-templates select="@*" mode="common-attributes"/>
+      <xsl:apply-templates select="* except *[contains(@class, ' topic/prolog ')]"/>
+    </article>
   </xsl:template>
 
   <xsl:template match="*[contains(@class, ' topic/titlealts ')]">
@@ -93,6 +97,7 @@
 
   <xsl:template match="*[contains(@class, ' topic/titlealts ')]">
     <p>
+      <xsl:apply-templates select="@*" mode="common-attributes"/>
       <b class="generated label">Navigation title: </b>
       <xsl:apply-templates/>
     </p>
@@ -100,12 +105,14 @@
 
   <xsl:template match="*[contains(@class, ' topic/topic ')]/*[contains(@class, ' topic/title ')]">
     <xsl:element name="h{count(ancestor::*[contains(@class, ' topic/topic ')])}">
+      <xsl:apply-templates select="@*" mode="common-attributes"/>
       <xsl:apply-templates/>
     </xsl:element>
   </xsl:template>
 
   <xsl:template match="*[contains(@class, ' topic/shortdesc ')]">
     <p>
+      <xsl:apply-templates select="@*" mode="common-attributes"/>
       <b class="generated label">Short description: </b>
       <xsl:apply-templates/>
     </p>
@@ -117,18 +124,21 @@
 
   <xsl:template match="*[contains(@class, ' topic/fig ')]">
     <figure>
+      <xsl:apply-templates select="@*" mode="common-attributes"/>
       <xsl:apply-templates/>
     </figure>
   </xsl:template>
 
   <xsl:template match="*[contains(@class, ' topic/fig ')]/*[contains(@class, ' topic/title ')]">
     <figcaption>
+      <xsl:apply-templates select="@*" mode="common-attributes"/>
       <xsl:apply-templates/>
     </figcaption>
   </xsl:template>
 
   <xsl:template match="*[contains(@class, ' topic/image ')]">
     <img src="{resolve-uri(@href, base-uri(.))}">
+      <xsl:apply-templates select="@*" mode="common-attributes"/>
       <xsl:choose>
         <xsl:when test="*[contains(@class, ' topic/alt ')]">
           <xsl:attribute name="alt">
@@ -144,12 +154,14 @@
 
   <xsl:template match="*[contains(@class, ' topic/pre ')]">
     <pre>
+      <xsl:apply-templates select="@*" mode="common-attributes"/>
       <xsl:apply-templates/>
     </pre>
   </xsl:template>
 
   <xsl:template match="*[contains(@class, ' topic/note ')]">
     <div class="note">
+      <xsl:apply-templates select="@*" mode="common-attributes"/>
       <b class="label">
         <xsl:value-of select="(@type/string(), 'note')[1]"/>
         <xsl:text>: </xsl:text>
@@ -161,6 +173,7 @@
   <xsl:template match="*[contains(@class, ' hi-d/b ') or
                          contains(@class, ' pr-d/parmname ')]">
     <b>
+      <xsl:apply-templates select="@*" mode="common-attributes"/>
       <xsl:apply-templates/>
     </b>
   </xsl:template>
@@ -168,15 +181,30 @@
   <xsl:template match="*[contains(@class, ' sw-d/filepath ') or
                          contains(@class, ' pr-d/codeph ')]">
     <code>
+      <xsl:apply-templates select="@*" mode="common-attributes"/>
       <xsl:apply-templates/>
     </code>
   </xsl:template>
 
   <xsl:template match="*[contains(@class, ' topic/p ')]">
     <p>
+      <xsl:apply-templates select="@*" mode="common-attributes"/>
       <xsl:apply-templates/>
     </p>
   </xsl:template>
+
+  <xsl:template match="*[contains(@class, ' topic/section ')]">
+    <section>
+      <xsl:apply-templates select="@*" mode="common-attributes"/>
+      <xsl:apply-templates/>
+    </section>
+  </xsl:template>
+  
+  <xsl:template match="*[contains(@class, ' topic/section ')]/*[contains(@class, ' topic/title ')]">
+    <xsl:element name="h{count(ancestor::*[contains(@class, ' topic/topic ') or contains(@class, ' topic/section ')])}">
+      <xsl:apply-templates/>
+    </xsl:element>
+  </xsl:template>  
 
   <xsl:template match="*[contains(@class, ' topic/ul ')]">
     <ul>
@@ -223,6 +251,18 @@
   </xsl:template>
   
   <xsl:template match="*[contains(@class, ' topic/indexterm ')]"/>
+
+  <!-- Common attribute templates -->
+
+  <xsl:mode name="common-attributes" on-no-match="deep-skip"/>
+
+  <xsl:template match="@id" mode="common-attributes">
+    <xsl:attribute name="id" select="concat(ancestor::*[contains(@class, ' topic/topic ')][1]/@id, '__', .)"/>
+  </xsl:template>
+
+  <xsl:template match="*[contains(@class, ' topic/topic ')]/@id" mode="common-attributes">
+    <xsl:attribute name="id" select="."/>
+  </xsl:template>
 
   <!-- Text only templates -->
 
