@@ -9,6 +9,65 @@
 
   <xsl:param name="keyrefs" as="document-node()?"/>
 
+  <xsl:variable name="css" as="xs:string">
+    a:before {
+      content: "🔗";
+    }
+
+    .keyref:before {
+      content: "🔑[" attr(data-keyref) "]";
+      background-color: transparent;
+    }
+
+    .conref:before {
+      content: "📎";
+    }
+
+    .generated {
+      cursor: pointer;
+    }
+
+    .label {
+      text-transform: capitalize;
+    }
+
+    .note {
+      margin: 1rem;
+    }
+
+    pre {
+      padding: 0.5rem;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      pre {
+        background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, white);
+      }
+
+      .replaced {
+        background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, white);
+      }
+    }
+
+    @media (prefers-color-scheme: light) {
+      pre {
+        background-color: color-mix(in srgb, var(--vscode-editor-background) 10%, black);
+      }
+
+      .replaced {
+        background-color: color-mix(in srgb, var(--vscode-editor-background) 10%, black);
+      }
+    }
+  </xsl:variable>
+
+  <xsl:variable name="head" as="element()">
+    <head>
+      <style type="text/css">
+        <xsl:value-of select="normalize-space($css)"/>
+      </style>
+    </head>
+  </xsl:variable>
+
   <xsl:template match="/">
     <xsl:variable name="keyref-resolved" as="document-node()">
       <xsl:choose>
@@ -36,48 +95,7 @@
     </xsl:variable>
 
     <html>
-      <head>
-        <style type="text/css">
-          a:before {
-            content: "🔗";
-          }
-          .keyref:before {
-            content: "🔑[" attr(data-keyref) "]";
-            background-color: transparent;
-          }
-          .conref:before {
-            content: "📎";
-          }
-          .generated {
-            cursor: pointer;
-          }
-          .label {
-            text-transform: capitalize;
-          }
-          .note {
-            margin: 1rem;
-          }
-          pre {
-            padding: 0.5rem;
-          }
-          @media (prefers-color-scheme: dark) {
-            pre {
-              background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, white);
-            }
-            .replaced {
-              background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, white);
-            }
-          }
-          @media (prefers-color-scheme: light) {
-            pre {
-              background-color: color-mix(in srgb, var(--vscode-editor-background) 10%, black);
-            }
-            .replaced {
-              background-color: color-mix(in srgb, var(--vscode-editor-background) 10%, black);
-            }
-          }
-        </style>
-      </head>
+      <xsl:sequence select="$head"/>
       <body>
         <xsl:apply-templates select="$coderef-resolved/*"/>
       </body>
