@@ -23,17 +23,18 @@
     }
 
     .keyref:before {
-      content: "🔑[" attr(data-keyref) "]";
+      content: "\0023[" attr(data-keyref) "]";
       background-color: transparent;
     }
     
     .conkeyref:before {
-      content: "🔑[" attr(data-conkeyref) "]";
+      content: "\00A7[" attr(data-conkeyref) "]";
       background-color: transparent;
     }
 
     .conref:before {
-      content: "📎";
+      content: "\00BB[" attr(data-conref) "]";
+      background-color: transparent;
     }
 
     .generated {
@@ -57,7 +58,7 @@
         background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, white);
       }
 
-      .replaced {
+      .replaced, .generated {
         background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, white);
       }
     }
@@ -67,7 +68,7 @@
         background-color: color-mix(in srgb, var(--vscode-editor-background) 10%, black);
       }
 
-      .replaced {
+      .replaced, .generated {
         background-color: color-mix(in srgb, var(--vscode-editor-background) 10%, black);
       }
     }
@@ -262,6 +263,14 @@
     </xsl:element>
   </xsl:template>  
 
+  <xsl:template match="*[contains(@class, ' topic/div ') or contains(@class, ' topic/itemgroup ')]">
+    <div>
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
+      <xsl:apply-templates/>
+    </div>
+  </xsl:template>
+
   <xsl:template match="*[contains(@class, ' topic/ul ')]">
     <ul>
       <xsl:call-template name="common-attributes"/>
@@ -286,7 +295,8 @@
     </li>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/keyword ')]">
+  <xsl:template match="*[contains(@class, ' topic/keyword ') or
+                         contains(@class, ' topic/ph ')]">
     <span>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
