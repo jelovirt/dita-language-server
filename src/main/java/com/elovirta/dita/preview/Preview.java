@@ -43,30 +43,7 @@ public class Preview {
     //            .map(XdmItem::getStringValue)
     //            .flatMap(value -> Stream.of(value.trim().split("\\s+")))
     //            .collect(Collectors.toSet());
-    var keysElems =
-        doc.select(
-                    Steps.descendantOrSelf(Predicates.isElement())
-                        .where(
-                            Predicates.hasAttribute("keyref")
-                                .or(Predicates.hasAttribute("conkeyref"))))
-                .exists()
-            ? keys.stream()
-                .map(Map.Entry::getValue)
-                .map(
-                    key -> {
-                      SaplingElement keyref = Saplings.elem("keyref").withAttr("key", key.key());
-                      if (key.navtitle() != null) {
-                        keyref = keyref.withText(key.navtitle());
-                      } else if (key.text() != null) {
-                        keyref = keyref.withText(key.text());
-                      }
-                      if (key.target() != null) {
-                        keyref = keyref.withAttr("href", key.target().toString());
-                      }
-                      return keyref;
-                    })
-                .toArray(SaplingElement[]::new)
-            : null;
+    var keysElems = getKeysElems(doc, keys);
 
     try (var out = new StringWriter()) {
       var serializer = processor.newSerializer(out);
@@ -83,5 +60,31 @@ public class Preview {
     } catch (SaxonApiException | IOException e) {
       throw new RuntimeException("Failed to run XSLT for preview: " + e.getMessage(), e);
     }
+  }
+
+  private static SaplingElement[] getKeysElems(
+      XdmNode doc, Set<Map.Entry<String, KeyManager.KeyDefinition>> keys) {
+    return doc.select(
+                Steps.descendantOrSelf(Predicates.isElement())
+                    .where(
+                        Predicates.hasAttribute("keyref").or(Predicates.hasAttribute("conkeyref"))))
+            .exists()
+        ? keys.stream()
+            .map(Map.Entry::getValue)
+            .map(
+                key -> {
+                  SaplingElement keyref = Saplings.elem("keyref").withAttr("key", key.key());
+                  if (key.navtitle() != null) {
+                    keyref = keyref.withText(key.navtitle());
+                  } else if (key.text() != null) {
+                    keyref = keyref.withText(key.text());
+                  }
+                  if (key.target() != null) {
+                    keyref = keyref.withAttr("href", key.target().toString());
+                  }
+                  return keyref;
+                })
+            .toArray(SaplingElement[]::new)
+        : null;
   }
 }
