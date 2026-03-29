@@ -26,6 +26,11 @@
       content: "🔑[" attr(data-keyref) "]";
       background-color: transparent;
     }
+    
+    .conkeyref:before {
+      content: "🔑[" attr(data-conkeyref) "]";
+      background-color: transparent;
+    }
 
     .conref:before {
       content: "📎";
@@ -117,7 +122,7 @@
     <html>
       <xsl:sequence select="$head"/>
       <body>
-        <xsl:copy-of select="$conref-resolved/*"></xsl:copy-of>
+        <xsl:copy-of select="$conref-resolved/*"/>
         <xsl:apply-templates select="$conref-resolved/*"/>
       </body>
     </html>
@@ -358,7 +363,7 @@
   </xsl:template>
   
   <xsl:template match="*[@conkeyref]" mode="class">
-    <xsl:text>conref</xsl:text>
+    <xsl:text>conkeyref</xsl:text>
     <xsl:next-match/>
   </xsl:template>
   
