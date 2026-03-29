@@ -9,12 +9,14 @@
   <xsl:output method="html" version="5"/>
 
   <xsl:param name="keyrefs" as="document-node()?">
+    <!--
     <xsl:document>
       <keyrefs>
-        <keyref key="xreusable-components"
+        <keyref key="reusable-components"
           href="file:/Users/jarno.elovirta/work/github.com/dita-ot/dita-ot/src/main/docsrc/resources/reusable-components.dita"/>
       </keyrefs>
     </xsl:document>
+    -->
   </xsl:param>
 
   <xsl:variable name="css" as="xs:string">
@@ -58,7 +60,7 @@
         background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, white);
       }
 
-      .replaced, .generated {
+      .replaced, .generated, [data-conref], [data-keyref] {
         background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, white);
       }
     }
@@ -68,7 +70,7 @@
         background-color: color-mix(in srgb, var(--vscode-editor-background) 10%, black);
       }
 
-      .replaced, .generated {
+      .replaced, .generated, [data-conref], [data-keyref] {
         background-color: color-mix(in srgb, var(--vscode-editor-background) 10%, black);
       }
     }
@@ -123,7 +125,6 @@
     <html>
       <xsl:sequence select="$head"/>
       <body>
-        <xsl:copy-of select="$conref-resolved/*"/>
         <xsl:apply-templates select="$conref-resolved/*"/>
       </body>
     </html>
@@ -387,7 +388,7 @@
   </xsl:template>
   
   <xsl:template match="*[@conref]" mode="prefix">
-    <xsl:attribute name="data-keyref" select="@keyref"/>
+    <xsl:attribute name="data-conref" select="@conref"/>
     <xsl:next-match/>
   </xsl:template>
 
@@ -433,6 +434,7 @@
   </xsl:function>
   
   <xsl:template match="*[@conref]" mode="conref">
+    <xsl:variable name="conref" select="@conref"/>
     <xsl:variable name="tokens" select="x:parse-uri(@conref)" as="xs:string+"/>
     <xsl:variable name="target-doc" as="document-node()?"
                   select="document($tokens[1])"/>
@@ -456,7 +458,11 @@
                    
                  </xsl:copy>
                  -->
-                 <xsl:copy-of select="$element"/>
+                 <xsl:for-each select="$element">
+                   <xsl:copy>
+                     <xsl:copy-of select="@*, $conref, node()"/>
+                   </xsl:copy>
+                 </xsl:for-each>
                </xsl:when>
                <xsl:otherwise>
                  <xsl:next-match/>
