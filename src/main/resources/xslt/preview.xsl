@@ -7,6 +7,8 @@
                 exclude-result-prefixes="xs dita-ot x">
 
   <xsl:import href="keyref.xsl"/>
+  <xsl:import href="conref.xsl"/>
+  <xsl:import href="coderef.xsl"/>
 
   <xsl:output method="html" version="5" indent="no"/>
 
@@ -407,98 +409,6 @@
   <xsl:template match="*[contains(@class, ' topic/shortdesc ')]" mode="prefix">
     <b class="generated label">Short description: </b>
     <xsl:next-match/>
-  </xsl:template>
-  
-  <!-- Content reference resolution templates -->
-  
-  <xsl:mode name="conref" on-no-match="shallow-copy"/>
-  
-  <xsl:function name="x:parse-uri" as="xs:string+">
-    <xsl:param name="uri" as="xs:string"/>
-    <xsl:choose>
-      <xsl:when test="contains($uri, '#')">
-        <xsl:value-of select="substring-before($uri, '#')"/>
-        <xsl:variable name="fragment" select="substring-after($uri, '#')"/>
-        <xsl:choose>
-          <xsl:when test="contains($fragment, '/')">
-            <xsl:value-of select="substring-before($fragment, '/')"/>
-            <xsl:value-of select="substring-after($fragment, '/')"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:value-of select="$fragment"/>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:value-of select="$uri"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:function>
-  
-  <xsl:template match="*[@conref]" mode="conref">
-    <xsl:variable name="conref" select="@conref"/>
-    <xsl:variable name="tokens" select="x:parse-uri(@conref)" as="xs:string+"/>
-    <xsl:variable name="target-doc" as="document-node()?"
-                  select="document($tokens[1])"/>
-    <xsl:choose>
-       <xsl:when test="exists($target-doc)">
-         <xsl:variable name="topic" as="element()?"
-                       select="if ($tokens[2] = '.')
-                               then $target-doc//*[contains(@class, ' topic/topic ')][1]
-                               else $target-doc//*[contains(@class, ' topic/topic ')][@id = $tokens[2]]"/>
-         <xsl:choose>
-           <xsl:when test="exists($topic)">
-             <xsl:variable name="element" as="element()?"
-                           select="if (exists($tokens[3]))
-                                   then $topic//*[@id = $tokens[3]]
-                                   else $topic"/>
-             <xsl:choose>
-               <xsl:when test="exists($element)">
-                 <!--
-                 <xsl:copy>
-                   <xsl:apply-templates select="@*" mode="conref"/>
-                   
-                 </xsl:copy>
-                 -->
-                 <xsl:for-each select="$element">
-                   <xsl:copy>
-                     <xsl:copy-of select="@*, $conref, node()"/>
-                   </xsl:copy>
-                 </xsl:for-each>
-               </xsl:when>
-               <xsl:otherwise>
-                 <xsl:next-match/>
-               </xsl:otherwise>
-             </xsl:choose>
-           </xsl:when>
-           <xsl:otherwise>
-             <xsl:next-match/>
-           </xsl:otherwise>
-         </xsl:choose>
-       </xsl:when>
-      <xsl:otherwise>
-        <xsl:next-match/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
-  <!-- Code reference templates -->
-  
-  <xsl:mode name="coderef" on-no-match="shallow-copy"/>
-  
-  <xsl:template match="*[contains(@class, ' pr-d/coderef ')]" mode="coderef">
-    <xsl:choose>
-      <xsl:when test="doc-available(@href)">
-        <xsl:value-of select="unparsed-text(@href)"/>        
-      </xsl:when>
-      <xsl:otherwise>
-        <span class="coderef">
-          <xsl:text>[</xsl:text>
-          <xsl:value-of select="@href"/>
-          <xsl:text>]</xsl:text>
-        </span>
-      </xsl:otherwise>
-    </xsl:choose>
   </xsl:template>
   
 </xsl:stylesheet>
