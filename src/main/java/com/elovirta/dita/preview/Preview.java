@@ -26,8 +26,9 @@ public class Preview {
     this.processor = processor;
     this.keyManager = keyManager;
     try (var in = getClass().getResourceAsStream("/xslt/preview.xsl")) {
+      XsltCompiler xsltCompiler = processor.newXsltCompiler();
       this.previewCompiler =
-          processor.newXsltCompiler().compile(new StreamSource(in, "classpath:/xslt/preview.xsl"));
+          xsltCompiler.compile(new StreamSource(in, "classpath:/xslt/preview.xsl"));
     } catch (SaxonApiException | IOException e) {
       throw new RuntimeException("Failed to parse classpath:/xslt/preview.xsl", e);
     }

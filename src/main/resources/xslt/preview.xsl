@@ -6,7 +6,9 @@
                 version="3.0"
                 exclude-result-prefixes="xs dita-ot x">
 
-  <xsl:output method="html" version="5"/>
+  <xsl:import href="keyref.xsl"/>
+
+  <xsl:output method="html" version="5" indent="no"/>
 
   <xsl:param name="keyrefs" as="document-node()?">
     <!--
@@ -479,67 +481,7 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-  
-  <!-- Key reference resolution templates -->
-  
-  <xsl:mode name="keyref" on-no-match="shallow-copy"/>
-  
-  <xsl:key name="keys" match="keyref" use="@key"/>
-  
-  <xsl:template match="*[@keyref]" mode="keyref">
-    <xsl:variable name="key" select="key('keys', @keyref, $keyrefs)" as="element()?"/>
-    <xsl:copy>
-      <xsl:copy-of select="$key/@href"/>
-      <xsl:apply-templates select="@* except @keyref" mode="#current"/>
-       <xsl:choose>
-         <xsl:when test="node()">
-           <xsl:apply-templates mode="#current"/>
-         </xsl:when>
-         <xsl:otherwise>
-           <xsl:attribute name="outputclass" select="string-join((@outputclass, 'replaced'), ' ')"/>
-           <xsl:apply-templates select="$key/node()" mode="#current"/>
-         </xsl:otherwise>
-       </xsl:choose>
-    </xsl:copy>
-  </xsl:template>
-  
-  <xsl:template match="*[@conkeyref]" mode="keyref">
-    <xsl:variable name="keyref" select="if (contains(@conkeyref, '/'))
-                                        then substring-before(@conkeyref, '/')
-                                        else @conkeyref"/>
-    <xsl:variable name="key" select="key('keys', $keyref, $keyrefs)" as="element()?"/>
-    <xsl:choose>
-      <xsl:when test="exists($key)">
-        <xsl:variable name="href" select="
-            if (contains($key/@href, '#'))
-            then
-              $key/@href
-            else
-              concat($key/@href, '#.')"/>
-        <xsl:copy>
-          <xsl:attribute name="conref" select="
-              if (contains(@conkeyref, '/'))
-              then
-                concat($href, '/', substring-after(@conkeyref, '/'))
-              else
-                $href"/>
-          <xsl:apply-templates select="@* except @conkeyref" mode="#current"/>
-          <xsl:choose>
-            <xsl:when test="node()">
-              <xsl:apply-templates mode="#current"/>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:apply-templates select="$key/node()" mode="#current"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:copy>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:next-match/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-  
+
   <!-- Code reference templates -->
   
   <xsl:mode name="coderef" on-no-match="shallow-copy"/>
