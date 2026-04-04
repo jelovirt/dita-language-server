@@ -38,7 +38,7 @@
     <xsl:variable name="conref" select="@conref"/>
     <xsl:variable name="tokens" select="x:parse-uri(@conref)" as="xs:string+"/>
     <xsl:variable name="target-doc" as="document-node()?"
-                  select="document($tokens[1])"/>
+                  select="document(resolve-uri($tokens[1], base-uri(.)))"/>
     <xsl:choose>
        <xsl:when test="exists($target-doc)">
          <xsl:variable name="topic" as="element()?"
