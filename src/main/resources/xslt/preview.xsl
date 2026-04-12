@@ -18,6 +18,8 @@
       <keyrefs>
         <keyref key="reusable-components"
           href="file:/Users/jarno.elovirta/work/github.com/dita-ot/dita-ot/src/main/docsrc/resources/reusable-components.dita"/>
+        <keyref key="conref-task"
+          href="file:/Users/jarno.elovirta/work/github.com/dita-ot/dita-ot/src/main/docsrc/resources/conref-task.dita"/>
       </keyrefs>
     </xsl:document>
     -->
@@ -30,11 +32,11 @@
 
     .keyref:before {
       content: "\0023[" attr(data-keyref) "]";
-      background-color: transparent;
+      background-color: transparent
     }
-    
+
     .conkeyref:before {
-      content: "\00A7[" attr(data-conkeyref) "]";
+      content: "\00A7[" attr(data-conkeyref) "]" !important;
       background-color: transparent;
     }
 
@@ -61,21 +63,21 @@
 
     @media (prefers-color-scheme: dark) {
       pre {
-        background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, white);
+        background-color: color-mix(in srgb, var(--vscode-editor-background) 80%, white);
       }
 
-      .replaced, .generated, [data-conref], [data-keyref] {
-        background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, white);
-      }
+      .replaced, .generated, .conref, .conkeyref, [data-conref], [data-keyref] {
+        background-color: color-mix(in srgb, var(--vscode-editor-background) 80%, white);
+        }
     }
 
     @media (prefers-color-scheme: light) {
       pre {
-        background-color: color-mix(in srgb, var(--vscode-editor-background) 10%, black);
+        background-color: color-mix(in srgb, var(--vscode-editor-background) 80%, black);
       }
 
-      .replaced, .generated, [data-conref], [data-keyref] {
-        background-color: color-mix(in srgb, var(--vscode-editor-background) 10%, black);
+      .replaced, .generated, .conref, .conkeyref, [data-conref], [data-keyref] {
+        background-color: color-mix(in srgb, var(--vscode-editor-background) 80%, black);
       }
     }
   </xsl:variable>
@@ -227,7 +229,7 @@
   </xsl:template>
 
   <xsl:template match="*[contains(@class, ' hi-d/b ') or
-                         contains(@class, ' pr-d/parmname ')]">
+                         contains(@class, ' pr-d/parmname ')]" priority="10">
     <b>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -236,7 +238,7 @@
   </xsl:template>
 
   <xsl:template match="*[contains(@class, ' sw-d/filepath ') or
-                         contains(@class, ' pr-d/codeph ')]">
+                         contains(@class, ' pr-d/codeph ')]" priority="10">
     <code>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -396,7 +398,7 @@
     <xsl:next-match/>
   </xsl:template>
 
-  <xsl:template match="*[@conkeyref]" mode="prefix">
+  <xsl:template match="*[@conkeyref]" mode="prefix" priority="10">
     <xsl:attribute name="data-conkeyref" select="@conkeyref"/>
     <xsl:next-match/>
   </xsl:template>

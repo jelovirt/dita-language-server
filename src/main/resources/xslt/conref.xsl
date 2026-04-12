@@ -36,49 +36,39 @@
   
   <xsl:template match="*[@conref]" mode="conref">
     <xsl:variable name="conref" select="@conref"/>
+    <xsl:variable name="conkeyref" select="@conkeyref"/>
     <xsl:variable name="tokens" select="x:parse-uri(@conref)" as="xs:string+"/>
     <xsl:variable name="target-doc" as="document-node()?"
                   select="document(resolve-uri($tokens[1], base-uri(.)))"/>
-    <xsl:choose>
-       <xsl:when test="exists($target-doc)">
-         <xsl:variable name="topic" as="element()?"
-                       select="if ($tokens[2] = '.')
+
+    <xsl:variable name="topic" as="element()?"
+                  select="if (exists($target-doc))
+                          then if ($tokens[2] = '.')
                                then $target-doc//*[contains(@class, ' topic/topic ')][1]
-                               else $target-doc//*[contains(@class, ' topic/topic ')][@id = $tokens[2]]"/>
-         <xsl:choose>
-           <xsl:when test="exists($topic)">
-             <xsl:variable name="element" as="element()?"
-                           select="if (exists($tokens[3]))
-                                   then $topic//*[@id = $tokens[3]]
-                                   else $topic"/>
-             <xsl:choose>
-               <xsl:when test="exists($element)">
-                 <!--
-                 <xsl:copy>
-                   <xsl:apply-templates select="@*" mode="conref"/>
-                   
-                 </xsl:copy>
-                 -->
-                 <xsl:for-each select="$element">
-                   <xsl:copy>
-                     <xsl:copy-of select="@*, $conref, node()"/>
-                   </xsl:copy>
-                 </xsl:for-each>
-               </xsl:when>
-               <xsl:otherwise>
-                 <xsl:next-match/>
-               </xsl:otherwise>
-             </xsl:choose>
-           </xsl:when>
-           <xsl:otherwise>
-             <xsl:next-match/>
-           </xsl:otherwise>
-         </xsl:choose>
-       </xsl:when>
-      <xsl:otherwise>
-        <xsl:next-match/>
-      </xsl:otherwise>
-    </xsl:choose>
+                               else $target-doc//*[contains(@class, ' topic/topic ')][@id = $tokens[2]]
+                          else ()"/>
+
+    <xsl:variable name="element" as="element()?"
+                  select="if (exists($topic))
+                          then if (exists($tokens[3]))
+                               then $topic//*[@id = $tokens[3]]
+                               else $topic
+                          else ()"/>
+
+   <xsl:choose>
+     <xsl:when test="exists($element)">
+       <xsl:for-each select="$element">
+         <xsl:copy>
+           <xsl:copy-of select="@*, $conref, $conkeyref"/>
+           <!-- XXX: don't resolve conref recursively -->
+           <xsl:copy-of select="node()"/>
+         </xsl:copy>
+       </xsl:for-each>
+     </xsl:when>
+     <xsl:otherwise>
+       <xsl:next-match/>
+     </xsl:otherwise>
+   </xsl:choose>
   </xsl:template>
   
 </xsl:stylesheet>

@@ -31,7 +31,7 @@
     <xsl:variable name="key" select="key('keys', @keyref, $keyrefs)" as="element()?"/>
     <xsl:copy>
       <xsl:copy-of select="$key/@href"/>
-      <xsl:apply-templates select="@* except @keyref" mode="#current"/>
+      <xsl:apply-templates select="@*" mode="#current"/>
        <xsl:choose>
          <xsl:when test="node()">
            <xsl:apply-templates mode="#current"/>
@@ -64,7 +64,7 @@
                 concat($href, '/', substring-after(@conkeyref, '/'))
               else
                 $href"/>
-          <xsl:apply-templates select="@* except @conkeyref" mode="#current"/>
+          <xsl:apply-templates select="@*" mode="#current"/>
           <xsl:choose>
             <xsl:when test="node()">
               <xsl:apply-templates mode="#current"/>
