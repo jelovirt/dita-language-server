@@ -1,19 +1,18 @@
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.tasks.Copy
 
 class DtdProcessingPlugin implements Plugin<Project> {
     void apply(Project project) {
         project.tasks.register('processDtd') {
-            def inputDir = project.file('src/main/resources/schemas/dtd')
-            def outputDir = project.layout.buildDirectory.dir('generated/dtd').get().asFile
+            def inputDir = project.file('src/main/resources/schemas/dtd/technicalContent/dtd')
+            def outputDir = project.layout.buildDirectory.dir('generated/dtd/schemas/dtd/technicalContent/dtd').get().asFile
             inputs.dir inputDir
             outputs.dir outputDir
 
             doLast {
                 def processor = new DtdProcessor()
 
-                project.fileTree(inputDir).include('**/*.dtd').each { dtdFile ->
+                project.fileTree(inputDir).include('mathml/*.dtd', 'svg/*.dtd').each { dtdFile ->
                     def relativePath = inputDir.toPath().relativize(dtdFile.toPath())
                     def outputFile = outputDir.toPath().resolve(relativePath)
                     outputFile.parent.toFile().mkdirs()
@@ -24,18 +23,10 @@ class DtdProcessingPlugin implements Plugin<Project> {
             }
         }
 
-//        project.tasks.named('processResources') {
-//            dependsOn 'processDtd'
-//        }
-
-        project.tasks.register('copyCatalog', Copy) {
-            from project.file('src/main/resources/schemas/dtd')
-            into project.layout.buildDirectory.dir('generated/dtd')
-            include '**/catalog.xml'
+        project.sourceSets.main.resources {
+            srcDir project.layout.buildDirectory.dir('generated/dtd')
+            exclude 'schemas/dtd/technicalContent/dtd/mathml/**'
+            exclude 'schemas/dtd/technicalContent/dtd/svg/**'
         }
-
-//        project.tasks.named('processDtd') {
-//            dependsOn  'copyCatalog'
-//        }
     }
 }
