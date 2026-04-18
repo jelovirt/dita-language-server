@@ -11,7 +11,7 @@
 
   <xsl:mode name="coderef" on-no-match="shallow-copy"/>
 
-  <xsl:template match="*[contains(@class, ' pr-d/coderef ')]" mode="coderef">
+  <xsl:template match="*[contains-token(@class, 'pr-d/coderef')]" mode="coderef">
     <xsl:choose>
       <xsl:when test="doc-available(@href)">
         <xsl:value-of select="unparsed-text(@href)"/>

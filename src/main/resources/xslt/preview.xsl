@@ -149,7 +149,7 @@
     </xsl:variable>
     <xsl:variable name="coderef-resolved" as="document-node()">
       <xsl:choose>
-        <xsl:when test="false() and $conref-resolved//*[contains(@class, ' pr-d/coderef ')]">
+        <xsl:when test="false() and $conref-resolved//*[contains-token(@class, 'pr-d/coderef')]">
           <xsl:document>
             <xsl:apply-templates select="$conref-resolved/*" mode="coderef"/>
           </xsl:document>
@@ -168,19 +168,19 @@
     </html>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/topic ')]">
+  <xsl:template match="*[contains-token(@class, 'topic/topic')]">
     <article>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
-      <xsl:apply-templates select="* except *[contains(@class, ' topic/prolog ')]"/>
+      <xsl:apply-templates select="* except *[contains-token(@class, 'topic/prolog')]"/>
     </article>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/titlealts ')]">
-    <xsl:apply-templates select="*[contains(@class, ' topic/navtitle ')]"/>
+  <xsl:template match="*[contains-token(@class, 'topic/titlealts')]">
+    <xsl:apply-templates select="*[contains-token(@class, 'topic/navtitle')]"/>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/navtitle ')]">
+  <xsl:template match="*[contains-token(@class, 'topic/navtitle')]">
     <p>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -188,15 +188,15 @@
     </p>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/topic ')]/*[contains(@class, ' topic/title ')]">
-    <xsl:element name="h{count(ancestor::*[contains(@class, ' topic/topic ')])}">
+  <xsl:template match="*[contains-token(@class, 'topic/topic')]/*[contains-token(@class, 'topic/title')]">
+    <xsl:element name="h{count(ancestor::*[contains-token(@class, 'topic/topic')])}">
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
       <xsl:apply-templates/>
     </xsl:element>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/shortdesc ')]">
+  <xsl:template match="*[contains-token(@class, 'topic/shortdesc')]">
     <p>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -204,11 +204,11 @@
     </p>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/body ')]">
+  <xsl:template match="*[contains-token(@class, 'topic/body')]">
     <xsl:apply-templates/>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/fig ')]">
+  <xsl:template match="*[contains-token(@class, 'topic/fig')]">
     <figure>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -216,7 +216,7 @@
     </figure>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/fig ')]/*[contains(@class, ' topic/title ')]">
+  <xsl:template match="*[contains-token(@class, 'topic/fig')]/*[contains-token(@class, 'topic/title')]">
     <figcaption>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -224,13 +224,13 @@
     </figcaption>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/image ')]">
+  <xsl:template match="*[contains-token(@class, 'topic/image')]">
     <img src="{resolve-uri(@href, base-uri(.))}">
       <xsl:apply-templates select="@*" mode="common-attributes"/>
       <xsl:choose>
-        <xsl:when test="*[contains(@class, ' topic/alt ')]">
+        <xsl:when test="*[contains-token(@class, 'topic/alt')]">
           <xsl:attribute name="alt">
-            <xsl:apply-templates select="*[contains(@class, ' topic/alt ')]/node()" mode="text-only"/>
+            <xsl:apply-templates select="*[contains-token(@class, 'topic/alt')]/node()" mode="text-only"/>
           </xsl:attribute>
         </xsl:when>
         <xsl:when test="@alt">
@@ -240,7 +240,7 @@
     </img>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/pre ')]">
+  <xsl:template match="*[contains-token(@class, 'topic/pre')]">
     <pre>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -248,7 +248,7 @@
     </pre>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/note ')]">
+  <xsl:template match="*[contains-token(@class, 'topic/note')]">
     <div class="note">
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -260,8 +260,8 @@
     </div>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' hi-d/b ') or
-                         contains(@class, ' pr-d/parmname ')]" priority="10">
+  <xsl:template match="*[contains-token(@class, 'hi-d/b') or
+                         contains-token(@class, 'pr-d/parmname')]" priority="10">
     <b>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -269,8 +269,8 @@
     </b>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' sw-d/filepath ') or
-                         contains(@class, ' pr-d/codeph ')]" priority="10">
+  <xsl:template match="*[contains-token(@class, 'sw-d/filepath') or
+                         contains-token(@class, 'pr-d/codeph')]" priority="10">
     <code>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -278,7 +278,7 @@
     </code>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/p ')]">
+  <xsl:template match="*[contains-token(@class, 'topic/p')]">
     <p>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -286,7 +286,7 @@
     </p>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/section ')]">
+  <xsl:template match="*[contains-token(@class, 'topic/section')]">
     <section>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -294,15 +294,15 @@
     </section>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/section ')]/*[contains(@class, ' topic/title ')]">
-    <xsl:element name="h{count(ancestor::*[contains(@class, ' topic/topic ') or contains(@class, ' topic/section ')])}">
+  <xsl:template match="*[contains-token(@class, 'topic/section')]/*[contains-token(@class, 'topic/title')]">
+    <xsl:element name="h{count(ancestor::*[contains-token(@class, 'topic/topic') or contains-token(@class, 'topic/section')])}">
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
       <xsl:apply-templates/>
     </xsl:element>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/div ') or contains(@class, ' topic/itemgroup ')]">
+  <xsl:template match="*[contains-token(@class, 'topic/div') or contains-token(@class, 'topic/itemgroup')]">
     <div>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -310,7 +310,7 @@
     </div>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/ul ')]">
+  <xsl:template match="*[contains-token(@class, 'topic/ul')]">
     <ul>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -318,7 +318,7 @@
     </ul>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/ol ')]">
+  <xsl:template match="*[contains-token(@class, 'topic/ol')]">
     <ol>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -326,7 +326,7 @@
     </ol>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/li ')]">
+  <xsl:template match="*[contains-token(@class, 'topic/li')]">
     <li>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -334,8 +334,8 @@
     </li>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/keyword ') or
-                         contains(@class, ' topic/ph ')]">
+  <xsl:template match="*[contains-token(@class, 'topic/keyword') or
+                         contains-token(@class, 'topic/ph')]">
     <span>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -343,7 +343,7 @@
     </span>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/xref ')]" name="xref">
+  <xsl:template match="*[contains-token(@class, 'topic/xref')]" name="xref">
     <a>
       <xsl:attribute name="href" select="resolve-uri(@href, base-uri(.))"/>
       <xsl:call-template name="common-attributes"/>
@@ -359,7 +359,7 @@
     </a>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/indexterm ')]"/>
+  <xsl:template match="*[contains-token(@class, 'topic/indexterm')]"/>
 
   <!-- Common attribute templates -->
 
@@ -377,10 +377,10 @@
   </xsl:template>
 
   <xsl:template match="@id" mode="common-attributes">
-    <xsl:attribute name="id" select="concat(ancestor::*[contains(@class, ' topic/topic ')][1]/@id, '__', .)"/>
+    <xsl:attribute name="id" select="concat(ancestor::*[contains-token(@class, 'topic/topic')][1]/@id, '__', .)"/>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/topic ')]/@id" mode="common-attributes">
+  <xsl:template match="*[contains-token(@class, 'topic/topic')]/@id" mode="common-attributes">
     <xsl:attribute name="id" select="."/>
   </xsl:template>
 
@@ -419,12 +419,12 @@
     <xsl:next-match/>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/navtitle ')]" mode="class">
+  <xsl:template match="*[contains-token(@class, 'topic/navtitle')]" mode="class">
     <xsl:text>navtitle</xsl:text>
     <xsl:next-match/>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/shortdesc ')]" mode="class">
+  <xsl:template match="*[contains-token(@class, 'topic/shortdesc')]" mode="class">
     <xsl:text>shortdesc</xsl:text>
     <xsl:next-match/>
   </xsl:template>
@@ -465,12 +465,12 @@
   </xsl:template>
 
   <!--
-  <xsl:template match="*[contains(@class, ' topic/navtitle ')]" mode="prefix">
+  <xsl:template match="*[contains-token(@class, 'topic/navtitle')]" mode="prefix">
     <b class="generated label">Navigation title:</b>
     <xsl:next-match/>
   </xsl:template>
 
-  <xsl:template match="*[contains(@class, ' topic/shortdesc ')]" mode="prefix">
+  <xsl:template match="*[contains-token(@class, 'topic/shortdesc')]" mode="prefix">
     <b class="generated label">Short description:</b>
     <xsl:next-match/>
   </xsl:template>

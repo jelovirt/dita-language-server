@@ -44,8 +44,8 @@
     <xsl:variable name="topic" as="element()?"
                   select="if (exists($target-doc))
                           then if ($tokens[2] = '.')
-                               then $target-doc//*[contains(@class, ' topic/topic ')][1]
-                               else $target-doc//*[contains(@class, ' topic/topic ')][@id = $tokens[2]]
+                               then $target-doc//*[contains-token(@class, 'topic/topic')][1]
+                               else $target-doc//*[contains-token(@class, 'topic/topic')][@id = $tokens[2]]
                           else ()"/>
 
     <xsl:variable name="element" as="element()?"
