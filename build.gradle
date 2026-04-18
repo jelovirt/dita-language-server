@@ -69,7 +69,10 @@ tasks.register('copyTranspileXsl', Copy) {
 }
 
 tasks.named('processResources') {
-    dependsOn 'generateVersionProperties', 'copyTranspileXsl'
+    dependsOn 'generateVersionProperties', 'copyTranspileXsl', 'processDtd'
+    from(layout.buildDirectory.dir('generated/dtd')) {
+        into ''
+    }
 }
 
 shadowJar {
