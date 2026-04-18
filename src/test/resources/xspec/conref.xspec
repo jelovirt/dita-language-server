@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+  stylesheet="../../../main/resources/xslt/conref.xsl">
+  <x:scenario label="Conref nested element">
+    <x:context href="conref.dita"/>
+    <x:expect label="Conref has been resolved">
+      <topic xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/" id="conref"
+        ditaarch:DITAArchVersion="1.3"
+        domains="(topic abbrev-d)                            a(props deliveryTarget)                            (topic equation-d)                            (topic hazard-d)                            (topic hi-d)                            (topic indexing-d)                            (topic markup-d)                            (topic mathml-d)                            (topic pr-d)                            (topic relmgmt-d)                            (topic sw-d)                            (topic svg-d)                            (topic ui-d)                            (topic ut-d)                            (topic markup-d xml-d)   "
+        class="- topic/topic ">
+        <title class="- topic/title ">Conref</title>
+        <body class="- topic/body ">
+          <p id="p" class="- topic/p " conref="target.dita#target/p">Conref target</p>
+        </body>
+      </topic>
+    </x:expect>
+  </x:scenario>
+</x:description>
