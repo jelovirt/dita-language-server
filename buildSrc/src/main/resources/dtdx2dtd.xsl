@@ -14,11 +14,13 @@
       <xsl:apply-templates select="@* | *" mode="#current"/>
     </xsl:copy>
   </xsl:template>
-  
-  <xsl:template match="internalEntityDecl | externalEntityDecl | unparsedEntityDecl | notationDecl" mode="flat">
+
+  <xsl:template match="internalEntityDecl | externalEntityDecl | unparsedEntityDecl | notationDecl | conditional[@type = 'IGNORE'] | ignoredCharacters" mode="flat">
+  <!--
     <xsl:copy>
       <xsl:apply-templates select="@* | *" mode="#current"/>
     </xsl:copy>
+    -->
   </xsl:template>
   
   <xsl:template match="group[group and empty(group[2])]" mode="flat">
@@ -198,9 +200,7 @@
 </xsl:text>
   </xsl:template>
 
-  <xsl:template match="ignoredCharacters">
-    <xsl:value-of select="text()"/>
-  </xsl:template>
+  <xsl:template match="ignoredCharacters"/>
 
   <xsl:template match="processingInstruction">
     <xsl:text>&lt;?</xsl:text>
@@ -211,6 +211,12 @@
     </xsl:if>
     <xsl:text>?&gt;
 </xsl:text>
+  </xsl:template>
+
+  <xsl:template match="contentModel"/>
+
+  <xsl:template match="*" priority="-10">
+    <xsl:message terminate="yes" select="name()"/>
   </xsl:template>
 
   <xsl:template name="escape">
