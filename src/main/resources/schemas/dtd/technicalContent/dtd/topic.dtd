@@ -1,325 +1,4914 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- ============================================================= -->
-<!--                    HEADER                                     -->
-<!-- ============================================================= -->
-<!-- Darwin Information Typing Architecture (DITA) Version 1.3 Plus Errata 02     -->
-<!-- OASIS Standard                                           -->
-<!-- 16 January 2018                                           -->
-<!-- Copyright (c) OASIS Open 2018. All rights reserved.           -->
-<!-- Source: http://docs.oasis-open.org/dita/dita/v1.3/errata02/csprd01/complete/part0-overview/dita-v1.3-errata02-csprd01-part0-overview-complete.html                                -->
-<!--                                                               -->
-<!-- ============================================================= -->
-<!--  MODULE:    DITA Topic                                        -->
-<!--  VERSION:   1.3                                               -->
-<!--  DATE:      March 2014                                        -->
-<!--                                                               -->
-<!-- ============================================================= -->
-<!-- ============================================================= -->
-<!--                    PUBLIC DOCUMENT TYPE DEFINITION            -->
-<!--                    TYPICAL INVOCATION                         -->
-<!--                                                               -->
-<!--  Refer to this file by the following public identifier or an  -->
-<!--       appropriate system identifier                           -->
-<!--                                                               -->
-<!-- PUBLIC "-//OASIS//DTD DITA Topic//EN"                         -->
-<!-- The public ID above refers to the latest version of this DTD. -->
-<!--      To refer to this specific version, you may use this value: -->
-<!-- PUBLIC "-//OASIS//DTD DITA 1.3 Topic//EN"                          -->
-<!-- ============================================================= -->
-<!-- SYSTEM:     Darwin Information Typing Architecture (DITA)     -->
-<!--                                                               -->
-<!-- PURPOSE:    DTD to describe DITA Topics                       -->
-<!--                                                               -->
-<!-- ORIGINAL CREATION DATE:                                       -->
-<!--             March 2001                                        -->
-<!--                                                               -->
-<!--             (C) Copyright OASIS Open 2005, 2009.              -->
-<!--             (C) Copyright IBM Corporation 2001, 2004.         -->
-<!--             All Rights Reserved.                              -->
-<!--                                                               -->
-<!--  UPDATES:                                                     -->
-<!--    2006.06.07 RDA: Added indexing domain                      -->
-<!--    2006.06.21 RDA: Added props attribute extensions           -->
-<!--    2007.12.01 EK:  Reformatted DTD modules for DITA 1.2        -->
-<!--    2008.02.12 RDA: Modify imbeds to use specific 1.2 version  -->
-<!--    2008.04.15 RDA: Added hazard domain                        -->
-<!-- ============================================================= -->
 
-<!-- ============================================================= -->
-<!--              TOPIC ENTITY DECLARATIONS                        -->
-<!-- ============================================================= -->
-
-<!-- ============================================================= -->
-<!--             DOMAIN CONSTRAINT INTEGRATION                     -->
-<!-- ============================================================= -->
-
-<!-- ============================================================= -->
-<!--             DOMAIN ENTITY DECLARATIONS                        -->
-<!-- ============================================================= -->
-
-<!ENTITY % abbrev-d-dec
-  PUBLIC "-//OASIS//ENTITIES DITA 1.3 Abbreviated Form Domain//EN"
-         "abbreviateDomain.ent"
->%abbrev-d-dec;
-
-<!ENTITY % equation-d-dec
-  PUBLIC "-//OASIS//ENTITIES DITA 1.3 Equation Domain//EN"
-         "equationDomain.ent"
->%equation-d-dec;
-
-<!ENTITY % hazard-d-dec
-  PUBLIC "-//OASIS//ENTITIES DITA 1.3 Hazard Statement Domain//EN"
-         "../../base/dtd/hazardstatementDomain.ent"
->%hazard-d-dec;
-
-<!ENTITY % hi-d-dec
-  PUBLIC "-//OASIS//ENTITIES DITA 1.3 Highlight Domain//EN"
-         "../../base/dtd/highlightDomain.ent"
->%hi-d-dec;
-
-<!ENTITY % indexing-d-dec
-  PUBLIC "-//OASIS//ENTITIES DITA 1.3 Indexing Domain//EN"
-         "../../base/dtd/indexingDomain.ent"
->%indexing-d-dec;
-
-<!ENTITY % markup-d-dec
-  PUBLIC "-//OASIS//ENTITIES DITA 1.3 Markup Domain//EN"
-         "markupDomain.ent"
->%markup-d-dec;
-
-<!ENTITY % mathml-d-dec
-  PUBLIC "-//OASIS//ENTITIES DITA 1.3 MathML Domain//EN"
-         "mathmlDomain.ent"
->%mathml-d-dec;
-
-<!ENTITY % pr-d-dec
-  PUBLIC "-//OASIS//ENTITIES DITA 1.3 Programming Domain//EN"
-         "programmingDomain.ent"
->%pr-d-dec;
-
-<!ENTITY % relmgmt-d-dec
-  PUBLIC "-//OASIS//ENTITIES DITA 1.3 Release Management Domain//EN"
-         "releaseManagementDomain.ent"
->%relmgmt-d-dec;
-
-<!ENTITY % sw-d-dec
-  PUBLIC "-//OASIS//ENTITIES DITA 1.3 Software Domain//EN"
-         "softwareDomain.ent"
->%sw-d-dec;
-
-<!ENTITY % svg-d-dec
-  PUBLIC "-//OASIS//ENTITIES DITA 1.3 SVG Domain//EN"
-         "svgDomain.ent"
->%svg-d-dec;
-
-<!ENTITY % ui-d-dec
-  PUBLIC "-//OASIS//ENTITIES DITA 1.3 User Interface Domain//EN"
-         "uiDomain.ent"
->%ui-d-dec;
-
-<!ENTITY % ut-d-dec
-  PUBLIC "-//OASIS//ENTITIES DITA 1.3 Utilities Domain//EN"
-         "../../base/dtd/utilitiesDomain.ent"
->%ut-d-dec;
-
-<!ENTITY % xml-d-dec
-  PUBLIC "-//OASIS//ENTITIES DITA 1.3 XML Domain//EN"
-         "xmlDomain.ent"
->%xml-d-dec;
-
-<!-- ============================================================= -->
-<!--             DOMAIN ATTRIBUTES DECLARATIONS                    -->
-<!-- ============================================================= -->
-
-<!ENTITY % deliveryTargetAtt-d-dec
-  PUBLIC "-//OASIS//ENTITIES DITA 1.3 Delivery Target Attribute Domain//EN"
-         "../../base/dtd/deliveryTargetAttDomain.ent"
->%deliveryTargetAtt-d-dec;
-
-<!-- ============================================================= -->
-<!--                    DOMAIN EXTENSIONS                          -->
-<!-- ============================================================= -->
-<!--                    One for each extended base element, with
-                        the name of the domain(s) in which the
-                        extension was declared                     -->
-
-<!ENTITY % index-base   "index-base |
-                         %indexing-d-index-base;
-                        ">
-<!ENTITY % note         "note |
-                         %hazard-d-note;
-                        ">
-<!ENTITY % ph           "ph |
-                         %hi-d-ph; |
-                         %pr-d-ph; |
-                         %sw-d-ph; |
-                         %ui-d-ph; |
-                         %equation-d-ph;
-                        ">
-<!ENTITY % fig          "fig |
-                         %ut-d-fig; |
-                         %pr-d-fig; |
-                         %equation-d-fig;
-                        ">
-<!ENTITY % data         "data |
-                         %ut-d-data;
-                        ">
-<!ENTITY % term         "term |
-                         %abbrev-d-term;
-                        ">
-<!ENTITY % keyword      "keyword |
-                         %markup-d-keyword; |
-                         %pr-d-keyword; |
-                         %sw-d-keyword; |
-                         %ui-d-keyword; |
-                         %xml-d-keyword;
-                        ">
-<!ENTITY % pre          "pre |
-                         %pr-d-pre; |
-                         %sw-d-pre; |
-                         %ui-d-pre;
-                        ">
-<!ENTITY % dl           "dl |
-                         %pr-d-dl;
-                        ">
-<!ENTITY % metadata     "metadata |
-                         %relmgmt-d-metadata;
-                        ">
-<!ENTITY % foreign      "foreign |
-                         %svg-d-foreign; |
-                         %mathml-d-foreign;
-                        ">
-<!ENTITY % div          "div |
-                         %equation-d-div;
-                        ">
-
-<!-- ============================================================= -->
-<!--                    DOMAIN ATTRIBUTE EXTENSIONS                -->
-<!-- ============================================================= -->
-
+ <!ENTITY % abbrev-d-term
+ "abbreviated-form"
+ >
+ <!ENTITY abbrev-d-att
+ "(topic abbrev-d)"
+ >
+ <!ENTITY % equation-d-ph
+ "equation-inline"
+ >
+ <!ENTITY % equation-d-div
+ "equation-block"
+ >
+ <!ENTITY % equation-d-fig
+ "equation-figure"
+ >
+ <!ENTITY equation-d-att
+ "(topic equation-d)"
+ >
+ <!ENTITY % hazard-d-note
+ "hazardstatement"
+ >
+ <!ENTITY hazard-d-att
+ "(topic hazard-d)"
+ >
+ <!ENTITY % hi-d-ph
+ "b |
+ i |
+ line-through |
+ overline |
+ sup |
+ sub |
+ tt |
+ u"
+ >
+ <!ENTITY hi-d-att
+ "(topic hi-d)"
+ >
+ <!ENTITY % indexing-d-index-base
+ "index-see |
+ index-see-also |
+ index-sort-as"
+ >
+ <!ENTITY indexing-d-att
+ "(topic indexing-d)"
+ >
+ <!ENTITY % markup-d-keyword
+ "markupname"
+ >
+ <!ENTITY markup-d-att
+ "(topic markup-d)"
+ >
+ <!ENTITY % mathml-d-foreign
+ "mathml"
+ >
+ <!ENTITY mathml-d-att
+ "(topic mathml-d)"
+ >
+ <!ENTITY % pr-d-ph
+ "codeph |
+ synph"
+ >
+ <!ENTITY % pr-d-pre
+ "codeblock"
+ >
+ <!ENTITY % pr-d-keyword
+ "apiname |
+ option |
+ parmname"
+ >
+ <!ENTITY % pr-d-fig
+ "syntaxdiagram"
+ >
+ <!ENTITY % pr-d-dl
+ "parml"
+ >
+ <!ENTITY pr-d-att
+ "(topic pr-d)"
+ >
+ <!ENTITY % relmgmt-d-metadata
+ "change-historylist"
+ >
+ <!ENTITY relmgmt-d-att
+ "(topic relmgmt-d)"
+ >
+ <!ENTITY % sw-d-pre
+ "msgblock"
+ >
+ <!ENTITY % sw-d-ph
+ "filepath |
+ msgph |
+ systemoutput |
+ userinput"
+ >
+ <!ENTITY % sw-d-keyword
+ "cmdname |
+ msgnum |
+ varname"
+ >
+ <!ENTITY sw-d-att
+ "(topic sw-d)"
+ >
+ <!ENTITY % svg-d-foreign
+ "svg-container"
+ >
+ <!ENTITY svg-d-att
+ "(topic svg-d)"
+ >
+ <!ENTITY % ui-d-keyword
+ "wintitle"
+ >
+ <!ENTITY % ui-d-ph
+ "menucascade |
+ uicontrol"
+ >
+ <!ENTITY % ui-d-pre
+ "screen"
+ >
+ <!ENTITY ui-d-att
+ "(topic ui-d)"
+ >
+ <!ENTITY % ut-d-fig
+ "imagemap"
+ >
+ <!ENTITY % ut-d-data
+ "sort-as"
+ >
+ <!ENTITY ut-d-att
+ "(topic ut-d)"
+ >
+ <!ENTITY % xml-d-keyword
+ "numcharref |
+ parameterentity |
+ textentity |
+ xmlatt |
+ xmlelement |
+ xmlnsname |
+ xmlpi"
+ >
+ <!ENTITY xml-d-att
+ "(topic markup-d xml-d)"
+ >
+ <!ENTITY % deliveryTargetAtt-d-attribute
+ "deliveryTarget
+ CDATA
+ #IMPLIED"
+ >
+ <!ENTITY deliveryTargetAtt-d-att
+ "a(props deliveryTarget)"
+ >
+<!-- One for each extended base element, with
+ the name of the domain(s) in which the
+ extension was declared -->
+<!ENTITY % index-base "index-base |
+ %indexing-d-index-base;
+ ">
+<!ENTITY % note "note |
+ %hazard-d-note;
+ ">
+<!ENTITY % ph "ph |
+ %hi-d-ph; |
+ %pr-d-ph; |
+ %sw-d-ph; |
+ %ui-d-ph; |
+ %equation-d-ph;
+ ">
+<!ENTITY % fig "fig |
+ %ut-d-fig; |
+ %pr-d-fig; |
+ %equation-d-fig;
+ ">
+<!ENTITY % data "data |
+ %ut-d-data;
+ ">
+<!ENTITY % term "term |
+ %abbrev-d-term;
+ ">
+<!ENTITY % keyword "keyword |
+ %markup-d-keyword; |
+ %pr-d-keyword; |
+ %sw-d-keyword; |
+ %ui-d-keyword; |
+ %xml-d-keyword;
+ ">
+<!ENTITY % pre "pre |
+ %pr-d-pre; |
+ %sw-d-pre; |
+ %ui-d-pre;
+ ">
+<!ENTITY % dl "dl |
+ %pr-d-dl;
+ ">
+<!ENTITY % metadata "metadata |
+ %relmgmt-d-metadata;
+ ">
+<!ENTITY % foreign "foreign |
+ %svg-d-foreign; |
+ %mathml-d-foreign;
+ ">
+<!ENTITY % div "div |
+ %equation-d-div;
+ ">
 <!ENTITY % props-attribute-extensions
-  "%deliveryTargetAtt-d-attribute;"
+ "%deliveryTargetAtt-d-attribute;"
 >
 <!ENTITY % base-attribute-extensions
-  ""
+ ""
 >
-
-<!-- ============================================================= -->
-<!--                    TOPIC NESTING OVERRIDE                     -->
-<!-- ============================================================= -->
-
 <!ENTITY % topic-info-types
-              "topic"
+ "topic"
 >
-
-<!-- ============================================================= -->
-<!--                    DOMAINS ATTRIBUTE OVERRIDE                 -->
-<!-- ============================================================= -->
-
 <!ENTITY included-domains
-                          "&abbrev-d-att;
-                           &deliveryTargetAtt-d-att;
-                           &equation-d-att;
-                           &hazard-d-att;
-                           &hi-d-att;
-                           &indexing-d-att;
-                           &markup-d-att;
-                           &mathml-d-att;
-                           &pr-d-att;
-                           &relmgmt-d-att;
-                           &sw-d-att;
-                           &svg-d-att;
-                           &ui-d-att;
-                           &ut-d-att;
-                           &xml-d-att;
-  "
+ "&abbrev-d-att;
+ &deliveryTargetAtt-d-att;
+ &equation-d-att;
+ &hazard-d-att;
+ &hi-d-att;
+ &indexing-d-att;
+ &markup-d-att;
+ &mathml-d-att;
+ &pr-d-att;
+ &relmgmt-d-att;
+ &sw-d-att;
+ &svg-d-att;
+ &ui-d-att;
+ &ut-d-att;
+ &xml-d-att;
+ "
 >
-
-<!-- ============================================================= -->
-<!--                    CONTENT CONSTRAINT INTEGRATION             -->
-<!-- ============================================================= -->
-
-<!-- ============================================================= -->
-<!--                    TOPIC ELEMENT INTEGRATION                  -->
-<!-- ============================================================= -->
-
-<!ENTITY % topic-type
-  PUBLIC "-//OASIS//ELEMENTS DITA 1.3 Topic//EN"
-         "../../base/dtd/topic.mod"
->%topic-type;
-
-<!-- ============================================================= -->
-<!--                    DOMAIN ELEMENT INTEGRATION                 -->
-<!-- ============================================================= -->
-
-<!ENTITY % abbrev-d-def
-  PUBLIC "-//OASIS//ELEMENTS DITA 1.3 Abbreviated Form Domain//EN"
-         "abbreviateDomain.mod"
->%abbrev-d-def;
-
-<!ENTITY % equation-d-def
-  PUBLIC "-//OASIS//ELEMENTS DITA 1.3 Equation Domain//EN"
-         "equationDomain.mod"
->%equation-d-def;
-
-<!ENTITY % hazard-d-def
-  PUBLIC "-//OASIS//ELEMENTS DITA 1.3 Hazard Statement Domain//EN"
-         "../../base/dtd/hazardstatementDomain.mod"
->%hazard-d-def;
-
-<!ENTITY % hi-d-def
-  PUBLIC "-//OASIS//ELEMENTS DITA 1.3 Highlight Domain//EN"
-         "../../base/dtd/highlightDomain.mod"
->%hi-d-def;
-
-<!ENTITY % indexing-d-def
-  PUBLIC "-//OASIS//ELEMENTS DITA 1.3 Indexing Domain//EN"
-         "../../base/dtd/indexingDomain.mod"
->%indexing-d-def;
-
-<!ENTITY % markup-d-def
-  PUBLIC "-//OASIS//ELEMENTS DITA 1.3 Markup Domain//EN"
-         "markupDomain.mod"
->%markup-d-def;
-
-<!ENTITY % mathml-d-def
-  PUBLIC "-//OASIS//ELEMENTS DITA 1.3 MathML Domain//EN"
-         "mathmlDomain.mod"
->%mathml-d-def;
-
-<!ENTITY % pr-d-def
-  PUBLIC "-//OASIS//ELEMENTS DITA 1.3 Programming Domain//EN"
-         "programmingDomain.mod"
->%pr-d-def;
-
-<!ENTITY % relmgmt-d-def
-  PUBLIC "-//OASIS//ELEMENTS DITA 1.3 Release Management Domain//EN"
-         "releaseManagementDomain.mod"
->%relmgmt-d-def;
-
-<!ENTITY % sw-d-def
-  PUBLIC "-//OASIS//ELEMENTS DITA 1.3 Software Domain//EN"
-         "softwareDomain.mod"
->%sw-d-def;
-
-<!ENTITY % svg-d-def
-  PUBLIC "-//OASIS//ELEMENTS DITA 1.3 SVG Domain//EN"
-         "svgDomain.mod"
->%svg-d-def;
-
-<!ENTITY % ui-d-def
-  PUBLIC "-//OASIS//ELEMENTS DITA 1.3 User Interface Domain//EN"
-         "uiDomain.mod"
->%ui-d-def;
-
-<!ENTITY % ut-d-def
-  PUBLIC "-//OASIS//ELEMENTS DITA 1.3 Utilities Domain//EN"
-         "../../base/dtd/utilitiesDomain.mod"
->%ut-d-def;
-
-<!ENTITY % xml-d-def
-  PUBLIC "-//OASIS//ELEMENTS DITA 1.3 XML Domain//EN"
-         "xmlDomain.mod"
->%xml-d-def;
-
-<!-- ================= End of DITA Topic Shell ================= -->
+ <!ENTITY % DITAArchNSPrefix
+ "ditaarch"
+ >
+ <!ENTITY % arch-atts
+ "xmlns:%DITAArchNSPrefix; 
+ CDATA
+ #FIXED 'http://dita.oasis-open.org/architecture/2005/'
+ %DITAArchNSPrefix;:DITAArchVersion
+ CDATA
+ '1.3'
+ "
+ >
+ <!ENTITY % topic "topic" >
+ <!ENTITY % titlealts "titlealts" >
+ <!ENTITY % searchtitle "searchtitle" >
+ <!ENTITY % shortdesc "shortdesc" >
+ <!ENTITY % abstract "abstract" >
+ <!ENTITY % body "body" >
+ <!ENTITY % bodydiv "bodydiv" >
+ <!ENTITY % no-topic-nesting
+ "no-topic-nesting" >
+ <!ENTITY % section "section" >
+ <!ENTITY % sectiondiv "sectiondiv" >
+ <!ENTITY % example "example" >
+ <!ENTITY % prolog "prolog" >
+ <!ENTITY % related-links
+ "related-links" >
+ <!ENTITY % link "link" >
+ <!ENTITY % linktext "linktext" >
+ <!ENTITY % linklist "linklist" >
+ <!ENTITY % linkinfo "linkinfo" >
+ <!ENTITY % linkpool "linkpool" >
+ <!-- Also include common elements used in topics
+ and maps -->
+ <!ENTITY % data-about "data-about" >
+ <!ENTITY % data "data" >
+ <!ENTITY % unknown "unknown" >
+ <!ENTITY % foreign "foreign" >
+ <!ENTITY % title "title" >
+ <!ENTITY % navtitle "navtitle" >
+ <!ENTITY % desc "desc" >
+ <!ENTITY % p "p" >
+ <!ENTITY % note "note" >
+ <!ENTITY % longquoteref
+ "longquoteref" >
+ <!ENTITY % lq "lq" >
+ <!ENTITY % q "q" >
+ <!ENTITY % sl "sl" >
+ <!ENTITY % sli "sli" >
+ <!ENTITY % ul "ul" >
+ <!ENTITY % ol "ol" >
+ <!ENTITY % li "li" >
+ <!ENTITY % itemgroup "itemgroup" >
+ <!ENTITY % dl "dl" >
+ <!ENTITY % dlhead "dlhead" >
+ <!ENTITY % dthd "dthd" >
+ <!ENTITY % ddhd "ddhd" >
+ <!ENTITY % dlentry "dlentry" >
+ <!ENTITY % dt "dt" >
+ <!ENTITY % dd "dd" >
+ <!ENTITY % fig "fig" >
+ <!ENTITY % figgroup "figgroup" >
+ <!ENTITY % pre "pre" >
+ <!ENTITY % lines "lines" >
+ <!ENTITY % div "div" >
+ <!ENTITY % text "text" >
+ <!ENTITY % keyword "keyword" >
+ <!ENTITY % term "term" >
+ <!ENTITY % ph "ph" >
+ <!ENTITY % tm "tm" >
+ <!ENTITY % boolean "boolean" >
+ <!ENTITY % state "state" >
+ <!ENTITY % image "image" >
+ <!ENTITY % alt "alt" >
+ <!ENTITY % longdescref "longdescref" >
+ <!ENTITY % object "object" >
+ <!ENTITY % param "param" >
+ <!ENTITY % simpletable "simpletable" >
+ <!ENTITY % sthead "sthead" >
+ <!ENTITY % strow "strow" >
+ <!ENTITY % stentry "stentry" >
+ <!ENTITY % draft-comment
+ "draft-comment" >
+ <!ENTITY % required-cleanup
+ "required-cleanup" >
+ <!ENTITY % fn "fn" >
+ <!ENTITY % indexterm "indexterm" >
+ <!ENTITY % index-base "index-base" >
+ <!ENTITY % indextermref
+ "indextermref" >
+ <!ENTITY % cite "cite" >
+ <!ENTITY % xref "xref" >
+ <!ENTITY % author "author" >
+ <!ENTITY % source "source" >
+ <!ENTITY % publisher "publisher" >
+ <!ENTITY % copyright "copyright" >
+ <!ENTITY % copyryear "copyryear" >
+ <!ENTITY % copyrholder "copyrholder" >
+ <!ENTITY % critdates "critdates" >
+ <!ENTITY % created "created" >
+ <!ENTITY % revised "revised" >
+ <!ENTITY % permissions "permissions" >
+ <!ENTITY % category "category" >
+ <!ENTITY % metadata "metadata" >
+ <!ENTITY % audience "audience" >
+ <!ENTITY % keywords "keywords" >
+ <!ENTITY % prodinfo "prodinfo" >
+ <!ENTITY % prodname "prodname" >
+ <!ENTITY % vrmlist "vrmlist" >
+ <!ENTITY % vrm "vrm" >
+ <!ENTITY % brand "brand" >
+ <!ENTITY % series "series" >
+ <!ENTITY % platform "platform" >
+ <!ENTITY % prognum "prognum" >
+ <!ENTITY % featnum "featnum" >
+ <!ENTITY % component "component" >
+ <!ENTITY % othermeta "othermeta" >
+ <!ENTITY % resourceid "resourceid" >
+ <!ENTITY % table "table" >
+ <!ENTITY % tgroup "tgroup" >
+ <!ENTITY % colspec "colspec" >
+ <!ENTITY % thead "thead" >
+ <!ENTITY % tbody "tbody" >
+ <!ENTITY % row "row" >
+ <!ENTITY % entry "entry" >
+ <!ENTITY % data-about "data-about" >
+ <!ENTITY % data "data" >
+ <!ENTITY % unknown "unknown" >
+ <!ENTITY % foreign "foreign" >
+ <!ENTITY % title "title" >
+ <!ENTITY % navtitle "navtitle" >
+ <!ENTITY % desc "desc" >
+ <!ENTITY % p "p" >
+ <!ENTITY % note "note" >
+ <!ENTITY % longquoteref
+ "longquoteref" >
+ <!ENTITY % lq "lq" >
+ <!ENTITY % q "q" >
+ <!ENTITY % sl "sl" >
+ <!ENTITY % sli "sli" >
+ <!ENTITY % ul "ul" >
+ <!ENTITY % ol "ol" >
+ <!ENTITY % li "li" >
+ <!ENTITY % itemgroup "itemgroup" >
+ <!ENTITY % dl "dl" >
+ <!ENTITY % dlhead "dlhead" >
+ <!ENTITY % dthd "dthd" >
+ <!ENTITY % ddhd "ddhd" >
+ <!ENTITY % dlentry "dlentry" >
+ <!ENTITY % dt "dt" >
+ <!ENTITY % dd "dd" >
+ <!ENTITY % fig "fig" >
+ <!ENTITY % figgroup "figgroup" >
+ <!ENTITY % pre "pre" >
+ <!ENTITY % lines "lines" >
+ <!ENTITY % div "div" >
+ <!ENTITY % text "text" >
+ <!ENTITY % keyword "keyword" >
+ <!ENTITY % term "term" >
+ <!ENTITY % ph "ph" >
+ <!ENTITY % tm "tm" >
+ <!ENTITY % boolean "boolean" >
+ <!ENTITY % state "state" >
+ <!ENTITY % image "image" >
+ <!ENTITY % alt "alt" >
+ <!ENTITY % longdescref "longdescref" >
+ <!ENTITY % object "object" >
+ <!ENTITY % param "param" >
+ <!ENTITY % simpletable "simpletable" >
+ <!ENTITY % sthead "sthead" >
+ <!ENTITY % strow "strow" >
+ <!ENTITY % stentry "stentry" >
+ <!ENTITY % draft-comment
+ "draft-comment" >
+ <!ENTITY % required-cleanup
+ "required-cleanup" >
+ <!ENTITY % fn "fn" >
+ <!ENTITY % indexterm "indexterm" >
+ <!ENTITY % index-base "index-base" >
+ <!ENTITY % indextermref
+ "indextermref" >
+ <!ENTITY % cite "cite" >
+ <!ENTITY % xref "xref" >
+ <!ENTITY % author "author" >
+ <!ENTITY % source "source" >
+ <!ENTITY % publisher "publisher" >
+ <!ENTITY % copyright "copyright" >
+ <!ENTITY % copyryear "copyryear" >
+ <!ENTITY % copyrholder "copyrholder" >
+ <!ENTITY % critdates "critdates" >
+ <!ENTITY % created "created" >
+ <!ENTITY % revised "revised" >
+ <!ENTITY % permissions "permissions" >
+ <!ENTITY % category "category" >
+ <!ENTITY % metadata "metadata" >
+ <!ENTITY % audience "audience" >
+ <!ENTITY % keywords "keywords" >
+ <!ENTITY % prodinfo "prodinfo" >
+ <!ENTITY % prodname "prodname" >
+ <!ENTITY % vrmlist "vrmlist" >
+ <!ENTITY % vrm "vrm" >
+ <!ENTITY % brand "brand" >
+ <!ENTITY % series "series" >
+ <!ENTITY % platform "platform" >
+ <!ENTITY % prognum "prognum" >
+ <!ENTITY % featnum "featnum" >
+ <!ENTITY % component "component" >
+ <!ENTITY % othermeta "othermeta" >
+ <!ENTITY % resourceid "resourceid" >
+ <!ENTITY % table "table" >
+ <!ENTITY % tgroup "tgroup" >
+ <!ENTITY % colspec "colspec" >
+ <!ENTITY % thead "thead" >
+ <!ENTITY % tbody "tbody" >
+ <!ENTITY % row "row" >
+ <!ENTITY % entry "entry" >
+ <!ENTITY % basic.ph
+ "%boolean; |
+ %cite; |
+ %keyword; |
+ %ph; |
+ %q; |
+ %term; |
+ %text; |
+ %tm; |
+ %xref; |
+ %state;"
+ >
+ <!ENTITY % basic.block
+ "%dl; |
+ %div; |
+ %fig; |
+ %image; |
+ %lines; |
+ %lq; |
+ %note; |
+ %object; |
+ %ol; |
+ %p; |
+ %pre; |
+ %simpletable; |
+ %sl; |
+ %table; |
+ %ul;"
+ >
+ <!ENTITY % basic.phandblock
+ "%basic.block; |
+ %basic.ph;"
+ >
+ <!ENTITY % basic.ph.noxref.nocite
+ "%boolean; |
+ %keyword; |
+ %ph; |
+ %q; |
+ %term; |
+ %text; |
+ %tm; |
+ %state;"
+ >
+ <!ENTITY % basic.ph.noxref
+ "%basic.ph.noxref.nocite; |
+ %cite;"
+ >
+ <!ENTITY % basic.ph.notm
+ "%boolean; |
+ %cite; |
+ %keyword; |
+ %ph; |
+ %q; |
+ %term; |
+ %text; |
+ %xref; |
+ %state;"
+ >
+ <!ENTITY % basic.block.notbl
+ "%dl; |
+ %div; |
+ %fig; |
+ %image; |
+ %lines; |
+ %lq; |
+ %note; |
+ %object; |
+ %ol; |
+ %p; |
+ %pre; |
+ %sl; |
+ %ul;"
+ >
+ <!ENTITY % basic.block.nonote
+ "%dl; |
+ %div; |
+ %fig; |
+ %image; |
+ %lines; |
+ %lq; |
+ %object; |
+ %ol; |
+ %p; |
+ %pre; |
+ %simpletable; |
+ %sl; |
+ %table; |
+ %ul;"
+ >
+ <!ENTITY % basic.block.nopara
+ "%dl; |
+ %div; |
+ %fig; |
+ %image; |
+ %lines; |
+ %lq; |
+ %note; |
+ %object; |
+ %ol; |
+ %pre; |
+ %simpletable; |
+ %sl; |
+ %table; |
+ %ul;"
+ >
+ <!ENTITY % basic.block.nolq
+ "%dl; |
+ %div; |
+ %fig; |
+ %image; |
+ %lines; |
+ %note; |
+ %object; |
+ %ol; |
+ %p; |
+ %pre; |
+ %simpletable; |
+ %sl; |
+ %table; |
+ %ul;"
+ >
+ <!ENTITY % basic.block.notbnofg
+ "%dl; |
+ %div; |
+ %image; |
+ %lines; |
+ %lq; |
+ %note; |
+ %object; |
+ %ol; |
+ %p; |
+ %pre; |
+ %sl; |
+ %ul;"
+ >
+ <!ENTITY % basic.block.notbfgobj
+ "%dl; |
+ %div; |
+ %image; |
+ %lines; |
+ %lq; |
+ %note; |
+ %ol; |
+ %p; |
+ %pre; |
+ %sl; |
+ %ul;"
+ >
+ <!ENTITY % txt.incl
+ "%draft-comment; |
+ %fn; |
+ %indextermref; |
+ %indexterm; |
+ %required-cleanup;"
+ >
+ <!ENTITY % data.elements.incl
+ "%data; |
+ %data-about;"
+ >
+ <!ENTITY % foreign.unknown.incl
+ "%foreign; |
+ %unknown;"
+ >
+ <!ENTITY % listitem.cnt
+ "#PCDATA |
+ %basic.block; |
+ %basic.ph; |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %itemgroup; |
+ %txt.incl;"
+ >
+ <!ENTITY % itemgroup.cnt
+ "#PCDATA |
+ %basic.block; |
+ %basic.ph; |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %txt.incl;"
+ >
+ <!ENTITY % title.cnt
+ "#PCDATA |
+ %basic.ph.noxref; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %foreign.unknown.incl; |
+ %required-cleanup; |
+ %image;"
+ >
+ <!ENTITY % xreftext.cnt
+ "#PCDATA |
+ %basic.ph.noxref; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %foreign.unknown.incl; |
+ %required-cleanup; |
+ %image;"
+ >
+ <!ENTITY % xrefph.cnt
+ "#PCDATA |
+ %basic.ph.noxref.nocite; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %foreign.unknown.incl; |
+ %required-cleanup;"
+ >
+ <!ENTITY % shortquote.cnt
+ "#PCDATA |
+ %basic.ph; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %foreign.unknown.incl; |
+ %required-cleanup;"
+ >
+ <!ENTITY % para.cnt
+ "#PCDATA |
+ %basic.block.nopara; |
+ %basic.ph; |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %txt.incl;"
+ >
+ <!ENTITY % note.cnt
+ "#PCDATA |
+ %basic.block.nonote; |
+ %basic.ph; |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %txt.incl;"
+ >
+ <!ENTITY % longquote.cnt
+ "#PCDATA |
+ %basic.block.nolq; |
+ %basic.ph; |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %longquoteref; |
+ %txt.incl;"
+ >
+ <!ENTITY % tblcell.cnt
+ "#PCDATA |
+ %basic.block.notbl; |
+ %basic.ph; |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %txt.incl;"
+ >
+ <!ENTITY % desc.cnt
+ "#PCDATA |
+ %basic.block.notbfgobj; |
+ %basic.ph; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %foreign.unknown.incl; |
+ %required-cleanup;"
+ >
+ <!ENTITY % ph.cnt
+ "#PCDATA |
+ %basic.ph; |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %image; |
+ %txt.incl;"
+ >
+ <!ENTITY % fn.cnt
+ "#PCDATA |
+ %basic.block.notbl; |
+ %basic.ph; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %foreign.unknown.incl; |
+ %required-cleanup;"
+ >
+ <!ENTITY % term.cnt
+ "#PCDATA |
+ %basic.ph; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %foreign.unknown.incl; |
+ %required-cleanup; |
+ %image;"
+ >
+ <!ENTITY % defn.cnt
+ "#PCDATA |
+ %basic.block; |
+ %basic.ph; |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %itemgroup; |
+ %txt.incl;"
+ >
+ <!ENTITY % pre.cnt
+ "#PCDATA |
+ %basic.ph; |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %txt.incl;"
+ >
+ <!ENTITY % fig.cnt
+ "%basic.block.notbnofg; |
+ %data.elements.incl; |
+ %fn; |
+ %foreign.unknown.incl; |
+ %simpletable; |
+ %xref;"
+ >
+ <!ENTITY % figgroup.cnt
+ "%basic.block.notbnofg; |
+ %basic.ph; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %fn; |
+ %foreign.unknown.incl; |
+ %required-cleanup;"
+ >
+ <!ENTITY % words.cnt
+ "#PCDATA |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %keyword; |
+ %term; |
+ %text;"
+ >
+ <!ENTITY % data.cnt
+ "#PCDATA |
+ %basic.ph; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %foreign.unknown.incl; |
+ %image; |
+ %object; |
+ %required-cleanup; |
+ %title;"
+ >
+ <!ENTITY % div.cnt
+ "#PCDATA |
+ %basic.block; |
+ %basic.ph; |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %txt.incl;"
+ >
+ <!ENTITY % display-atts
+ "scale
+ (50 |
+ 60 |
+ 70 |
+ 80 |
+ 90 |
+ 100 |
+ 110 |
+ 120 |
+ 140 |
+ 160 |
+ 180 |
+ 200 |
+ -dita-use-conref-target)
+ #IMPLIED
+ frame
+ (all |
+ bottom |
+ none |
+ sides |
+ top |
+ topbot |
+ -dita-use-conref-target)
+ #IMPLIED
+ expanse
+ (column |
+ page |
+ spread |
+ textline |
+ -dita-use-conref-target)
+ #IMPLIED"
+ >
+ <!ENTITY % props-attribute-extensions
+ ""
+ >
+ <!ENTITY % base-attribute-extensions
+ ""
+ >
+ <!ENTITY % filter-atts
+ "props
+ CDATA
+ #IMPLIED
+ platform
+ CDATA
+ #IMPLIED
+ product
+ CDATA
+ #IMPLIED
+ audience
+ CDATA
+ #IMPLIED
+ otherprops
+ CDATA
+ #IMPLIED
+ %props-attribute-extensions;"
+ >
+ <!ENTITY % select-atts
+ "%filter-atts;
+ base
+ CDATA
+ #IMPLIED
+ %base-attribute-extensions;
+ importance
+ (default |
+ deprecated |
+ high |
+ low |
+ normal |
+ obsolete |
+ optional |
+ recommended |
+ required |
+ urgent |
+ -dita-use-conref-target)
+ #IMPLIED
+ rev
+ CDATA
+ #IMPLIED
+ status
+ (changed |
+ deleted |
+ new |
+ unchanged |
+ -dita-use-conref-target)
+ #IMPLIED"
+ >
+ <!ENTITY % conref-atts
+ "conref
+ CDATA
+ #IMPLIED
+ conrefend
+ CDATA
+ #IMPLIED
+ conaction
+ (mark |
+ pushafter |
+ pushbefore |
+ pushreplace |
+ -dita-use-conref-target)
+ #IMPLIED
+ conkeyref
+ CDATA
+ #IMPLIED"
+ >
+ <!ENTITY % id-atts
+ "id
+ NMTOKEN
+ #IMPLIED
+ %conref-atts;"
+ >
+ <!ENTITY % localization-atts
+ "translate
+ (no |
+ yes |
+ -dita-use-conref-target)
+ #IMPLIED
+ xml:lang
+ CDATA
+ #IMPLIED
+ dir
+ (lro |
+ ltr |
+ rlo |
+ rtl |
+ -dita-use-conref-target)
+ #IMPLIED"
+ >
+ <!ENTITY % localization-atts-translate-no
+ "translate
+ (no |
+ yes |
+ -dita-use-conref-target)
+ 'no'
+ xml:lang
+ CDATA
+ #IMPLIED
+ dir
+ (lro |
+ ltr |
+ rlo |
+ rtl |
+ -dita-use-conref-target)
+ #IMPLIED"
+ >
+ <!ENTITY % univ-atts
+ "%id-atts;
+ %select-atts;
+ %localization-atts;"
+ >
+ <!ENTITY % univ-atts-translate-no
+ "%id-atts;
+ %select-atts;
+ %localization-atts-translate-no;"
+ >
+ <!ENTITY % global-atts
+ "xtrc
+ CDATA
+ #IMPLIED
+ xtrf
+ CDATA
+ #IMPLIED"
+ >
+ <!ENTITY % data-about.content
+ "((%data;),
+ (%data; |
+ %data-about;)*)"
+ >
+ <!ENTITY % data-about.attributes
+ "%univ-atts;
+ href
+ CDATA
+ #IMPLIED
+ keyref
+ CDATA
+ #IMPLIED
+ format
+ CDATA
+ #IMPLIED
+ type
+ CDATA
+ #IMPLIED
+ scope
+ (external |
+ local |
+ peer |
+ -dita-use-conref-target)
+ #IMPLIED
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT data-about %data-about.content;>
+ <!ATTLIST data-about %data-about.attributes;>
+ <!ENTITY % data-element-atts
+ "%univ-atts;
+ name
+ CDATA
+ #IMPLIED
+ datatype
+ CDATA
+ #IMPLIED
+ value
+ CDATA
+ #IMPLIED
+ href
+ CDATA
+ #IMPLIED
+ keyref
+ CDATA
+ #IMPLIED
+ format
+ CDATA
+ #IMPLIED
+ type
+ CDATA
+ #IMPLIED
+ scope
+ (external |
+ local |
+ peer |
+ -dita-use-conref-target)
+ #IMPLIED
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ENTITY % data.content
+ "(%data.cnt;)*"
+ >
+ <!ENTITY % data.attributes
+ "%data-element-atts;"
+ >
+ <!ELEMENT data %data.content;>
+ <!ATTLIST data %data.attributes;>
+ <!ENTITY % unknown.content
+ "ANY "
+ >
+ <!ENTITY % unknown.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT unknown %unknown.content;>
+ <!ATTLIST unknown %unknown.attributes;>
+ <!ENTITY % foreign.content
+ "ANY "
+ >
+ <!ENTITY % foreign.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT foreign %foreign.content;>
+ <!ATTLIST foreign %foreign.attributes;>
+ <!ENTITY % title.content
+ "(%title.cnt;)*"
+ >
+ <!ENTITY % title.attributes
+ "%id-atts;
+ %localization-atts;
+ base
+ CDATA
+ #IMPLIED
+ %base-attribute-extensions;
+ outputclass
+ CDATA
+ #IMPLIED
+ rev
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT title %title.content;>
+ <!ATTLIST title %title.attributes;>
+ <!ENTITY % navtitle.content
+ "(%words.cnt; |
+ %ph; |
+ %draft-comment; |
+ %required-cleanup;)*"
+ >
+ <!ENTITY % navtitle.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT navtitle %navtitle.content;>
+ <!ATTLIST navtitle %navtitle.attributes;>
+ <!ENTITY % desc.content
+ "(%desc.cnt;)*"
+ >
+ <!ENTITY % desc.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT desc %desc.content;>
+ <!ATTLIST desc %desc.attributes;>
+ <!ENTITY % p.content
+ "(%para.cnt;)*"
+ >
+ <!ENTITY % p.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT p %p.content;>
+ <!ATTLIST p %p.attributes;>
+ <!ENTITY % note.content
+ "(%note.cnt;)*"
+ >
+ <!ENTITY % note.attributes
+ "type
+ (attention |
+ caution |
+ danger |
+ fastpath |
+ important |
+ note |
+ notice |
+ other |
+ remember |
+ restriction |
+ tip |
+ trouble |
+ warning |
+ -dita-use-conref-target)
+ #IMPLIED
+ spectitle
+ CDATA
+ #IMPLIED
+ othertype
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT note %note.content;>
+ <!ATTLIST note %note.attributes;>
+ <!ENTITY % longquoteref.content
+ "EMPTY"
+ >
+ <!ENTITY % longquoteref.attributes
+ "href
+ CDATA
+ #IMPLIED
+ keyref
+ CDATA
+ #IMPLIED
+ type
+ CDATA
+ #IMPLIED
+ format
+ CDATA
+ #IMPLIED
+ scope
+ (external |
+ local |
+ peer |
+ -dita-use-conref-target)
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT longquoteref %longquoteref.content;>
+ <!ATTLIST longquoteref %longquoteref.attributes;>
+ <!ENTITY % lq.content
+ "(%longquote.cnt;)*"
+ >
+ <!ENTITY % lq.attributes
+ "href
+ CDATA
+ #IMPLIED
+ keyref
+ CDATA
+ #IMPLIED
+ format
+ CDATA
+ #IMPLIED
+ type
+ CDATA
+ #IMPLIED
+ scope
+ (external |
+ local |
+ peer |
+ -dita-use-conref-target)
+ #IMPLIED
+ reftitle
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT lq %lq.content;>
+ <!ATTLIST lq %lq.attributes;>
+ <!ENTITY % q.content
+ "(%shortquote.cnt;)*"
+ >
+ <!ENTITY % q.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT q %q.content;>
+ <!ATTLIST q %q.attributes;>
+ <!ENTITY % sl.content
+ "((%data; |
+ %data-about;)*,
+ (%sli;)+)"
+ >
+ <!ENTITY % sl.attributes
+ "compact
+ (no |
+ yes |
+ -dita-use-conref-target)
+ #IMPLIED
+ spectitle
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT sl %sl.content;>
+ <!ATTLIST sl %sl.attributes;>
+ <!ENTITY % sli.content
+ "(%ph.cnt;)*"
+ >
+ <!ENTITY % sli.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT sli %sli.content;>
+ <!ATTLIST sli %sli.attributes;>
+ <!ENTITY % ul.content
+ "((%data; |
+ %data-about;)*,
+ (%li;)+)"
+ >
+ <!ENTITY % ul.attributes
+ "compact
+ (no |
+ yes |
+ -dita-use-conref-target)
+ #IMPLIED
+ spectitle
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT ul %ul.content;>
+ <!ATTLIST ul %ul.attributes;>
+ <!ENTITY % ol.content
+ "((%data; |
+ %data-about;)*,
+ (%li;)+)"
+ >
+ <!ENTITY % ol.attributes
+ "compact
+ (no |
+ yes |
+ -dita-use-conref-target)
+ #IMPLIED
+ spectitle
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT ol %ol.content;>
+ <!ATTLIST ol %ol.attributes;>
+ <!ENTITY % li.content
+ "(%listitem.cnt;)*"
+ >
+ <!ENTITY % li.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT li %li.content;>
+ <!ATTLIST li %li.attributes;>
+ <!ENTITY % itemgroup.content
+ "(%itemgroup.cnt;)*"
+ >
+ <!ENTITY % itemgroup.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT itemgroup %itemgroup.content;>
+ <!ATTLIST itemgroup %itemgroup.attributes;>
+ <!ENTITY % dl.content
+ "((%data; |
+ %data-about;)*,
+ (%dlhead;)?,
+ (%dlentry;)+)"
+ >
+ <!ENTITY % dl.attributes
+ "compact
+ (no |
+ yes |
+ -dita-use-conref-target)
+ #IMPLIED
+ spectitle
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT dl %dl.content;>
+ <!ATTLIST dl %dl.attributes;>
+ <!ENTITY % dlhead.content
+ "((%dthd;)?,
+ (%ddhd;)?)"
+ >
+ <!ENTITY % dlhead.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT dlhead %dlhead.content;>
+ <!ATTLIST dlhead %dlhead.attributes;>
+ <!ENTITY % dthd.content
+ "(%title.cnt;)*"
+ >
+ <!ENTITY % dthd.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT dthd %dthd.content;>
+ <!ATTLIST dthd %dthd.attributes;>
+ <!ENTITY % ddhd.content
+ "(%title.cnt;)*"
+ >
+ <!ENTITY % ddhd.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT ddhd %ddhd.content;>
+ <!ATTLIST ddhd %ddhd.attributes;>
+ <!ENTITY % dlentry.content
+ "((%dt;)+,
+ (%dd;)+)"
+ >
+ <!ENTITY % dlentry.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT dlentry %dlentry.content;>
+ <!ATTLIST dlentry %dlentry.attributes;>
+ <!ENTITY % dt.content
+ "(%term.cnt;)*"
+ >
+ <!ENTITY % dt.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT dt %dt.content;>
+ <!ATTLIST dt %dt.attributes;>
+ <!ENTITY % dd.content
+ "(%defn.cnt;)*"
+ >
+ <!ENTITY % dd.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT dd %dd.content;>
+ <!ATTLIST dd %dd.attributes;>
+ <!ENTITY % fig.content
+ "((%title;)?,
+ (%desc;)?,
+ (%figgroup; |
+ %fig.cnt;)*)"
+ >
+ <!ENTITY % fig.attributes
+ "%display-atts;
+ spectitle
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT fig %fig.content;>
+ <!ATTLIST fig %fig.attributes;>
+ <!ENTITY % figgroup.content
+ "((%title;)?,
+ (%figgroup; |
+ %figgroup.cnt;)*)"
+ >
+ <!ENTITY % figgroup.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT figgroup %figgroup.content;>
+ <!ATTLIST figgroup %figgroup.attributes;>
+ <!ENTITY % pre.content
+ "(%pre.cnt;)*"
+ >
+ <!ENTITY % pre.attributes
+ "%display-atts;
+ spectitle
+ CDATA
+ #IMPLIED
+ xml:space
+ (preserve)
+ #FIXED 
+ 'preserve'
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT pre %pre.content;>
+ <!ATTLIST pre %pre.attributes;>
+ <!ENTITY % lines.content
+ "(%pre.cnt;)*"
+ >
+ <!ENTITY % lines.attributes
+ "%display-atts;
+ spectitle
+ CDATA
+ #IMPLIED
+ xml:space
+ (preserve)
+ #FIXED 
+ 'preserve'
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT lines %lines.content;>
+ <!ATTLIST lines %lines.attributes;>
+ <!ENTITY % div.content
+ "(%div.cnt;)*"
+ >
+ <!ENTITY % div.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT div %div.content;>
+ <!ATTLIST div %div.attributes;>
+ <!ENTITY % text.content
+ "(#PCDATA |
+ %text;)*"
+ >
+ <!ENTITY % text.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT text %text.content;>
+ <!ATTLIST text %text.attributes;>
+ <!ENTITY % keyword.content
+ "(#PCDATA |
+ %draft-comment; |
+ %required-cleanup; |
+ %text; |
+ %tm;)*"
+ >
+ <!ENTITY % keyword.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT keyword %keyword.content;>
+ <!ATTLIST keyword %keyword.attributes;>
+ <!ENTITY % term.content
+ "(#PCDATA |
+ %draft-comment; |
+ %required-cleanup; |
+ %text; |
+ %tm;)*"
+ >
+ <!ENTITY % term.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT term %term.content;>
+ <!ATTLIST term %term.attributes;>
+ <!ENTITY % ph.content
+ "(%ph.cnt;)*"
+ >
+ <!ENTITY % ph.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT ph %ph.content;>
+ <!ATTLIST ph %ph.attributes;>
+ <!ENTITY % tm.content
+ "(#PCDATA |
+ %text; |
+ %tm;)*"
+ >
+ <!ENTITY % tm.attributes
+ "trademark
+ CDATA
+ #IMPLIED
+ tmowner
+ CDATA
+ #IMPLIED
+ tmtype
+ (reg |
+ service |
+ tm |
+ -dita-use-conref-target)
+ #REQUIRED
+ tmclass
+ CDATA
+ #IMPLIED
+ %univ-atts;"
+ >
+ <!ELEMENT tm %tm.content;>
+ <!ATTLIST tm %tm.attributes;>
+ <!ENTITY % boolean.content
+ "EMPTY"
+ >
+ <!ENTITY % boolean.attributes
+ "state
+ (no |
+ yes |
+ -dita-use-conref-target)
+ #REQUIRED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT boolean %boolean.content;>
+ <!ATTLIST boolean %boolean.attributes;>
+ <!ENTITY % state.content
+ "EMPTY"
+ >
+ <!ENTITY % state.attributes
+ "name
+ CDATA
+ #REQUIRED
+ value
+ CDATA
+ #REQUIRED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT state %state.content;>
+ <!ATTLIST state %state.attributes;>
+ <!ENTITY % image.content
+ "((%alt;)?,
+ (%longdescref;)?)"
+ >
+ <!ENTITY % image.attributes
+ "href
+ CDATA
+ #IMPLIED
+ scope
+ (external |
+ local |
+ peer |
+ -dita-use-conref-target)
+ #IMPLIED
+ keyref
+ CDATA
+ #IMPLIED
+ alt
+ CDATA
+ #IMPLIED
+ longdescref
+ CDATA
+ #IMPLIED
+ height
+ NMTOKEN
+ #IMPLIED
+ width
+ NMTOKEN
+ #IMPLIED
+ align
+ CDATA
+ #IMPLIED
+ scale
+ NMTOKEN
+ #IMPLIED
+ scalefit
+ (yes |
+ no |
+ -dita-use-conref-target)
+ #IMPLIED
+ placement
+ (break |
+ inline |
+ -dita-use-conref-target)
+ 'inline'
+ format
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT image %image.content;>
+ <!ATTLIST image %image.attributes;>
+ <!ENTITY % alt.content
+ "(%words.cnt; |
+ %draft-comment; |
+ %required-cleanup; |
+ %ph;)*"
+ >
+ <!ENTITY % alt.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT alt %alt.content;>
+ <!ATTLIST alt %alt.attributes;>
+ <!ENTITY % longdescref.content
+ "EMPTY"
+ >
+ <!ENTITY % longdescref.attributes
+ "href
+ CDATA
+ #IMPLIED
+ keyref
+ CDATA
+ #IMPLIED
+ type
+ CDATA
+ #IMPLIED
+ format
+ CDATA
+ #IMPLIED
+ scope
+ (external |
+ local |
+ peer |
+ -dita-use-conref-target)
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT longdescref %longdescref.content;>
+ <!ATTLIST longdescref %longdescref.attributes;>
+ <!ENTITY % object.content
+ "((%desc;)?,
+ (%longdescref;)?,
+ (%param;)*,
+ (%foreign.unknown.incl;)*)"
+ >
+ <!ENTITY % object.attributes
+ "declare
+ (declare)
+ #IMPLIED
+ classid
+ CDATA
+ #IMPLIED
+ classidkeyref
+ CDATA
+ #IMPLIED
+ codebase
+ CDATA
+ #IMPLIED
+ codebasekeyref
+ CDATA
+ #IMPLIED
+ data
+ CDATA
+ #IMPLIED
+ datakeyref
+ CDATA
+ #IMPLIED
+ type
+ CDATA
+ #IMPLIED
+ codetype
+ CDATA
+ #IMPLIED
+ archive
+ CDATA
+ #IMPLIED
+ archivekeyrefs
+ CDATA
+ #IMPLIED
+ standby
+ CDATA
+ #IMPLIED
+ height
+ NMTOKEN
+ #IMPLIED
+ width
+ NMTOKEN
+ #IMPLIED
+ usemap
+ CDATA
+ #IMPLIED
+ name
+ CDATA
+ #IMPLIED
+ tabindex
+ NMTOKEN
+ #IMPLIED
+ longdescref
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED
+ longdescre CDATA #IMPLIED"
+ >
+ <!ELEMENT object %object.content;>
+ <!ATTLIST object %object.attributes;>
+ <!ENTITY % param.content
+ "EMPTY"
+ >
+ <!ENTITY % param.attributes
+ "%univ-atts;
+ name
+ CDATA
+ #REQUIRED
+ value
+ CDATA
+ #IMPLIED
+ valuetype
+ (data |
+ object |
+ ref |
+ -dita-use-conref-target)
+ #IMPLIED
+ type
+ CDATA
+ #IMPLIED
+ keyref
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT param %param.content;>
+ <!ATTLIST param %param.attributes;>
+ <!ENTITY % simpletable.content
+ "((%sthead;)?,
+ (%strow;)+)"
+ >
+ <!ENTITY % simpletable.attributes
+ "relcolwidth
+ CDATA
+ #IMPLIED
+ keycol
+ NMTOKEN
+ #IMPLIED
+ refcols
+ NMTOKENS
+ #IMPLIED
+ %display-atts;
+ spectitle
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT simpletable %simpletable.content;>
+ <!ATTLIST simpletable %simpletable.attributes;>
+ <!ENTITY % sthead.content
+ "(%stentry;)+"
+ >
+ <!ENTITY % sthead.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT sthead %sthead.content;>
+ <!ATTLIST sthead %sthead.attributes;>
+ <!ENTITY % strow.content
+ "(%stentry;)*"
+ >
+ <!ENTITY % strow.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT strow %strow.content;>
+ <!ATTLIST strow %strow.attributes;>
+ <!ENTITY % stentry.content
+ "(%tblcell.cnt;)*"
+ >
+ <!ENTITY % stentry.attributes
+ "specentry
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT stentry %stentry.content;>
+ <!ATTLIST stentry %stentry.attributes;>
+ <!ENTITY % draft-comment.content
+ "(#PCDATA |
+ %basic.phandblock; |
+ %data.elements.incl; |
+ %foreign.unknown.incl;)*"
+ >
+ <!ENTITY % draft-comment.attributes
+ "author
+ CDATA
+ #IMPLIED
+ time
+ CDATA
+ #IMPLIED
+ disposition
+ CDATA
+ #IMPLIED
+ %univ-atts-translate-no;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT draft-comment %draft-comment.content;>
+ <!ATTLIST draft-comment %draft-comment.attributes;>
+ <!ENTITY % required-cleanup.content
+ "ANY "
+ >
+ <!ENTITY % required-cleanup.attributes
+ "remap
+ CDATA
+ #IMPLIED
+ %univ-atts-translate-no;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT required-cleanup %required-cleanup.content;>
+ <!ATTLIST required-cleanup %required-cleanup.attributes;>
+ <!ENTITY % fn.content
+ "(%fn.cnt;)*"
+ >
+ <!ENTITY % fn.attributes
+ "callout
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT fn %fn.content;>
+ <!ATTLIST fn %fn.attributes;>
+ <!ENTITY % indexterm.content
+ "(%words.cnt; |
+ %ph; |
+ %indexterm; |
+ %index-base;)*"
+ >
+ <!ENTITY % indexterm.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ start
+ CDATA
+ #IMPLIED
+ end
+ CDATA
+ #IMPLIED
+ %univ-atts;"
+ >
+ <!ELEMENT indexterm %indexterm.content;>
+ <!ATTLIST indexterm %indexterm.attributes;>
+ <!ENTITY % index-base.content
+ "(%words.cnt; |
+ %indexterm;)*"
+ >
+ <!ENTITY % index-base.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;"
+ >
+ <!ELEMENT index-base %index-base.content;>
+ <!ATTLIST index-base %index-base.attributes;>
+ <!ENTITY % indextermref.content
+ "EMPTY"
+ >
+ <!ENTITY % indextermref.attributes
+ "keyref
+ CDATA
+ #REQUIRED
+ %univ-atts;"
+ >
+ <!ELEMENT indextermref %indextermref.content;>
+ <!ATTLIST indextermref %indextermref.attributes;>
+ <!ENTITY % cite.content
+ "(%xrefph.cnt;)*"
+ >
+ <!ENTITY % cite.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT cite %cite.content;>
+ <!ATTLIST cite %cite.attributes;>
+ <!ENTITY % xref.content
+ "(%xreftext.cnt; |
+ %desc;)*"
+ >
+ <!ENTITY % xref.attributes
+ "href
+ CDATA
+ #IMPLIED
+ keyref
+ CDATA
+ #IMPLIED
+ type
+ CDATA
+ #IMPLIED
+ format
+ CDATA
+ #IMPLIED
+ scope
+ (external |
+ local |
+ peer |
+ -dita-use-conref-target)
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT xref %xref.content;>
+ <!ATTLIST xref %xref.attributes;>
+ <!ENTITY % table "table" >
+ <!ENTITY % tgroup "tgroup" >
+ <!ENTITY % colspec "colspec" >
+ <!ENTITY % thead "thead" >
+ <!ENTITY % tbody "tbody" >
+ <!ENTITY % row "row" >
+ <!ENTITY % entry "entry" >
+ <!ENTITY % yesorno
+ "NMTOKEN"
+ >
+ <!ENTITY % titles
+ "(%title;)?"
+ >
+ <!ENTITY % paracon
+ "%tblcell.cnt;"
+ >
+ <!ENTITY % tbl.table.name
+ "table"
+ >
+ <!ENTITY % tbl.table-titles.mdl
+ "((%title;)?,
+ (%desc;)?)"
+ >
+ <!ENTITY % tbl.table-main.mdl
+ "(%tgroup;)+"
+ >
+ <!ENTITY % tbl.table.mdl
+ "((%tbl.table-titles.mdl;),
+ (%tbl.table-main.mdl;))"
+ >
+ <!ENTITY % tbl.table.att
+ "pgwide
+ %yesorno;
+ #IMPLIED"
+ >
+ <!ENTITY % bodyatt
+ ""
+ >
+ <!ENTITY % tbl.tgroup.mdl
+ "((%colspec;)*,
+ (%thead;)?,
+ (%tbody;))"
+ >
+ <!ENTITY % tbl.tgroup.att
+ ""
+ >
+ <!ENTITY % tbl.thead.att
+ ""
+ >
+ <!ENTITY % tbl.tbody.att
+ ""
+ >
+ <!ENTITY % tbl.colspec.att
+ "base
+ CDATA
+ #IMPLIED
+ %base-attribute-extensions;"
+ >
+ <!ENTITY % tbl.row.mdl
+ "(%entry;)+"
+ >
+ <!ENTITY % tbl.row.att
+ ""
+ >
+ <!ENTITY % tbl.entry.mdl
+ "(%paracon;)*"
+ >
+ <!ENTITY % tbl.entry.att
+ "base
+ CDATA
+ #IMPLIED
+ %base-attribute-extensions;"
+ >
+ <!ENTITY % dita.table.attributes
+ "orient
+ (port |
+ land |
+ -dita-use-conref-target)
+ #IMPLIED
+ rowheader
+ (firstcol |
+ headers |
+ norowheader |
+ -dita-use-conref-target)
+ #IMPLIED
+ scale
+ (50 |
+ 60 |
+ 70 |
+ 80 |
+ 90 |
+ 100 |
+ 110 |
+ 120 |
+ 140 |
+ 160 |
+ 180 |
+ 200 |
+ -dita-use-conref-target)
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ENTITY % dita.tgroup.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ENTITY % dita.thead.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ENTITY % dita.tbody.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ENTITY % dita.row.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ENTITY % dita.entry.attributes
+ "%id-atts;
+ %localization-atts;
+ rotate
+ %yesorno;
+ #IMPLIED
+ rev
+ CDATA
+ #IMPLIED
+ outputclass
+ CDATA
+ #IMPLIED
+ scope
+ (row |
+ col |
+ rowgroup |
+ colgroup |
+ -dita-use-conref-target)
+ #IMPLIED
+ headers
+ NMTOKENS
+ #IMPLIED"
+ >
+ <!-- Include colspec/@outputclass fix for DITA 1.3:
+ https://lists.oasis-open.org/archives/dita-comment/202112/msg00000.html -->
+ <!ENTITY % dita.colspec.attributes
+ "%id-atts;
+ %localization-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ENTITY % table.content
+ "(%tbl.table.mdl;)"
+ >
+ <!ENTITY % table.attributes
+ "frame
+ (top |
+ bottom |
+ topbot |
+ all |
+ sides |
+ none |
+ -dita-use-conref-target)
+ #IMPLIED
+ colsep
+ %yesorno;
+ #IMPLIED
+ rowsep
+ %yesorno;
+ #IMPLIED
+ %tbl.table.att;
+ %bodyatt;
+ %dita.table.attributes;"
+ >
+ <!ELEMENT table %table.content;>
+ <!ATTLIST table %table.attributes;>
+ <!ENTITY % tgroup.content
+ "(%tbl.tgroup.mdl;)"
+ >
+ <!ENTITY % tgroup.attributes
+ "cols
+ NMTOKEN
+ #REQUIRED
+ colsep
+ %yesorno;
+ #IMPLIED
+ rowsep
+ %yesorno;
+ #IMPLIED
+ align
+ (left |
+ right |
+ center |
+ justify |
+ char |
+ -dita-use-conref-target)
+ #IMPLIED
+ %tbl.tgroup.att;
+ %dita.tgroup.attributes;"
+ >
+ <!ELEMENT tgroup %tgroup.content;>
+ <!ATTLIST tgroup %tgroup.attributes;>
+ <!ENTITY % colspec.content
+ "EMPTY"
+ >
+ <!ENTITY % colspec.attributes
+ "colnum
+ NMTOKEN
+ #IMPLIED
+ colname
+ NMTOKEN
+ #IMPLIED
+ colwidth
+ CDATA
+ #IMPLIED
+ colsep
+ %yesorno;
+ #IMPLIED
+ rowsep
+ %yesorno;
+ #IMPLIED
+ align
+ (left |
+ right |
+ center |
+ justify |
+ char |
+ -dita-use-conref-target)
+ #IMPLIED
+ char
+ CDATA
+ #IMPLIED
+ charoff
+ NMTOKEN
+ #IMPLIED
+ rowheader
+ (firstcol |
+ headers |
+ norowheader |
+ -dita-use-conref-target)
+ #IMPLIED
+ %tbl.colspec.att;
+ %dita.colspec.attributes;"
+ >
+ <!ELEMENT colspec %colspec.content;>
+ <!ATTLIST colspec %colspec.attributes;>
+ <!ENTITY % thead.content
+ "(%row;)+"
+ >
+ <!ENTITY % thead.attributes
+ "valign
+ (top |
+ middle |
+ bottom |
+ -dita-use-conref-target)
+ #IMPLIED
+ %tbl.thead.att;
+ %dita.thead.attributes;"
+ >
+ <!ELEMENT thead %thead.content;>
+ <!ATTLIST thead %thead.attributes;>
+ <!ENTITY % tbody.content
+ "(%row;)+"
+ >
+ <!ENTITY % tbody.attributes
+ "valign
+ (top |
+ middle |
+ bottom |
+ -dita-use-conref-target)
+ #IMPLIED
+ %tbl.tbody.att;
+ %dita.tbody.attributes;"
+ >
+ <!ELEMENT tbody %tbody.content;>
+ <!ATTLIST tbody %tbody.attributes;>
+ <!ENTITY % row.content
+ "(%tbl.row.mdl;)"
+ >
+ <!ENTITY % row.attributes
+ "rowsep
+ %yesorno;
+ #IMPLIED
+ valign
+ (top |
+ middle |
+ bottom |
+ -dita-use-conref-target)
+ #IMPLIED
+ %tbl.row.att;
+ %dita.row.attributes;"
+ >
+ <!ELEMENT row %row.content;>
+ <!ATTLIST row %row.attributes;>
+ <!ENTITY % entry.content
+ "%tbl.entry.mdl;"
+ >
+ <!ENTITY % entry.attributes
+ "colname
+ NMTOKEN
+ #IMPLIED
+ namest
+ NMTOKEN
+ #IMPLIED
+ nameend
+ NMTOKEN
+ #IMPLIED
+ morerows
+ NMTOKEN
+ #IMPLIED
+ colsep
+ %yesorno;
+ #IMPLIED
+ rowsep
+ %yesorno;
+ #IMPLIED
+ align
+ (left |
+ right |
+ center |
+ justify |
+ char |
+ -dita-use-conref-target)
+ #IMPLIED
+ char
+ CDATA
+ #IMPLIED
+ charoff
+ NMTOKEN
+ #IMPLIED
+ valign
+ (top |
+ middle |
+ bottom |
+ -dita-use-conref-target)
+ #IMPLIED
+ %tbl.entry.att;
+ %dita.entry.attributes;"
+ >
+ <!ELEMENT entry %entry.content;>
+ <!ATTLIST entry %entry.attributes;>
+ <!ATTLIST table %global-atts; class CDATA "- topic/table " >
+ <!ATTLIST tgroup %global-atts; class CDATA "- topic/tgroup " >
+ <!ATTLIST colspec %global-atts; class CDATA "- topic/colspec " >
+ <!ATTLIST thead %global-atts; class CDATA "- topic/thead " >
+ <!ATTLIST tbody %global-atts; class CDATA "- topic/tbody " >
+ <!ATTLIST row %global-atts; class CDATA "- topic/row " >
+ <!ATTLIST entry %global-atts; class CDATA "- topic/entry " >
+ <!ATTLIST alt %global-atts; class CDATA "- topic/alt " >
+ <!ATTLIST boolean %global-atts; class CDATA "- topic/boolean " >
+ <!ATTLIST cite %global-atts; class CDATA "- topic/cite " >
+ <!ATTLIST dd %global-atts; class CDATA "- topic/dd " >
+ <!ATTLIST data %global-atts; class CDATA "- topic/data " >
+ <!ATTLIST data-about %global-atts; class CDATA "- topic/data-about " >
+ <!ATTLIST ddhd %global-atts; class CDATA "- topic/ddhd " >
+ <!ATTLIST desc %global-atts; class CDATA "- topic/desc " >
+ <!ATTLIST div %global-atts; class CDATA "- topic/div " >
+ <!ATTLIST dl %global-atts; class CDATA "- topic/dl " >
+ <!ATTLIST dlentry %global-atts; class CDATA "- topic/dlentry " >
+ <!ATTLIST dlhead %global-atts; class CDATA "- topic/dlhead " >
+ <!ATTLIST draft-comment %global-atts; class CDATA "- topic/draft-comment ">
+ <!ATTLIST dt %global-atts; class CDATA "- topic/dt " >
+ <!ATTLIST dthd %global-atts; class CDATA "- topic/dthd " >
+ <!ATTLIST fig %global-atts; class CDATA "- topic/fig " >
+ <!ATTLIST figgroup %global-atts; class CDATA "- topic/figgroup " >
+ <!ATTLIST fn %global-atts; class CDATA "- topic/fn " >
+ <!ATTLIST foreign %global-atts; class CDATA "- topic/foreign " >
+ <!ATTLIST image %global-atts; class CDATA "- topic/image " >
+ <!ATTLIST indexterm %global-atts; class CDATA "- topic/indexterm " >
+ <!ATTLIST index-base %global-atts; class CDATA "- topic/index-base " >
+ <!ATTLIST indextermref %global-atts; class CDATA "- topic/indextermref ">
+ <!ATTLIST itemgroup %global-atts; class CDATA "- topic/itemgroup " >
+ <!ATTLIST keyword %global-atts; class CDATA "- topic/keyword " >
+ <!ATTLIST li %global-atts; class CDATA "- topic/li " >
+ <!ATTLIST lines %global-atts; class CDATA "- topic/lines " >
+ <!ATTLIST longdescref %global-atts; class CDATA "- topic/longdescref ">
+ <!ATTLIST longquoteref %global-atts; class CDATA "- topic/longquoteref ">
+ <!ATTLIST lq %global-atts; class CDATA "- topic/lq " >
+ <!ATTLIST navtitle %global-atts; class CDATA "- topic/navtitle " >
+ <!ATTLIST note %global-atts; class CDATA "- topic/note " >
+ <!ATTLIST object %global-atts; class CDATA "- topic/object " >
+ <!ATTLIST ol %global-atts; class CDATA "- topic/ol " >
+ <!ATTLIST p %global-atts; class CDATA "- topic/p " >
+ <!ATTLIST param %global-atts; class CDATA "- topic/param " >
+ <!ATTLIST ph %global-atts; class CDATA "- topic/ph " >
+ <!ATTLIST pre %global-atts; class CDATA "- topic/pre " >
+ <!ATTLIST q %global-atts; class CDATA "- topic/q " >
+ <!ATTLIST required-cleanup %global-atts; class CDATA "- topic/required-cleanup ">
+ <!ATTLIST simpletable %global-atts; class CDATA "- topic/simpletable ">
+ <!ATTLIST sl %global-atts; class CDATA "- topic/sl " >
+ <!ATTLIST sli %global-atts; class CDATA "- topic/sli " >
+ <!ATTLIST state %global-atts; class CDATA "- topic/state " >
+ <!ATTLIST stentry %global-atts; class CDATA "- topic/stentry " >
+ <!ATTLIST sthead %global-atts; class CDATA "- topic/sthead " >
+ <!ATTLIST strow %global-atts; class CDATA "- topic/strow " >
+ <!ATTLIST term %global-atts; class CDATA "- topic/term " >
+ <!ATTLIST text %global-atts; class CDATA "- topic/text " >
+ <!ATTLIST title %global-atts; class CDATA "- topic/title " >
+ <!ATTLIST tm %global-atts; class CDATA "- topic/tm " >
+ <!ATTLIST ul %global-atts; class CDATA "- topic/ul " >
+ <!ATTLIST unknown %global-atts; class CDATA "- topic/unknown " >
+ <!ATTLIST xref %global-atts; class CDATA "- topic/xref " >
+ <!ENTITY % date-format
+ "CDATA"
+ >
+ <!ENTITY % author.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % author.attributes
+ "%univ-atts;
+ href
+ CDATA
+ #IMPLIED
+ format
+ CDATA
+ #IMPLIED
+ scope
+ (external |
+ local |
+ peer |
+ -dita-use-conref-target)
+ #IMPLIED
+ keyref
+ CDATA
+ #IMPLIED
+ type
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT author %author.content;>
+ <!ATTLIST author %author.attributes;>
+ <!ENTITY % source.content
+ "(%words.cnt; |
+ %ph;)*"
+ >
+ <!ENTITY % source.attributes
+ "%univ-atts;
+ href
+ CDATA
+ #IMPLIED
+ format
+ CDATA
+ #IMPLIED
+ type
+ CDATA
+ #IMPLIED
+ scope
+ (external |
+ local |
+ peer |
+ -dita-use-conref-target)
+ #IMPLIED
+ keyref
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT source %source.content;>
+ <!ATTLIST source %source.attributes;>
+ <!ENTITY % publisher.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % publisher.attributes
+ "href
+ CDATA
+ #IMPLIED
+ format
+ CDATA
+ #IMPLIED
+ type
+ CDATA
+ #IMPLIED
+ scope
+ (external |
+ local |
+ peer |
+ -dita-use-conref-target)
+ #IMPLIED
+ keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;"
+ >
+ <!ELEMENT publisher %publisher.content;>
+ <!ATTLIST publisher %publisher.attributes;>
+ <!ENTITY % copyright.content
+ "((%copyryear;)+,
+ (%copyrholder;))"
+ >
+ <!ENTITY % copyright.attributes
+ "%univ-atts;
+ type
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT copyright %copyright.content;>
+ <!ATTLIST copyright %copyright.attributes;>
+ <!ENTITY % copyryear.content
+ "EMPTY"
+ >
+ <!ENTITY % copyryear.attributes
+ "year
+ %date-format;
+ #REQUIRED
+ %univ-atts;"
+ >
+ <!ELEMENT copyryear %copyryear.content;>
+ <!ATTLIST copyryear %copyryear.attributes;>
+ <!ENTITY % copyrholder.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % copyrholder.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT copyrholder %copyrholder.content;>
+ <!ATTLIST copyrholder %copyrholder.attributes;>
+ <!ENTITY % critdates.content
+ "((%created;)?,
+ (%revised;)*)"
+ >
+ <!ENTITY % critdates.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT critdates %critdates.content;>
+ <!ATTLIST critdates %critdates.attributes;>
+ <!ENTITY % created.content
+ "EMPTY"
+ >
+ <!ENTITY % created.attributes
+ "date
+ %date-format;
+ #REQUIRED
+ golive
+ %date-format;
+ #IMPLIED
+ expiry
+ %date-format;
+ #IMPLIED
+ %univ-atts;"
+ >
+ <!ELEMENT created %created.content;>
+ <!ATTLIST created %created.attributes;>
+ <!ENTITY % revised.content
+ "EMPTY"
+ >
+ <!ENTITY % revised.attributes
+ "modified
+ %date-format;
+ #REQUIRED
+ golive
+ %date-format;
+ #IMPLIED
+ expiry
+ %date-format;
+ #IMPLIED
+ %univ-atts;"
+ >
+ <!ELEMENT revised %revised.content;>
+ <!ATTLIST revised %revised.attributes;>
+ <!ENTITY % permissions.content
+ "EMPTY"
+ >
+ <!ENTITY % permissions.attributes
+ "%univ-atts;
+ view
+ CDATA
+ #REQUIRED"
+ >
+ <!ELEMENT permissions %permissions.content;>
+ <!ATTLIST permissions %permissions.attributes;>
+ <!ENTITY % category.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % category.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT category %category.content;>
+ <!ATTLIST category %category.attributes;>
+ <!ENTITY % metadata.content
+ "((%audience;)*,
+ (%category;)*,
+ (%keywords;)*,
+ (%prodinfo;)*,
+ (%othermeta;)*,
+ (%data.elements.incl; |
+ %foreign.unknown.incl;)*)"
+ >
+ <!ENTITY % metadata.attributes
+ "%univ-atts;
+ mapkeyref
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT metadata %metadata.content;>
+ <!ATTLIST metadata %metadata.attributes;>
+ <!ENTITY % audience.content
+ "EMPTY"
+ >
+ <!ENTITY % audience.attributes
+ "type
+ CDATA
+ #IMPLIED
+ othertype
+ CDATA
+ #IMPLIED
+ job
+ CDATA
+ #IMPLIED
+ otherjob
+ CDATA
+ #IMPLIED
+ experiencelevel
+ CDATA
+ #IMPLIED
+ name
+ NMTOKEN
+ #IMPLIED
+ %univ-atts;"
+ >
+ <!ELEMENT audience %audience.content;>
+ <!ATTLIST audience %audience.attributes;>
+ <!ENTITY % keywords.content
+ "(%indexterm; |
+ %keyword;)*"
+ >
+ <!ENTITY % keywords.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT keywords %keywords.content;>
+ <!ATTLIST keywords %keywords.attributes;>
+ <!ENTITY % prodinfo.content
+ "((%prodname;),
+ (%vrmlist;)?,
+ (%brand; |
+ %component; |
+ %featnum; |
+ %platform; |
+ %prognum; |
+ %series;)*)"
+ >
+ <!ENTITY % prodinfo.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT prodinfo %prodinfo.content;>
+ <!ATTLIST prodinfo %prodinfo.attributes;>
+ <!ENTITY % prodname.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % prodname.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT prodname %prodname.content;>
+ <!ATTLIST prodname %prodname.attributes;>
+ <!ENTITY % vrmlist.content
+ "(%vrm;)+"
+ >
+ <!ENTITY % vrmlist.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT vrmlist %vrmlist.content;>
+ <!ATTLIST vrmlist %vrmlist.attributes;>
+ <!ENTITY % vrm.content
+ "EMPTY"
+ >
+ <!ENTITY % vrm.attributes
+ "version
+ CDATA
+ #REQUIRED
+ release
+ CDATA
+ #IMPLIED
+ modification
+ CDATA
+ #IMPLIED
+ %univ-atts;"
+ >
+ <!ELEMENT vrm %vrm.content;>
+ <!ATTLIST vrm %vrm.attributes;>
+ <!ENTITY % brand.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % brand.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT brand %brand.content;>
+ <!ATTLIST brand %brand.attributes;>
+ <!ENTITY % series.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % series.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT series %series.content;>
+ <!ATTLIST series %series.attributes;>
+ <!ENTITY % platform.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % platform.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT platform %platform.content;>
+ <!ATTLIST platform %platform.attributes;>
+ <!ENTITY % prognum.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % prognum.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT prognum %prognum.content;>
+ <!ATTLIST prognum %prognum.attributes;>
+ <!ENTITY % featnum.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % featnum.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT featnum %featnum.content;>
+ <!ATTLIST featnum %featnum.attributes;>
+ <!ENTITY % component.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % component.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT component %component.content;>
+ <!ATTLIST component %component.attributes;>
+ <!ENTITY % othermeta.content
+ "EMPTY"
+ >
+ <!ENTITY % othermeta.attributes
+ "name
+ CDATA
+ #REQUIRED
+ content
+ CDATA
+ #REQUIRED
+ translate-content
+ (no |
+ yes |
+ -dita-use-conref-target)
+ #IMPLIED
+ %univ-atts;"
+ >
+ <!ELEMENT othermeta %othermeta.content;>
+ <!ATTLIST othermeta %othermeta.attributes;>
+ <!ENTITY % resourceid.content
+ "(%data.elements.incl;)*"
+ >
+ <!ENTITY % resourceid.attributes
+ "%select-atts;
+ %localization-atts;
+ id
+ CDATA
+ #IMPLIED
+ %conref-atts;
+ appname
+ CDATA
+ #IMPLIED
+ appid
+ CDATA
+ #IMPLIED
+ ux-context-string
+ CDATA
+ #IMPLIED
+ ux-source-priority
+ (topic-and-map |
+ topic-only |
+ map-only |
+ map-takes-priority |
+ topic-takes-priority |
+ -dita-use-conref-target)
+ 'topic-and-map'
+ ux-windowref
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT resourceid %resourceid.content;>
+ <!ATTLIST resourceid %resourceid.attributes;>
+ <!ATTLIST author %global-atts; class CDATA "- topic/author " >
+ <!ATTLIST source %global-atts; class CDATA "- topic/source " >
+ <!ATTLIST publisher %global-atts; class CDATA "- topic/publisher " >
+ <!ATTLIST copyright %global-atts; class CDATA "- topic/copyright " >
+ <!ATTLIST copyryear %global-atts; class CDATA "- topic/copyryear " >
+ <!ATTLIST copyrholder %global-atts; class CDATA "- topic/copyrholder ">
+ <!ATTLIST critdates %global-atts; class CDATA "- topic/critdates " >
+ <!ATTLIST created %global-atts; class CDATA "- topic/created " >
+ <!ATTLIST revised %global-atts; class CDATA "- topic/revised " >
+ <!ATTLIST permissions %global-atts; class CDATA "- topic/permissions ">
+ <!ATTLIST category %global-atts; class CDATA "- topic/category " >
+ <!ATTLIST metadata %global-atts; class CDATA "- topic/metadata " >
+ <!ATTLIST audience %global-atts; class CDATA "- topic/audience " >
+ <!ATTLIST keywords %global-atts; class CDATA "- topic/keywords " >
+ <!ATTLIST prodinfo %global-atts; class CDATA "- topic/prodinfo " >
+ <!ATTLIST prodname %global-atts; class CDATA "- topic/prodname " >
+ <!ATTLIST vrmlist %global-atts; class CDATA "- topic/vrmlist " >
+ <!ATTLIST vrm %global-atts; class CDATA "- topic/vrm " >
+ <!ATTLIST brand %global-atts; class CDATA "- topic/brand " >
+ <!ATTLIST series %global-atts; class CDATA "- topic/series " >
+ <!ATTLIST platform %global-atts; class CDATA "- topic/platform " >
+ <!ATTLIST prognum %global-atts; class CDATA "- topic/prognum " >
+ <!ATTLIST featnum %global-atts; class CDATA "- topic/featnum " >
+ <!ATTLIST component %global-atts; class CDATA "- topic/component " >
+ <!ATTLIST othermeta %global-atts; class CDATA "- topic/othermeta " >
+ <!ATTLIST resourceid %global-atts; class CDATA "- topic/resourceid " >
+ <!-- Use of this entity is deprecated; the nbsp entity will be 
+ removed in DITA 2.0. -->
+ <!ENTITY nbsp "&#xA0;" >
+ <!-- DITA uses the direct reference model; 
+ notations may be added later as required -->
+ <!ENTITY % info-types
+ "topic
+ "
+ >
+ <!ENTITY % topic-info-types
+ "%info-types;
+ "
+ >
+ <!ENTITY included-domains
+ ""
+ >
+ <!ENTITY % abstract.cnt
+ "#PCDATA |
+ %basic.block; |
+ %basic.ph; |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %shortdesc; |
+ %txt.incl;"
+ >
+ <!ENTITY % body.cnt
+ "%basic.block; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %foreign.unknown.incl; |
+ %required-cleanup;"
+ >
+ <!ENTITY % bodydiv.cnt
+ "#PCDATA |
+ %basic.block; |
+ %basic.ph; |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %txt.incl;"
+ >
+ <!ENTITY % example.cnt
+ "#PCDATA |
+ %basic.block; |
+ %basic.ph; |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %title; |
+ %txt.incl;"
+ >
+ <!ENTITY % section.cnt
+ "#PCDATA |
+ %basic.block; |
+ %basic.ph; |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %sectiondiv; |
+ %title; |
+ %txt.incl;"
+ >
+ <!ENTITY % section.notitle.cnt
+ "#PCDATA |
+ %basic.block; |
+ %basic.ph; |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %sectiondiv; |
+ %txt.incl;"
+ >
+ <!ENTITY % sectiondiv.cnt
+ "#PCDATA |
+ %basic.block; |
+ %basic.ph; |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %txt.incl;"
+ >
+ <!ENTITY % relational-atts
+ "type
+ CDATA
+ #IMPLIED
+ cascade
+ CDATA
+ #IMPLIED
+ format
+ CDATA
+ #IMPLIED
+ scope
+ (external |
+ local |
+ peer |
+ -dita-use-conref-target)
+ #IMPLIED
+ role
+ (ancestor |
+ child |
+ cousin |
+ descendant |
+ external |
+ friend |
+ next |
+ other |
+ parent |
+ previous |
+ sample |
+ sibling |
+ -dita-use-conref-target)
+ #IMPLIED
+ otherrole
+ CDATA
+ #IMPLIED"
+ >
+ <!ENTITY % rel-atts
+ "type
+ CDATA
+ #IMPLIED
+ role
+ (ancestor |
+ child |
+ cousin |
+ descendant |
+ external |
+ friend |
+ next |
+ other |
+ parent |
+ previous |
+ sample |
+ sibling |
+ -dita-use-conref-target)
+ #IMPLIED
+ otherrole
+ CDATA
+ #IMPLIED"
+ >
+ <!ENTITY % topic.content
+ "((%title;),
+ (%titlealts;)?,
+ (%shortdesc; |
+ %abstract;)?,
+ (%prolog;)?,
+ (%body;)?,
+ (%related-links;)?,
+ (%topic-info-types;)*)"
+ >
+ <!ENTITY % topic.attributes
+ "id
+ ID
+ #REQUIRED
+ %conref-atts;
+ %select-atts;
+ %localization-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT topic %topic.content;>
+ <!ATTLIST topic %topic.attributes;
+ %arch-atts;
+ domains
+ CDATA
+ "&included-domains;"
+ >
+ <!ENTITY % titlealts.content
+ "((%navtitle;)?,
+ (%searchtitle;)?)"
+ >
+ <!ENTITY % titlealts.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT titlealts %titlealts.content;>
+ <!ATTLIST titlealts %titlealts.attributes;>
+ <!ENTITY % searchtitle.content
+ "(%words.cnt; |
+ %ph;)*"
+ >
+ <!ENTITY % searchtitle.attributes
+ "outputclass
+ CDATA
+ #IMPLIED
+ %univ-atts;"
+ >
+ <!ELEMENT searchtitle %searchtitle.content;>
+ <!ATTLIST searchtitle %searchtitle.attributes;>
+ <!ENTITY % shortdesc.content
+ "(%title.cnt; |
+ %xref;)*"
+ >
+ <!ENTITY % shortdesc.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT shortdesc %shortdesc.content;>
+ <!ATTLIST shortdesc %shortdesc.attributes;>
+ <!ENTITY % abstract.content
+ "(%abstract.cnt;)*"
+ >
+ <!ENTITY % abstract.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT abstract %abstract.content;>
+ <!ATTLIST abstract %abstract.attributes;>
+ <!ENTITY % body.content
+ "(%body.cnt; |
+ %bodydiv; |
+ %example; |
+ %section;)*"
+ >
+ <!ENTITY % body.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT body %body.content;>
+ <!ATTLIST body %body.attributes;>
+ <!ENTITY % bodydiv.content
+ "(%bodydiv.cnt; |
+ %bodydiv; |
+ %section;)*"
+ >
+ <!ENTITY % bodydiv.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT bodydiv %bodydiv.content;>
+ <!ATTLIST bodydiv %bodydiv.attributes;>
+ <!ELEMENT no-topic-nesting EMPTY >
+ <!ENTITY % section.content
+ "(%section.cnt;)*"
+ >
+ <!ENTITY % section.attributes
+ "spectitle
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT section %section.content;>
+ <!ATTLIST section %section.attributes;>
+ <!ENTITY % sectiondiv.content
+ "(%sectiondiv.cnt; |
+ %sectiondiv;)*"
+ >
+ <!ENTITY % sectiondiv.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT sectiondiv %sectiondiv.content;>
+ <!ATTLIST sectiondiv %sectiondiv.attributes;>
+ <!ENTITY % example.content
+ "(%example.cnt;)*"
+ >
+ <!ENTITY % example.attributes
+ "spectitle
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT example %example.content;>
+ <!ATTLIST example %example.attributes;>
+ <!ENTITY % prolog.content
+ "((%author;)*,
+ (%source;)?,
+ (%publisher;)?,
+ (%copyright;)*,
+ (%critdates;)?,
+ (%permissions;)?,
+ (%metadata;)*,
+ (%resourceid;)*,
+ (%data.elements.incl; |
+ %foreign.unknown.incl;)*)"
+ >
+ <!ENTITY % prolog.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT prolog %prolog.content;>
+ <!ATTLIST prolog %prolog.attributes;>
+ <!ENTITY % related-links.content
+ "(%link; |
+ %linklist; |
+ %linkpool;)*"
+ >
+ <!ENTITY % related-links.attributes
+ "%relational-atts;
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT related-links %related-links.content;>
+ <!ATTLIST related-links %related-links.attributes;>
+ <!ENTITY % link.content
+ "((%linktext;)?,
+ (%desc;)?)"
+ >
+ <!ENTITY % link.attributes
+ "href
+ CDATA
+ #IMPLIED
+ keyref
+ CDATA
+ #IMPLIED
+ query
+ CDATA
+ #IMPLIED
+ %relational-atts;
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT link %link.content;>
+ <!ATTLIST link %link.attributes;>
+ <!ENTITY % linktext.content
+ "(%words.cnt; |
+ %ph;)*"
+ >
+ <!ENTITY % linktext.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT linktext %linktext.content;>
+ <!ATTLIST linktext %linktext.attributes;>
+ <!ENTITY % linklist.content
+ "((%title;)?,
+ (%desc;)?,
+ (%linklist; |
+ %link;)*,
+ (%linkinfo;)?)"
+ >
+ <!ENTITY % linklist.attributes
+ "collection-type
+ (choice |
+ family |
+ sequence |
+ unordered |
+ -dita-use-conref-target |
+ tree)
+ #IMPLIED
+ duplicates
+ (no |
+ yes |
+ -dita-use-conref-target)
+ #IMPLIED
+ mapkeyref
+ CDATA
+ #IMPLIED
+ %relational-atts;
+ %univ-atts;
+ spectitle
+ CDATA
+ #IMPLIED
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT linklist %linklist.content;>
+ <!ATTLIST linklist %linklist.attributes;>
+ <!ENTITY % linkinfo.content
+ "(%desc.cnt;)*"
+ >
+ <!ENTITY % linkinfo.attributes
+ "%univ-atts;"
+ >
+ <!ELEMENT linkinfo %linkinfo.content;>
+ <!ATTLIST linkinfo %linkinfo.attributes;>
+ <!ENTITY % linkpool.content
+ "(%linkpool; |
+ %link;)*"
+ >
+ <!ENTITY % linkpool.attributes
+ "collection-type
+ (choice |
+ family |
+ sequence |
+ unordered |
+ -dita-use-conref-target |
+ tree)
+ #IMPLIED
+ duplicates
+ (no |
+ yes |
+ -dita-use-conref-target)
+ #IMPLIED
+ mapkeyref
+ CDATA
+ #IMPLIED
+ %relational-atts;
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT linkpool %linkpool.content;>
+ <!ATTLIST linkpool %linkpool.attributes;>
+ <!ATTLIST abstract %global-atts; class CDATA "- topic/abstract " >
+ <!ATTLIST body %global-atts; class CDATA "- topic/body " >
+ <!ATTLIST bodydiv %global-atts; class CDATA "- topic/bodydiv " >
+ <!ATTLIST example %global-atts; class CDATA "- topic/example " >
+ <!ATTLIST link %global-atts; class CDATA "- topic/link " >
+ <!ATTLIST linkinfo %global-atts; class CDATA "- topic/linkinfo " >
+ <!ATTLIST linklist %global-atts; class CDATA "- topic/linklist " >
+ <!ATTLIST linkpool %global-atts; class CDATA "- topic/linkpool " >
+ <!ATTLIST linktext %global-atts; class CDATA "- topic/linktext " >
+ <!ATTLIST no-topic-nesting %global-atts; class CDATA "- topic/no-topic-nesting ">
+ <!ATTLIST prolog %global-atts; class CDATA "- topic/prolog " >
+ <!ATTLIST related-links %global-atts; class CDATA "- topic/related-links ">
+ <!ATTLIST searchtitle %global-atts; class CDATA "- topic/searchtitle ">
+ <!ATTLIST section %global-atts; class CDATA "- topic/section " >
+ <!ATTLIST sectiondiv %global-atts; class CDATA "- topic/sectiondiv " >
+ <!ATTLIST titlealts %global-atts; class CDATA "- topic/titlealts " >
+ <!ATTLIST topic %global-atts; class CDATA "- topic/topic " >
+ <!ATTLIST shortdesc %global-atts; class CDATA "- topic/shortdesc " >
+ <!ENTITY % abbreviated-form
+ "abbreviated-form" >
+ <!ENTITY % abbreviated-form.content
+ "EMPTY"
+ >
+ <!ENTITY % abbreviated-form.attributes
+ "keyref
+ CDATA
+ #REQUIRED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT abbreviated-form %abbreviated-form.content;>
+ <!ATTLIST abbreviated-form %abbreviated-form.attributes;>
+ <!ATTLIST abbreviated-form %global-atts; class CDATA "+ topic/term abbrev-d/abbreviated-form ">
+ <!ENTITY % equation-inline
+ "equation-inline" >
+ <!ENTITY % equation-block
+ "equation-block" >
+ <!ENTITY % equation-number
+ "equation-number" >
+ <!ENTITY % equation-figure
+ "equation-figure" >
+ <!ENTITY % equation.cnt
+ "%ph.cnt;"
+ >
+ <!ENTITY % equation-inline.content
+ "(%equation.cnt;)*"
+ >
+ <!ENTITY % equation-inline.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT equation-inline %equation-inline.content;>
+ <!ATTLIST equation-inline %equation-inline.attributes;>
+ <!ENTITY % equation-block.content
+ "(%equation.cnt; |
+ %equation-number;)*"
+ >
+ <!ENTITY % equation-block.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT equation-block %equation-block.content;>
+ <!ATTLIST equation-block %equation-block.attributes;>
+ <!ENTITY % equation-number.content
+ "(#PCDATA |
+ %ph; |
+ %text;)*"
+ >
+ <!ENTITY % equation-number.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT equation-number %equation-number.content;>
+ <!ATTLIST equation-number %equation-number.attributes;>
+ <!ENTITY % equation-figure.content
+ "((%title;)?,
+ (%desc;)?,
+ (%figgroup; |
+ %fig.cnt;)*)"
+ >
+ <!ENTITY % equation-figure.attributes
+ "%display-atts;
+ spectitle
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT equation-figure %equation-figure.content;>
+ <!ATTLIST equation-figure %equation-figure.attributes;>
+ <!ATTLIST equation-inline %global-atts; class CDATA "+ topic/ph equation-d/equation-inline ">
+ <!ATTLIST equation-block %global-atts; class CDATA "+ topic/div equation-d/equation-block ">
+ <!ATTLIST equation-number %global-atts; class CDATA "+ topic/ph equation-d/equation-number ">
+ <!ATTLIST equation-figure %global-atts; class CDATA "+ topic/fig equation-d/equation-figure ">
+ <!ENTITY % hazardstatement
+ "hazardstatement" >
+ <!ENTITY % hazardsymbol
+ "hazardsymbol" >
+ <!ENTITY % messagepanel
+ "messagepanel" >
+ <!ENTITY % typeofhazard
+ "typeofhazard" >
+ <!ENTITY % consequence "consequence" >
+ <!ENTITY % howtoavoid "howtoavoid" >
+ <!ENTITY % hazard.cnt
+ "#PCDATA |
+ %basic.ph; |
+ %sl; |
+ %simpletable;"
+ >
+ <!ENTITY % hazardstatement.content
+ "((%messagepanel;)+,
+ (%hazardsymbol;)*)"
+ >
+ <!ENTITY % hazardstatement.attributes
+ "type
+ (attention |
+ caution |
+ danger |
+ fastpath |
+ important |
+ note |
+ notice |
+ other |
+ remember |
+ restriction |
+ tip |
+ warning |
+ -dita-use-conref-target)
+ #IMPLIED
+ spectitle
+ CDATA
+ #IMPLIED
+ othertype
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT hazardstatement %hazardstatement.content;>
+ <!ATTLIST hazardstatement %hazardstatement.attributes;>
+ <!ENTITY % hazardsymbol.content
+ "((%alt;)?,
+ (%longdescref;)?)"
+ >
+ <!ENTITY % hazardsymbol.attributes
+ "href
+ CDATA
+ #IMPLIED
+ scope
+ (external |
+ local |
+ peer |
+ -dita-use-conref-target)
+ #IMPLIED
+ keyref
+ CDATA
+ #IMPLIED
+ longdescref
+ CDATA
+ #IMPLIED
+ height
+ NMTOKEN
+ #IMPLIED
+ width
+ NMTOKEN
+ #IMPLIED
+ align
+ CDATA
+ #IMPLIED
+ scale
+ NMTOKEN
+ #IMPLIED
+ scalefit
+ (yes |
+ no |
+ -dita-use-conref-target)
+ #IMPLIED
+ placement
+ (break |
+ inline |
+ -dita-use-conref-target)
+ 'inline'
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT hazardsymbol %hazardsymbol.content;>
+ <!ATTLIST hazardsymbol %hazardsymbol.attributes;>
+ <!ENTITY % messagepanel.content
+ "((%data; |
+ %data-about;)*,
+ (%typeofhazard;),
+ (%consequence;)*,
+ (%howtoavoid;)+)"
+ >
+ <!ENTITY % messagepanel.attributes
+ "spectitle
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT messagepanel %messagepanel.content;>
+ <!ATTLIST messagepanel %messagepanel.attributes;>
+ <!ENTITY % typeofhazard.content
+ "(%words.cnt; |
+ %ph; |
+ %tm;)*"
+ >
+ <!ENTITY % typeofhazard.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT typeofhazard %typeofhazard.content;>
+ <!ATTLIST typeofhazard %typeofhazard.attributes;>
+ <!ENTITY % consequence.content
+ "(%words.cnt; |
+ %ph; |
+ %tm;)*"
+ >
+ <!ENTITY % consequence.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT consequence %consequence.content;>
+ <!ATTLIST consequence %consequence.attributes;>
+ <!ENTITY % howtoavoid.content
+ "(%hazard.cnt;)*"
+ >
+ <!ENTITY % howtoavoid.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT howtoavoid %howtoavoid.content;>
+ <!ATTLIST howtoavoid %howtoavoid.attributes;>
+ <!ATTLIST hazardstatement %global-atts; class CDATA "+ topic/note hazard-d/hazardstatement ">
+ <!ATTLIST messagepanel %global-atts; class CDATA "+ topic/ul hazard-d/messagepanel ">
+ <!ATTLIST hazardsymbol %global-atts; class CDATA "+ topic/image hazard-d/hazardsymbol ">
+ <!ATTLIST typeofhazard %global-atts; class CDATA "+ topic/li hazard-d/typeofhazard ">
+ <!ATTLIST consequence %global-atts; class CDATA "+ topic/li hazard-d/consequence ">
+ <!ATTLIST howtoavoid %global-atts; class CDATA "+ topic/li hazard-d/howtoavoid ">
+ <!ENTITY % b "b" >
+ <!ENTITY % u "u" >
+ <!ENTITY % i "i" >
+ <!ENTITY % line-through
+ "line-through" >
+ <!ENTITY % overline "overline" >
+ <!ENTITY % tt "tt" >
+ <!ENTITY % sup "sup" >
+ <!ENTITY % sub "sub" >
+ <!ENTITY % b.content
+ "(#PCDATA |
+ %basic.ph; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %foreign.unknown.incl; |
+ %required-cleanup;)*"
+ >
+ <!ENTITY % b.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT b %b.content;>
+ <!ATTLIST b %b.attributes;>
+ <!ENTITY % u.content
+ "(#PCDATA |
+ %basic.ph; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %foreign.unknown.incl; |
+ %required-cleanup;)*"
+ >
+ <!ENTITY % u.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT u %u.content;>
+ <!ATTLIST u %u.attributes;>
+ <!ENTITY % i.content
+ "(#PCDATA |
+ %basic.ph; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %foreign.unknown.incl; |
+ %required-cleanup;)*"
+ >
+ <!ENTITY % i.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT i %i.content;>
+ <!ATTLIST i %i.attributes;>
+ <!ENTITY % line-through.content
+ "(#PCDATA |
+ %basic.ph; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %foreign.unknown.incl; |
+ %required-cleanup;)*"
+ >
+ <!ENTITY % line-through.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT line-through %line-through.content;>
+ <!ATTLIST line-through %line-through.attributes;>
+ <!ENTITY % overline.content
+ "(#PCDATA |
+ %basic.ph; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %foreign.unknown.incl; |
+ %required-cleanup;)*"
+ >
+ <!ENTITY % overline.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT overline %overline.content;>
+ <!ATTLIST overline %overline.attributes;>
+ <!ENTITY % tt.content
+ "(#PCDATA |
+ %basic.ph; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %foreign.unknown.incl; |
+ %required-cleanup;)*"
+ >
+ <!ENTITY % tt.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT tt %tt.content;>
+ <!ATTLIST tt %tt.attributes;>
+ <!ENTITY % sup.content
+ "(#PCDATA |
+ %basic.ph; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %foreign.unknown.incl; |
+ %required-cleanup;)*"
+ >
+ <!ENTITY % sup.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT sup %sup.content;>
+ <!ATTLIST sup %sup.attributes;>
+ <!ENTITY % sub.content
+ "(#PCDATA |
+ %basic.ph; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %foreign.unknown.incl; |
+ %required-cleanup;)*"
+ >
+ <!ENTITY % sub.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT sub %sub.content;>
+ <!ATTLIST sub %sub.attributes;>
+ <!ATTLIST b %global-atts; class CDATA "+ topic/ph hi-d/b " >
+ <!ATTLIST i %global-atts; class CDATA "+ topic/ph hi-d/i " >
+ <!ATTLIST line-through %global-atts; class CDATA "+ topic/ph hi-d/line-through ">
+ <!ATTLIST overline %global-atts; class CDATA "+ topic/ph hi-d/overline ">
+ <!ATTLIST sub %global-atts; class CDATA "+ topic/ph hi-d/sub ">
+ <!ATTLIST sup %global-atts; class CDATA "+ topic/ph hi-d/sup ">
+ <!ATTLIST tt %global-atts; class CDATA "+ topic/ph hi-d/tt " >
+ <!ATTLIST u %global-atts; class CDATA "+ topic/ph hi-d/u " >
+ <!ENTITY % index-see "index-see" >
+ <!ENTITY % index-see-also
+ "index-see-also" >
+ <!ENTITY % index-sort-as
+ "index-sort-as" >
+ <!ENTITY % index-see.content
+ "(%words.cnt; |
+ %ph; |
+ %indexterm;)*"
+ >
+ <!ENTITY % index-see.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;"
+ >
+ <!ELEMENT index-see %index-see.content;>
+ <!ATTLIST index-see %index-see.attributes;>
+ <!ENTITY % index-see-also.content
+ "(%words.cnt; |
+ %ph; |
+ %indexterm;)*"
+ >
+ <!ENTITY % index-see-also.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;"
+ >
+ <!ELEMENT index-see-also %index-see-also.content;>
+ <!ATTLIST index-see-also %index-see-also.attributes;>
+ <!ENTITY % index-sort-as.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % index-sort-as.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;"
+ >
+ <!ELEMENT index-sort-as %index-sort-as.content;>
+ <!ATTLIST index-sort-as %index-sort-as.attributes;>
+ <!ATTLIST index-see %global-atts; class CDATA "+ topic/index-base indexing-d/index-see ">
+ <!ATTLIST index-see-also %global-atts; class CDATA "+ topic/index-base indexing-d/index-see-also ">
+ <!ATTLIST index-sort-as %global-atts; class CDATA "+ topic/index-base indexing-d/index-sort-as ">
+ <!ENTITY % markupname "markupname" >
+ <!ENTITY % markupname.content
+ "(#PCDATA |
+ %draft-comment; |
+ %required-cleanup; |
+ %text;)*"
+ >
+ <!ENTITY % markupname.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT markupname %markupname.content;>
+ <!ATTLIST markupname %markupname.attributes;>
+ <!ATTLIST markupname %global-atts; class CDATA "+ topic/keyword markup-d/markupname ">
+ <!ENTITY % mathmlref "mathmlref" >
+ <!ENTITY % mathml "mathml" >
+ <!ENTITY % mathml3-ditadriver
+ PUBLIC "-//OASIS//ELEMENTS DITA 1.3 Mathml3 Driver//EN"
+ "mathml/mathml3-ditadriver.dtd"
+ >%mathml3-ditadriver;
+ <!ENTITY % mathmlref.content
+ "EMPTY"
+ >
+ <!ENTITY % mathmlref.attributes
+ "href
+ CDATA
+ #IMPLIED
+ keyref
+ CDATA
+ #IMPLIED
+ type
+ CDATA
+ #IMPLIED
+ format
+ CDATA
+ 'mml'
+ scope
+ (external |
+ local |
+ peer |
+ -dita-use-conref-target)
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT mathmlref %mathmlref.content;>
+ <!ATTLIST mathmlref %mathmlref.attributes;>
+ <!ENTITY % mathml.content
+ "(m:math |
+ %mathmlref; |
+ %data; |
+ %data-about;)*"
+ >
+ <!ENTITY % mathml.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT mathml %mathml.content;>
+ <!ATTLIST mathml %mathml.attributes;>
+ <!ATTLIST mathml %global-atts; class CDATA "+ topic/foreign mathml-d/mathml ">
+ <!ATTLIST mathmlref %global-atts; class CDATA "+ topic/xref mathml-d/mathmlref ">
+ <!ENTITY % codeph "codeph" >
+ <!ENTITY % codeblock "codeblock" >
+ <!ENTITY % coderef "coderef" >
+ <!ENTITY % option "option" >
+ <!ENTITY % var "var" >
+ <!ENTITY % parmname "parmname" >
+ <!ENTITY % synph "synph" >
+ <!ENTITY % oper "oper" >
+ <!ENTITY % delim "delim" >
+ <!ENTITY % sep "sep" >
+ <!ENTITY % apiname "apiname" >
+ <!ENTITY % parml "parml" >
+ <!ENTITY % plentry "plentry" >
+ <!ENTITY % pt "pt" >
+ <!ENTITY % pd "pd" >
+ <!ENTITY % syntaxdiagram
+ "syntaxdiagram" >
+ <!ENTITY % synblk "synblk" >
+ <!ENTITY % groupseq "groupseq" >
+ <!ENTITY % groupchoice "groupchoice" >
+ <!ENTITY % groupcomp "groupcomp" >
+ <!ENTITY % fragment "fragment" >
+ <!ENTITY % fragref "fragref" >
+ <!ENTITY % synnote "synnote" >
+ <!ENTITY % synnoteref "synnoteref" >
+ <!ENTITY % repsep "repsep" >
+ <!ENTITY % kwd "kwd" >
+ <!ENTITY % univ-atts-no-importance
+ "base
+ CDATA
+ #IMPLIED
+ %base-attribute-extensions;
+ %id-atts;
+ %filter-atts;
+ %localization-atts;
+ rev
+ CDATA
+ #IMPLIED
+ status
+ (new |
+ changed |
+ deleted |
+ unchanged |
+ -dita-use-conref-target)
+ #IMPLIED"
+ >
+ <!ENTITY % codeph.content
+ "(#PCDATA |
+ %basic.ph.notm; |
+ %data.elements.incl; |
+ %draft-comment; |
+ %foreign.unknown.incl; |
+ %required-cleanup;)*"
+ >
+ <!ENTITY % codeph.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT codeph %codeph.content;>
+ <!ATTLIST codeph %codeph.attributes;>
+ <!ENTITY % codeblock.content
+ "(#PCDATA |
+ %basic.ph.notm; |
+ %coderef; |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %txt.incl;)*"
+ >
+ <!ENTITY % codeblock.attributes
+ "%display-atts;
+ spectitle
+ CDATA
+ #IMPLIED
+ xml:space
+ (preserve)
+ #FIXED 
+ 'preserve'
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT codeblock %codeblock.content;>
+ <!ATTLIST codeblock %codeblock.attributes;>
+ <!ENTITY % coderef.content
+ "EMPTY"
+ >
+ <!ENTITY % coderef.attributes
+ "href
+ CDATA
+ #IMPLIED
+ keyref
+ CDATA
+ #IMPLIED
+ type
+ CDATA
+ #IMPLIED
+ format
+ CDATA
+ #IMPLIED
+ scope
+ (external |
+ local |
+ peer |
+ -dita-use-conref-target)
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT coderef %coderef.content;>
+ <!ATTLIST coderef %coderef.attributes;>
+ <!ENTITY % option.content
+ "(#PCDATA |
+ %text;)*"
+ >
+ <!ENTITY % option.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT option %option.content;>
+ <!ATTLIST option %option.attributes;>
+ <!ENTITY % var.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % var.attributes
+ "importance
+ (default |
+ optional |
+ required |
+ -dita-use-conref-target)
+ #IMPLIED
+ %univ-atts-no-importance;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT var %var.content;>
+ <!ATTLIST var %var.attributes;>
+ <!ENTITY % parmname.content
+ "(#PCDATA |
+ %text;)*"
+ >
+ <!ENTITY % parmname.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT parmname %parmname.content;>
+ <!ATTLIST parmname %parmname.attributes;>
+ <!ENTITY % synph.content
+ "(#PCDATA |
+ %codeph; |
+ %delim; |
+ %kwd; |
+ %oper; |
+ %option; |
+ %parmname; |
+ %sep; |
+ %synph; |
+ %text; |
+ %var;)*"
+ >
+ <!ENTITY % synph.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT synph %synph.content;>
+ <!ATTLIST synph %synph.attributes;>
+ <!ENTITY % oper.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % oper.attributes
+ "importance
+ (default |
+ optional |
+ required |
+ -dita-use-conref-target)
+ #IMPLIED
+ %univ-atts-no-importance;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT oper %oper.content;>
+ <!ATTLIST oper %oper.attributes;>
+ <!ENTITY % delim.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % delim.attributes
+ "importance
+ (optional |
+ required |
+ -dita-use-conref-target)
+ #IMPLIED
+ %univ-atts-no-importance;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT delim %delim.content;>
+ <!ATTLIST delim %delim.attributes;>
+ <!ENTITY % sep.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % sep.attributes
+ "importance
+ (optional |
+ required |
+ -dita-use-conref-target)
+ #IMPLIED
+ %univ-atts-no-importance;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT sep %sep.content;>
+ <!ATTLIST sep %sep.attributes;>
+ <!ENTITY % apiname.content
+ "(#PCDATA |
+ %text;)*"
+ >
+ <!ENTITY % apiname.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT apiname %apiname.content;>
+ <!ATTLIST apiname %apiname.attributes;>
+ <!ENTITY % parml.content
+ "((%data; |
+ %data-about;)*,
+ (%plentry;)+)"
+ >
+ <!ENTITY % parml.attributes
+ "compact
+ (yes |
+ no |
+ -dita-use-conref-target)
+ #IMPLIED
+ spectitle
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT parml %parml.content;>
+ <!ATTLIST parml %parml.attributes;>
+ <!ENTITY % plentry.content
+ "((%pt;)+,
+ (%pd;)+)"
+ >
+ <!ENTITY % plentry.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT plentry %plentry.content;>
+ <!ATTLIST plentry %plentry.attributes;>
+ <!ENTITY % pt.content
+ "(%term.cnt;)*"
+ >
+ <!ENTITY % pt.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT pt %pt.content;>
+ <!ATTLIST pt %pt.attributes;>
+ <!ENTITY % pd.content
+ "(%defn.cnt;)*"
+ >
+ <!ENTITY % pd.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT pd %pd.content;>
+ <!ATTLIST pd %pd.attributes;>
+ <!ENTITY % syntaxdiagram.content
+ "((%title;)?,
+ (%fragment; |
+ %fragref; |
+ %groupchoice; |
+ %groupcomp; |
+ %groupseq; |
+ %synblk; |
+ %synnote; |
+ %synnoteref;)*)"
+ >
+ <!ENTITY % syntaxdiagram.attributes
+ "%display-atts;
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT syntaxdiagram %syntaxdiagram.content;>
+ <!ATTLIST syntaxdiagram %syntaxdiagram.attributes;>
+ <!ENTITY % synblk.content
+ "((%title;)?,
+ (%fragment; |
+ %fragref; |
+ %groupchoice; |
+ %groupcomp; |
+ %groupseq; |
+ %synnote; |
+ %synnoteref;)*)"
+ >
+ <!ENTITY % synblk.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT synblk %synblk.content;>
+ <!ATTLIST synblk %synblk.attributes;>
+ <!ENTITY % groupseq.content
+ "((%title;)?,
+ (%repsep;)?,
+ (%delim; |
+ %fragref; |
+ %groupchoice; |
+ %groupcomp; |
+ %groupseq; |
+ %kwd; |
+ %oper; |
+ %sep; |
+ %synnote; |
+ %synnoteref; |
+ %var;)*)"
+ >
+ <!ENTITY % groupseq.attributes
+ "importance
+ (default |
+ required |
+ optional |
+ -dita-use-conref-target)
+ #IMPLIED
+ %univ-atts-no-importance;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT groupseq %groupseq.content;>
+ <!ATTLIST groupseq %groupseq.attributes;>
+ <!ENTITY % groupchoice.content
+ "((%title;)?,
+ (%repsep;)?,
+ (%delim; |
+ %fragref; |
+ %groupchoice; |
+ %groupcomp; |
+ %groupseq; |
+ %kwd; |
+ %oper; |
+ %sep; |
+ %synnote; |
+ %synnoteref; |
+ %var;)*)"
+ >
+ <!ENTITY % groupchoice.attributes
+ "importance
+ (default |
+ required |
+ optional |
+ -dita-use-conref-target)
+ #IMPLIED
+ %univ-atts-no-importance;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT groupchoice %groupchoice.content;>
+ <!ATTLIST groupchoice %groupchoice.attributes;>
+ <!ENTITY % groupcomp.content
+ "((%title;)?,
+ (%repsep;)?,
+ (%delim; |
+ %fragref; |
+ %groupchoice; |
+ %groupcomp; |
+ %groupseq; |
+ %kwd; |
+ %oper; |
+ %sep; |
+ %synnote; |
+ %synnoteref; |
+ %var;)*)"
+ >
+ <!ENTITY % groupcomp.attributes
+ "importance
+ (default |
+ required |
+ optional |
+ -dita-use-conref-target)
+ #IMPLIED
+ %univ-atts-no-importance;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT groupcomp %groupcomp.content;>
+ <!ATTLIST groupcomp %groupcomp.attributes;>
+ <!ENTITY % fragment.content
+ "((%title;)?,
+ (%fragref; |
+ %groupchoice; |
+ %groupcomp; |
+ %groupseq; |
+ %synnote; |
+ %synnoteref;)*)"
+ >
+ <!ENTITY % fragment.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT fragment %fragment.content;>
+ <!ATTLIST fragment %fragment.attributes;>
+ <!ENTITY % fragref.content
+ "(%xrefph.cnt;)*"
+ >
+ <!ENTITY % fragref.attributes
+ "href
+ CDATA
+ #IMPLIED
+ importance
+ (optional |
+ required |
+ -dita-use-conref-target)
+ #IMPLIED
+ %univ-atts-no-importance;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT fragref %fragref.content;>
+ <!ATTLIST fragref %fragref.attributes;>
+ <!ENTITY % synnote.content
+ "(#PCDATA |
+ %basic.ph;)*"
+ >
+ <!ENTITY % synnote.attributes
+ "callout
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT synnote %synnote.content;>
+ <!ATTLIST synnote %synnote.attributes;>
+ <!ENTITY % synnoteref.content
+ "EMPTY"
+ >
+ <!ENTITY % synnoteref.attributes
+ "href
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT synnoteref %synnoteref.content;>
+ <!ATTLIST synnoteref %synnoteref.attributes;>
+ <!ENTITY % repsep.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % repsep.attributes
+ "importance
+ (optional |
+ required |
+ -dita-use-conref-target)
+ #IMPLIED
+ %univ-atts-no-importance;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT repsep %repsep.content;>
+ <!ATTLIST repsep %repsep.attributes;>
+ <!ENTITY % kwd.content
+ "(#PCDATA |
+ %text;)*"
+ >
+ <!ENTITY % kwd.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ importance
+ (default |
+ required |
+ optional |
+ -dita-use-conref-target)
+ #IMPLIED
+ %univ-atts-no-importance;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT kwd %kwd.content;>
+ <!ATTLIST kwd %kwd.attributes;>
+ <!ATTLIST apiname %global-atts; class CDATA "+ topic/keyword pr-d/apiname ">
+ <!ATTLIST codeblock %global-atts; class CDATA "+ topic/pre pr-d/codeblock ">
+ <!ATTLIST codeph %global-atts; class CDATA "+ topic/ph pr-d/codeph ">
+ <!ATTLIST coderef %global-atts; class CDATA "+ topic/xref pr-d/coderef ">
+ <!ATTLIST delim %global-atts; class CDATA "+ topic/ph pr-d/delim ">
+ <!ATTLIST fragment %global-atts; class CDATA "+ topic/figgroup pr-d/fragment ">
+ <!ATTLIST fragref %global-atts; class CDATA "+ topic/xref pr-d/fragref ">
+ <!ATTLIST groupchoice %global-atts; class CDATA "+ topic/figgroup pr-d/groupchoice ">
+ <!ATTLIST groupcomp %global-atts; class CDATA "+ topic/figgroup pr-d/groupcomp ">
+ <!ATTLIST groupseq %global-atts; class CDATA "+ topic/figgroup pr-d/groupseq ">
+ <!ATTLIST kwd %global-atts; class CDATA "+ topic/keyword pr-d/kwd ">
+ <!ATTLIST oper %global-atts; class CDATA "+ topic/ph pr-d/oper ">
+ <!ATTLIST option %global-atts; class CDATA "+ topic/keyword pr-d/option ">
+ <!ATTLIST parml %global-atts; class CDATA "+ topic/dl pr-d/parml ">
+ <!ATTLIST parmname %global-atts; class CDATA "+ topic/keyword pr-d/parmname ">
+ <!ATTLIST pd %global-atts; class CDATA "+ topic/dd pr-d/pd " >
+ <!ATTLIST plentry %global-atts; class CDATA "+ topic/dlentry pr-d/plentry ">
+ <!ATTLIST pt %global-atts; class CDATA "+ topic/dt pr-d/pt " >
+ <!ATTLIST repsep %global-atts; class CDATA "+ topic/ph pr-d/repsep ">
+ <!ATTLIST sep %global-atts; class CDATA "+ topic/ph pr-d/sep ">
+ <!ATTLIST synblk %global-atts; class CDATA "+ topic/figgroup pr-d/synblk ">
+ <!ATTLIST synnote %global-atts; class CDATA "+ topic/fn pr-d/synnote ">
+ <!ATTLIST synnoteref %global-atts; class CDATA "+ topic/xref pr-d/synnoteref ">
+ <!ATTLIST synph %global-atts; class CDATA "+ topic/ph pr-d/synph ">
+ <!ATTLIST syntaxdiagram %global-atts; class CDATA "+ topic/fig pr-d/syntaxdiagram ">
+ <!ATTLIST var %global-atts; class CDATA "+ topic/ph pr-d/var ">
+ <!ENTITY % change-historylist
+ "change-historylist" >
+ <!ENTITY % change-item "change-item" >
+ <!ENTITY % change-person
+ "change-person" >
+ <!ENTITY % change-organization
+ "change-organization" >
+ <!ENTITY % change-revisionid
+ "change-revisionid" >
+ <!ENTITY % change-request-reference
+ "change-request-reference" >
+ <!ENTITY % change-request-system
+ "change-request-system" >
+ <!ENTITY % change-request-id
+ "change-request-id" >
+ <!ENTITY % change-started
+ "change-started" >
+ <!ENTITY % change-completed
+ "change-completed" >
+ <!ENTITY % change-summary
+ "change-summary" >
+ <!ENTITY % changehistory.data.atts
+ "%univ-atts;
+ datatype
+ CDATA
+ #IMPLIED
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ENTITY % change-historylist.content
+ "(%change-item;)*"
+ >
+ <!ENTITY % change-historylist.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED
+ mapkeyref
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT change-historylist %change-historylist.content;>
+ <!ATTLIST change-historylist %change-historylist.attributes;>
+ <!ENTITY % change-item.content
+ "((%change-person; |
+ %change-organization;)*,
+ (%change-revisionid;)?,
+ (%change-request-reference;)?,
+ (%change-started;)?,
+ (%change-completed;),
+ (%change-summary;)*,
+ (%data;)*)"
+ >
+ <!ENTITY % change-item.attributes
+ "%changehistory.data.atts;
+ name
+ CDATA
+ 'change-item'"
+ >
+ <!ELEMENT change-item %change-item.content;>
+ <!ATTLIST change-item %change-item.attributes;>
+ <!ENTITY % change-person.content
+ "(#PCDATA |
+ %text;)*"
+ >
+ <!ENTITY % change-person.attributes
+ "%changehistory.data.atts;
+ name
+ CDATA
+ 'change-person'"
+ >
+ <!ELEMENT change-person %change-person.content;>
+ <!ATTLIST change-person %change-person.attributes;>
+ <!ENTITY % change-organization.content
+ "(#PCDATA |
+ %text;)*"
+ >
+ <!ENTITY % change-organization.attributes
+ "%changehistory.data.atts;
+ name
+ CDATA
+ 'change-organization'"
+ >
+ <!ELEMENT change-organization %change-organization.content;>
+ <!ATTLIST change-organization %change-organization.attributes;>
+ <!ENTITY % change-revisionid.content
+ "(%data.cnt;)*"
+ >
+ <!ENTITY % change-revisionid.attributes
+ "%changehistory.data.atts;
+ name
+ CDATA
+ 'change-revisionid'"
+ >
+ <!ELEMENT change-revisionid %change-revisionid.content;>
+ <!ATTLIST change-revisionid %change-revisionid.attributes;>
+ <!ENTITY % change-request-reference.content
+ "((%change-request-system;)?,
+ (%change-request-id;)?)"
+ >
+ <!ENTITY % change-request-reference.attributes
+ "%changehistory.data.atts;
+ name
+ CDATA
+ 'change-request-reference'"
+ >
+ <!ELEMENT change-request-reference %change-request-reference.content;>
+ <!ATTLIST change-request-reference %change-request-reference.attributes;>
+ <!ENTITY % change-request-system.content
+ "(%data.cnt;)*"
+ >
+ <!ENTITY % change-request-system.attributes
+ "%changehistory.data.atts;
+ name
+ CDATA
+ 'change-request-system'"
+ >
+ <!ELEMENT change-request-system %change-request-system.content;>
+ <!ATTLIST change-request-system %change-request-system.attributes;>
+ <!ENTITY % change-request-id.content
+ "(%data.cnt;)*"
+ >
+ <!ENTITY % change-request-id.attributes
+ "%changehistory.data.atts;
+ name
+ CDATA
+ 'change-request-id'"
+ >
+ <!ELEMENT change-request-id %change-request-id.content;>
+ <!ATTLIST change-request-id %change-request-id.attributes;>
+ <!ENTITY % change-started.content
+ "(#PCDATA |
+ %text;)*"
+ >
+ <!ENTITY % change-started.attributes
+ "%changehistory.data.atts;
+ name
+ CDATA
+ 'change-started'"
+ >
+ <!ELEMENT change-started %change-started.content;>
+ <!ATTLIST change-started %change-started.attributes;>
+ <!ENTITY % change-completed.content
+ "(#PCDATA |
+ %text;)*"
+ >
+ <!ENTITY % change-completed.attributes
+ "%changehistory.data.atts;
+ name
+ CDATA
+ 'change-completed'"
+ >
+ <!ELEMENT change-completed %change-completed.content;>
+ <!ATTLIST change-completed %change-completed.attributes;>
+ <!ENTITY % change-summary.content
+ "(%data.cnt;)*"
+ >
+ <!ENTITY % change-summary.attributes
+ "%changehistory.data.atts;
+ name
+ CDATA
+ 'change-summary'"
+ >
+ <!ELEMENT change-summary %change-summary.content;>
+ <!ATTLIST change-summary %change-summary.attributes;>
+ <!ATTLIST change-historylist %global-atts; class CDATA "+ topic/metadata relmgmt-d/change-historylist ">
+ <!ATTLIST change-item %global-atts; class CDATA "+ topic/data relmgmt-d/change-item ">
+ <!ATTLIST change-person %global-atts; class CDATA "+ topic/data relmgmt-d/change-person ">
+ <!ATTLIST change-organization %global-atts; class CDATA "+ topic/data relmgmt-d/change-organization ">
+ <!ATTLIST change-revisionid %global-atts; class CDATA "+ topic/data relmgmt-d/change-revisionid ">
+ <!ATTLIST change-request-reference %global-atts; class CDATA "+ topic/data relmgmt-d/change-request-reference ">
+ <!ATTLIST change-request-system %global-atts; class CDATA "+ topic/data relmgmt-d/change-request-system ">
+ <!ATTLIST change-request-id %global-atts; class CDATA "+ topic/data relmgmt-d/change-request-id ">
+ <!ATTLIST change-started %global-atts; class CDATA "+ topic/data relmgmt-d/change-started ">
+ <!ATTLIST change-completed %global-atts; class CDATA "+ topic/data relmgmt-d/change-completed ">
+ <!ATTLIST change-summary %global-atts; class CDATA "+ topic/data relmgmt-d/change-summary ">
+ <!ENTITY % msgph "msgph" >
+ <!ENTITY % msgblock "msgblock" >
+ <!ENTITY % msgnum "msgnum" >
+ <!ENTITY % cmdname "cmdname" >
+ <!ENTITY % varname "varname" >
+ <!ENTITY % filepath "filepath" >
+ <!ENTITY % userinput "userinput" >
+ <!ENTITY % systemoutput
+ "systemoutput" >
+ <!ENTITY % msgph.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % msgph.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT msgph %msgph.content;>
+ <!ATTLIST msgph %msgph.attributes;>
+ <!ENTITY % msgblock.content
+ "(%words.cnt; |
+ %msgph;)*"
+ >
+ <!ENTITY % msgblock.attributes
+ "%display-atts;
+ spectitle
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED
+ xml:space
+ (preserve)
+ #FIXED 
+ 'preserve'"
+ >
+ <!ELEMENT msgblock %msgblock.content;>
+ <!ATTLIST msgblock %msgblock.attributes;>
+ <!ENTITY % msgnum.content
+ "(#PCDATA |
+ %text;)*"
+ >
+ <!ENTITY % msgnum.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT msgnum %msgnum.content;>
+ <!ATTLIST msgnum %msgnum.attributes;>
+ <!ENTITY % cmdname.content
+ "(#PCDATA |
+ %text;)*"
+ >
+ <!ENTITY % cmdname.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT cmdname %cmdname.content;>
+ <!ATTLIST cmdname %cmdname.attributes;>
+ <!ENTITY % varname.content
+ "(#PCDATA |
+ %text;)*"
+ >
+ <!ENTITY % varname.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT varname %varname.content;>
+ <!ATTLIST varname %varname.attributes;>
+ <!ENTITY % filepath.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % filepath.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT filepath %filepath.content;>
+ <!ATTLIST filepath %filepath.attributes;>
+ <!ENTITY % userinput.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % userinput.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT userinput %userinput.content;>
+ <!ATTLIST userinput %userinput.attributes;>
+ <!ENTITY % systemoutput.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % systemoutput.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT systemoutput %systemoutput.content;>
+ <!ATTLIST systemoutput %systemoutput.attributes;>
+ <!ATTLIST cmdname %global-atts; class CDATA "+ topic/keyword sw-d/cmdname ">
+ <!ATTLIST filepath %global-atts; class CDATA "+ topic/ph sw-d/filepath ">
+ <!ATTLIST msgblock %global-atts; class CDATA "+ topic/pre sw-d/msgblock ">
+ <!ATTLIST msgnum %global-atts; class CDATA "+ topic/keyword sw-d/msgnum ">
+ <!ATTLIST msgph %global-atts; class CDATA "+ topic/ph sw-d/msgph ">
+ <!ATTLIST systemoutput %global-atts; class CDATA "+ topic/ph sw-d/systemoutput ">
+ <!ATTLIST userinput %global-atts; class CDATA "+ topic/ph sw-d/userinput ">
+ <!ATTLIST varname %global-atts; class CDATA "+ topic/keyword sw-d/varname ">
+ <!ENTITY % svg-container
+ "svg-container" >
+ <!ENTITY % svgref "svgref" >
+ <!ENTITY % svg11-ditadriver
+ PUBLIC "-//OASIS//ELEMENTS DITA 1.3 SVG 1.1 Driver//EN"
+ "svg/svg11-ditadriver.dtd"
+ >%svg11-ditadriver;
+ <!ENTITY % svg-container.content
+ "(svg:svg |
+ %svgref; |
+ %data; |
+ %data-about;)*"
+ >
+ <!ENTITY % svg-container.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT svg-container %svg-container.content;>
+ <!ATTLIST svg-container %svg-container.attributes;>
+ <!ENTITY % svgref.content
+ "EMPTY"
+ >
+ <!ENTITY % svgref.attributes
+ "href
+ CDATA
+ #IMPLIED
+ keyref
+ CDATA
+ #IMPLIED
+ format
+ CDATA
+ 'svg'
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT svgref %svgref.content;>
+ <!ATTLIST svgref %svgref.attributes;>
+ <!ATTLIST svg-container %global-atts; class CDATA "+ topic/foreign svg-d/svg-container ">
+ <!ATTLIST svgref %global-atts; class CDATA "+ topic/xref svg-d/svgref ">
+ <!ENTITY % uicontrol "uicontrol" >
+ <!ENTITY % wintitle "wintitle" >
+ <!ENTITY % menucascade "menucascade" >
+ <!ENTITY % shortcut "shortcut" >
+ <!ENTITY % screen "screen" >
+ <!ENTITY % uicontrol.content
+ "(%words.cnt; |
+ %image; |
+ %shortcut;)*"
+ >
+ <!ENTITY % uicontrol.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT uicontrol %uicontrol.content;>
+ <!ATTLIST uicontrol %uicontrol.attributes;>
+ <!ENTITY % wintitle.content
+ "(#PCDATA |
+ %text;)*"
+ >
+ <!ENTITY % wintitle.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT wintitle %wintitle.content;>
+ <!ATTLIST wintitle %wintitle.attributes;>
+ <!ENTITY % menucascade.content
+ "(%uicontrol;)+"
+ >
+ <!ENTITY % menucascade.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT menucascade %menucascade.content;>
+ <!ATTLIST menucascade %menucascade.attributes;>
+ <!ENTITY % shortcut.content
+ "(#PCDATA |
+ %text;)*"
+ >
+ <!ENTITY % shortcut.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT shortcut %shortcut.content;>
+ <!ATTLIST shortcut %shortcut.attributes;>
+ <!ENTITY % screen.content
+ "(#PCDATA |
+ %basic.ph.notm; |
+ %data.elements.incl; |
+ %foreign.unknown.incl; |
+ %txt.incl;)*"
+ >
+ <!ENTITY % screen.attributes
+ "%display-atts;
+ spectitle
+ CDATA
+ #IMPLIED
+ xml:space
+ (preserve)
+ #FIXED 
+ 'preserve'
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT screen %screen.content;>
+ <!ATTLIST screen %screen.attributes;>
+ <!ATTLIST menucascade %global-atts; class CDATA "+ topic/ph ui-d/menucascade ">
+ <!ATTLIST screen %global-atts; class CDATA "+ topic/pre ui-d/screen ">
+ <!ATTLIST shortcut %global-atts; class CDATA "+ topic/keyword ui-d/shortcut ">
+ <!ATTLIST uicontrol %global-atts; class CDATA "+ topic/ph ui-d/uicontrol ">
+ <!ATTLIST wintitle %global-atts; class CDATA "+ topic/keyword ui-d/wintitle ">
+ <!ENTITY % imagemap "imagemap" >
+ <!ENTITY % area "area" >
+ <!ENTITY % shape "shape" >
+ <!ENTITY % coords "coords" >
+ <!ENTITY % sort-as "sort-as" >
+ <!ENTITY % imagemap.content
+ "((%image;),
+ (%area;)+)"
+ >
+ <!ENTITY % imagemap.attributes
+ "%display-atts;
+ spectitle
+ CDATA
+ #IMPLIED
+ %univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT imagemap %imagemap.content;>
+ <!ATTLIST imagemap %imagemap.attributes;>
+ <!ENTITY % area.content
+ "((%shape;),
+ (%coords;),
+ (%xref;))"
+ >
+ <!ENTITY % area.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT area %area.content;>
+ <!ATTLIST area %area.attributes;>
+ <!ENTITY % shape.content
+ "(#PCDATA |
+ %text;)*"
+ >
+ <!ENTITY % shape.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts-translate-no;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT shape %shape.content;>
+ <!ATTLIST shape %shape.attributes;>
+ <!ENTITY % coords.content
+ "(%words.cnt;)*"
+ >
+ <!ENTITY % coords.attributes
+ "keyref
+ CDATA
+ #IMPLIED
+ %univ-atts-translate-no;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT coords %coords.content;>
+ <!ATTLIST coords %coords.attributes;>
+ <!ENTITY % sort-as.content
+ "(#PCDATA |
+ %text; |
+ %keyword;)*"
+ >
+ <!ENTITY % sort-as.attributes
+ "%univ-atts;
+ name
+ CDATA
+ 'sort-as'
+ value
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT sort-as %sort-as.content;>
+ <!ATTLIST sort-as %sort-as.attributes;>
+ <!ATTLIST imagemap %global-atts; class CDATA "+ topic/fig ut-d/imagemap ">
+ <!ATTLIST area %global-atts; class CDATA "+ topic/figgroup ut-d/area ">
+ <!ATTLIST shape %global-atts; class CDATA "+ topic/keyword ut-d/shape ">
+ <!ATTLIST coords %global-atts; class CDATA "+ topic/ph ut-d/coords ">
+ <!ATTLIST sort-as %global-atts; class CDATA "+ topic/data ut-d/sort-as ">
+ <!ENTITY % numcharref "numcharref" >
+ <!ENTITY % parameterentity
+ "parameterentity" >
+ <!ENTITY % textentity "textentity" >
+ <!ENTITY % xmlatt "xmlatt" >
+ <!ENTITY % xmlelement "xmlelement" >
+ <!ENTITY % xmlnsname "xmlnsname" >
+ <!ENTITY % xmlpi "xmlpi" >
+ <!ENTITY % numcharref.content
+ "(#PCDATA |
+ %draft-comment; |
+ %required-cleanup; |
+ %text;)*"
+ >
+ <!ENTITY % numcharref.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT numcharref %numcharref.content;>
+ <!ATTLIST numcharref %numcharref.attributes;>
+ <!ENTITY % parameterentity.content
+ "(#PCDATA |
+ %draft-comment; |
+ %required-cleanup; |
+ %text;)*"
+ >
+ <!ENTITY % parameterentity.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT parameterentity %parameterentity.content;>
+ <!ATTLIST parameterentity %parameterentity.attributes;>
+ <!ENTITY % textentity.content
+ "(#PCDATA |
+ %draft-comment; |
+ %required-cleanup; |
+ %text;)*"
+ >
+ <!ENTITY % textentity.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT textentity %textentity.content;>
+ <!ATTLIST textentity %textentity.attributes;>
+ <!ENTITY % xmlatt.content
+ "(#PCDATA |
+ %draft-comment; |
+ %required-cleanup; |
+ %text;)*"
+ >
+ <!ENTITY % xmlatt.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT xmlatt %xmlatt.content;>
+ <!ATTLIST xmlatt %xmlatt.attributes;>
+ <!ENTITY % xmlelement.content
+ "(#PCDATA |
+ %draft-comment; |
+ %required-cleanup; |
+ %text;)*"
+ >
+ <!ENTITY % xmlelement.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT xmlelement %xmlelement.content;>
+ <!ATTLIST xmlelement %xmlelement.attributes;>
+ <!ENTITY % xmlnsname.content
+ "(#PCDATA |
+ %draft-comment; |
+ %required-cleanup; |
+ %text;)*"
+ >
+ <!ENTITY % xmlnsname.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT xmlnsname %xmlnsname.content;>
+ <!ATTLIST xmlnsname %xmlnsname.attributes;>
+ <!ENTITY % xmlpi.content
+ "(#PCDATA |
+ %draft-comment; |
+ %required-cleanup; |
+ %text;)*"
+ >
+ <!ENTITY % xmlpi.attributes
+ "%univ-atts;
+ outputclass
+ CDATA
+ #IMPLIED"
+ >
+ <!ELEMENT xmlpi %xmlpi.content;>
+ <!ATTLIST xmlpi %xmlpi.attributes;>
+ <!ATTLIST numcharref %global-atts; class CDATA "+ topic/keyword markup-d/markupname xml-d/numcharref ">
+ <!ATTLIST parameterentity %global-atts; class CDATA "+ topic/keyword markup-d/markupname xml-d/parameterentity ">
+ <!ATTLIST textentity %global-atts; class CDATA "+ topic/keyword markup-d/markupname xml-d/textentity ">
+ <!ATTLIST xmlatt %global-atts; class CDATA "+ topic/keyword markup-d/markupname xml-d/xmlatt ">
+ <!ATTLIST xmlelement %global-atts; class CDATA "+ topic/keyword markup-d/markupname xml-d/xmlelement ">
+ <!ATTLIST xmlnsname %global-atts; class CDATA "+ topic/keyword markup-d/markupname xml-d/xmlnsname ">
+ <!ATTLIST xmlpi %global-atts; class CDATA "+ topic/keyword markup-d/markupname xml-d/xmlpi ">
