@@ -16,6 +16,8 @@ plugins {
     id 'com.nwalsh.gradle.saxon.saxon-gradle' version '0.10.7'
 }
 
+apply plugin: DtdProcessingPlugin
+
 group = 'com.elovirta'
 version = '0.1.0'
 description = 'DITA Language Server'

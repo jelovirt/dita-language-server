@@ -649,10 +649,12 @@ public class DitaTextDocumentService implements TextDocumentService {
   public CompletableFuture<PreviewResult> getPreview(URI uri) {
     return CompletableFuture.supplyAsync(
         () -> {
+          var start = System.currentTimeMillis();
           var documentCache = documentManager.get(uri);
           var html = preview.generatePreview(documentCache.document());
           var result = new PreviewResult();
           result.setHtml(html);
+          logger.info("Preview generated in {} ms", System.currentTimeMillis() - start);
           return result;
         });
   }
