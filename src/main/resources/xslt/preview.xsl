@@ -89,6 +89,22 @@
       padding: 0.5rem;
     }
 
+    dd + dt {
+      margin-top: 1rem;
+    }
+
+    dd {
+      margin-left: 2rem;
+    }
+
+    dd > p:first-child {
+      margin-top: 0.5rem;
+    }
+
+    .term {
+      font-style: italic;
+    }
+
     @media (prefers-color-scheme: dark) {
       pre {
         background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, pink);
@@ -278,6 +294,25 @@
     </code>
   </xsl:template>
 
+  <xsl:template match="*[contains-token(@class, 'xml-d/xmlelement')]" priority="10">
+    <code>
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
+      <xsl:text>&lt;</xsl:text>
+      <xsl:apply-templates/>
+      <xsl:text>&gt;</xsl:text>
+    </code>
+  </xsl:template>
+
+  <xsl:template match="*[contains-token(@class, 'xml-d/xmlatt')]" priority="10">
+    <code>
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
+      <xsl:text>@</xsl:text>
+      <xsl:apply-templates/>
+    </code>
+  </xsl:template>
+
   <xsl:template match="*[contains-token(@class, 'topic/p')]">
     <p>
       <xsl:call-template name="common-attributes"/>
@@ -314,7 +349,7 @@
     <ul>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
-      <xsl:apply-templates/>
+      <xsl:apply-templates select="*"/>
     </ul>
   </xsl:template>
 
@@ -322,7 +357,7 @@
     <ol>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
-      <xsl:apply-templates/>
+      <xsl:apply-templates select="*"/>
     </ol>
   </xsl:template>
 
@@ -334,8 +369,37 @@
     </li>
   </xsl:template>
 
+  <xsl:template match="*[contains-token(@class, 'topic/dl')]">
+    <dl>
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
+      <xsl:apply-templates select="*"/>
+    </dl>
+  </xsl:template>
+
+  <xsl:template match="*[contains-token(@class, 'topic/dlentry')]">
+    <xsl:apply-templates select="*"/>
+  </xsl:template>
+
+  <xsl:template match="*[contains-token(@class, 'topic/dt')]">
+    <dt>
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
+      <xsl:apply-templates/>
+    </dt>
+  </xsl:template>
+
+  <xsl:template match="*[contains-token(@class, 'topic/dd')]">
+    <dd>
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
+      <xsl:apply-templates/>
+    </dd>
+  </xsl:template>
+
   <xsl:template match="*[contains-token(@class, 'topic/keyword') or
-                         contains-token(@class, 'topic/ph')]">
+                         contains-token(@class, 'topic/ph') or
+                         contains-token(@class, 'topic/term')]">
     <span>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -429,6 +493,10 @@
     <xsl:next-match/>
   </xsl:template>
 
+  <xsl:template match="*[contains-token(@class, 'topic/term')]" mode="class">
+    <xsl:text>term</xsl:text>
+    <xsl:next-match/>
+  </xsl:template>
 
   <!-- Prefix templates -->
 
