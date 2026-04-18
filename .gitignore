@@ -4,3 +4,4 @@ build
 .DS_Store
 src/test/resources/xspec/*-report.html
 src/test/resources/xspec/xspec
+*.xpr

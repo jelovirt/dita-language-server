@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                xmlns:resolved="resolved"
                 xmlns:x="x"
-                xmlns:dita-ot="http://dita-ot.sourceforge.net/ns/201007/dita-ot"
                 version="3.0"
-                exclude-result-prefixes="xs dita-ot x">
+                exclude-result-prefixes="xs x">
 
   <xsl:import href="keyref.xsl"/>
   <xsl:import href="conref.xsl"/>
@@ -15,6 +15,7 @@
   <xsl:param name="keyrefs" as="document-node()?">
     <!--
     <xsl:document>
+      
       <keyrefs>
         <keyref key="reusable-components"
           href="file:/Users/jarno.elovirta/work/github.com/dita-ot/dita-ot/src/main/docsrc/resources/reusable-components.dita"/>
@@ -30,19 +31,46 @@
       content: "🔗";
     }
 
-    .keyref:before {
+    .keyref:not(.keyref__resolved):before {
       content: "\0023[" attr(data-keyref) "]";
-      background-color: transparent
+      padding-right: 0.25rem;
     }
 
-    .conkeyref:before {
+    .keyref__resolved:before {
+      content: "\0023";
+      padding-right: 0.25rem;
+    }
+
+    .conkeyref:not(.conkeyref__resolved):before {
       content: "\00A7[" attr(data-conkeyref) "]" !important;
-      background-color: transparent;
+      padding-right: 0.25rem;
     }
 
-    .conref:before {
+    .conkeyref__resolved:before {
+      content: "\00A7" !important;
+      padding-right: 0.25rem;
+    }
+
+    .conref:not(.conref__resolved):before {
       content: "\00BB[" attr(data-conref) "]";
-      background-color: transparent;
+      padding-right: 0.25rem;
+    }
+
+    .conref__resolved:before {
+      content: "\00BB";
+      padding-right: 0.25rem;
+    }
+
+    .shortdesc:before {
+      content: "Short description: ";
+      font-weight: bold;
+      text-transform: capitalize;
+    }
+
+    .navtitle:before {
+      content: "Navigation title: ";
+      font-weight: bold;
+      text-transform: capitalize;
     }
 
     .generated {
@@ -63,20 +91,24 @@
 
     @media (prefers-color-scheme: dark) {
       pre {
-        background-color: color-mix(in srgb, var(--vscode-editor-background) 80%, white);
+        background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, pink);
       }
 
-      .replaced, .generated, .conref, .conkeyref, [data-conref], [data-keyref] {
+      .replaced, .generated, .conref, .conkeyref,
+      .shortdesc:before, .navtitle:before,
+      [data-resolved-conref], [data-resolved-keyref], [data-resolved-conkeyref] {
         background-color: color-mix(in srgb, var(--vscode-editor-background) 80%, white);
-        }
+      }
     }
 
     @media (prefers-color-scheme: light) {
       pre {
-        background-color: color-mix(in srgb, var(--vscode-editor-background) 80%, black);
+        background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, black);
       }
 
-      .replaced, .generated, .conref, .conkeyref, [data-conref], [data-keyref] {
+      .replaced, .generated, .conref, .conkeyref,
+      .shortdesc:before, .navtitle:before,
+      [data-resolved-conref], [data-resolved-keyref], [data-resolved-conkeyref] {
         background-color: color-mix(in srgb, var(--vscode-editor-background) 80%, black);
       }
     }
@@ -261,14 +293,14 @@
       <xsl:apply-templates/>
     </section>
   </xsl:template>
-  
+
   <xsl:template match="*[contains(@class, ' topic/section ')]/*[contains(@class, ' topic/title ')]">
     <xsl:element name="h{count(ancestor::*[contains(@class, ' topic/topic ') or contains(@class, ' topic/section ')])}">
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
       <xsl:apply-templates/>
     </xsl:element>
-  </xsl:template>  
+  </xsl:template>
 
   <xsl:template match="*[contains(@class, ' topic/div ') or contains(@class, ' topic/itemgroup ')]">
     <div>
@@ -318,7 +350,7 @@
       <xsl:apply-templates select="." mode="prefix"/>
       <xsl:choose>
         <xsl:when test="node()">
-          <xsl:apply-templates/>    
+          <xsl:apply-templates/>
         </xsl:when>
         <xsl:otherwise>
           <xsl:value-of select="@href"/>
@@ -326,13 +358,13 @@
       </xsl:choose>
     </a>
   </xsl:template>
-  
+
   <xsl:template match="*[contains(@class, ' topic/indexterm ')]"/>
 
   <!-- Common attribute templates -->
 
   <xsl:mode name="common-attributes" on-no-match="deep-skip"/>
-  
+
   <xsl:template name="common-attributes">
     <xsl:param name="class" as="xs:string?"/>
     <xsl:apply-templates select="@*" mode="common-attributes"/>
@@ -357,7 +389,7 @@
   <xsl:mode name="text-only" on-no-match="text-only-copy"/>
 
   <!-- Class attribute templates -->
- 
+
   <!--xsl:template name="class">
     <xsl:variable name="classes" as="xs:string*">
       <xsl:apply-templates select="." mode="class"/>
@@ -366,35 +398,59 @@
       <xsl:attribute name="class" select="string-join(($classes, @outputclass), ' ')"/>
     </xsl:if>
   </xsl:template-->
-  
+
   <xsl:mode name="class" on-no-match="deep-skip"/>
-  
-  <xsl:template match="*[@keyref]" mode="class">
+
+  <xsl:template match="*[@keyref | @resolved:keyref]" mode="class">
     <xsl:text>keyref</xsl:text>
+    <xsl:if test="@resolved:keyref">keyref__resolved</xsl:if>
     <xsl:next-match/>
   </xsl:template>
-  
-  <xsl:template match="*[@conref]" mode="class">
+
+  <xsl:template match="*[@conref | @resolved:conref]" mode="class">
     <xsl:text>conref</xsl:text>
+    <xsl:if test="@resolved:conref">conref__resolved</xsl:if>
     <xsl:next-match/>
   </xsl:template>
-  
-  <xsl:template match="*[@conkeyref]" mode="class">
+
+  <xsl:template match="*[@conkeyref | @resolved:conkeyref]" mode="class">
     <xsl:text>conkeyref</xsl:text>
+    <xsl:if test="@resolved:conkeyref">conkeyref__resolved</xsl:if>
     <xsl:next-match/>
   </xsl:template>
-  
+
+  <xsl:template match="*[contains(@class, ' topic/navtitle ')]" mode="class">
+    <xsl:text>navtitle</xsl:text>
+    <xsl:next-match/>
+  </xsl:template>
+
+  <xsl:template match="*[contains(@class, ' topic/shortdesc ')]" mode="class">
+    <xsl:text>shortdesc</xsl:text>
+    <xsl:next-match/>
+  </xsl:template>
+
+
   <!-- Prefix templates -->
-  
+
   <xsl:mode name="prefix" on-no-match="deep-skip"/>
-  
+
   <xsl:template match="*[@keyref]" mode="prefix">
     <xsl:attribute name="data-keyref" select="@keyref"/>
     <xsl:next-match/>
   </xsl:template>
-  
+
+  <xsl:template match="*[@resolved:keyref]" mode="prefix">
+    <xsl:attribute name="data-resolved-keyref" select="@resolved:keyref"/>
+    <xsl:next-match/>
+  </xsl:template>
+
   <xsl:template match="*[@conref]" mode="prefix">
     <xsl:attribute name="data-conref" select="@conref"/>
+    <xsl:next-match/>
+  </xsl:template>
+
+  <xsl:template match="*[@resolved:conref]" mode="prefix">
+    <xsl:attribute name="data-resolved-conref" select="@resolved:conref"/>
     <xsl:next-match/>
   </xsl:template>
 
@@ -403,14 +459,21 @@
     <xsl:next-match/>
   </xsl:template>
 
+  <xsl:template match="*[@resolved:conkeyref]" mode="prefix" priority="10">
+    <xsl:attribute name="data-resolved-conkeyref" select="@resolved:conkeyref"/>
+    <xsl:next-match/>
+  </xsl:template>
+
+  <!--
   <xsl:template match="*[contains(@class, ' topic/navtitle ')]" mode="prefix">
-    <b class="generated label">Navigation title: </b>
+    <b class="generated label">Navigation title:</b>
     <xsl:next-match/>
   </xsl:template>
-  
+
   <xsl:template match="*[contains(@class, ' topic/shortdesc ')]" mode="prefix">
-    <b class="generated label">Short description: </b>
+    <b class="generated label">Short description:</b>
     <xsl:next-match/>
   </xsl:template>
-  
+  -->
+
 </xsl:stylesheet>
