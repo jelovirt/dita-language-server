@@ -9,6 +9,7 @@
   <xsl:import href="keyref.xsl"/>
   <xsl:import href="conref.xsl"/>
   <xsl:import href="coderef.xsl"/>
+  <xsl:import href="simpletable.xsl"/>
 
   <xsl:output method="html" version="5" indent="no"/>
 
@@ -89,16 +90,39 @@
       padding: 0.5rem;
     }
 
+    table {
+      &amp;.frame__all {
+        border: solid 3px var(--vscode-editor-foreground);
+      }
+      &amp;.frame__top {
+        border-top: solid 3px var(--vscode-editor-foreground);
+      }
+      &amp;.frame__bottom {
+        border-bottom: solid 3px var(--vscode-editor-foreground);
+      }
+      &amp;.frame__topbot {
+        border-top: solid 3px var(--vscode-editor-foreground);
+        border-bottom: solid 3px var(--vscode-editor-foreground);
+      }
+      &amp;.frame__sides {
+        border-left: solid 3px var(--vscode-editor-foreground);
+        border-right: solid 3px var(--vscode-editor-foreground);
+      }
+    }
+    
+    dd > p:first-child {
+      margin-top: 0;
+    }
+
     dd + dt {
-      margin-top: 1rem;
+      margin-top: 0.5rem;
+    }
+    dt {
+      font-weight: bold;
     }
 
     dd {
       margin-left: 2rem;
-    }
-
-    dd > p:first-child {
-      margin-top: 0.5rem;
     }
 
     .term {
@@ -153,7 +177,7 @@
     </xsl:variable>
     <xsl:variable name="conref-resolved" as="document-node()">
       <xsl:choose>
-        <xsl:when test="exists($keyrefs) and $keyref-resolved//@conref">
+        <xsl:when test="$keyref-resolved//@conref">
           <xsl:document>
             <xsl:apply-templates select="$keyref-resolved/*" mode="conref"/>
           </xsl:document>
