@@ -26,8 +26,8 @@ public class KeyManager {
   public void read(URI uri, XdmNode map) {
     logger.info("Read key definitions {}", uri);
     var keyDefs = map.select(descendant().then(attribute(KEYS_ATTR))).toList();
+    Map<String, KeyDefinition> buf = new ConcurrentHashMap<>();
     if (!keyDefs.isEmpty()) {
-      Map<String, KeyDefinition> buf = new ConcurrentHashMap<>();
       for (XdmNode keyDefAttr : keyDefs) {
         var keys = Set.of(keyDefAttr.getStringValue().trim().split("\\s+"));
         var keyDef = keyDefAttr.getParent();
@@ -54,8 +54,8 @@ public class KeyManager {
           }
         }
       }
-      keyDefinitions = buf;
     }
+    keyDefinitions = buf;
   }
 
   public KeyDefinition get(String key) {
