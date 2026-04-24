@@ -184,6 +184,8 @@
     </head>
   </xsl:variable>
 
+  <xsl:variable name="root" select="/"/>
+
   <xsl:template match="/">
     <xsl:variable name="keyref-resolved" as="document-node()">
       <xsl:choose>
@@ -295,8 +297,9 @@
   </xsl:template>
 
   <xsl:template match="*[contains-token(@class, 'topic/image')]">
-    <img src="{resolve-uri(@href, base-uri(.))}">
-      <xsl:apply-templates select="@*" mode="common-attributes"/>
+    <img src="{resolve-uri(@href, base-uri($root))}">
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
       <xsl:choose>
         <xsl:when test="*[contains-token(@class, 'topic/alt')]">
           <xsl:attribute name="alt">
