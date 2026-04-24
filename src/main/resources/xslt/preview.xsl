@@ -28,6 +28,10 @@
   </xsl:param>
 
   <xsl:variable name="css" as="xs:string">
+    :root {
+      line-height: 1.5;
+    }
+
     a:before {
       content: "🔗";
     }
@@ -129,9 +133,18 @@
       font-style: italic;
     }
 
+    .draft-comment {
+      padding: 0.5rem;
+    }
+
     @media (prefers-color-scheme: dark) {
       pre {
         background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, pink);
+      }
+
+      .draft-comment {
+        border-left: solid 3px color-mix(in srgb, var(--vscode-editor-foreground) 90%, white);
+        background-color: color-mix(in srgb, var(--vscode-editor-background) 50%, green);
       }
 
       .replaced, .generated, .conref, .conkeyref,
@@ -144,6 +157,11 @@
     @media (prefers-color-scheme: light) {
       pre {
         background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, black);
+      }
+
+      .draft-comment {
+        border-left: solid 3px color-mix(in srgb, var(--vscode-editor-foreground) 90%, black);
+        background-color: color-mix(in srgb, var(--vscode-editor-background) 50%, green);
       }
 
       .replaced, .generated, .conref, .conkeyref,
@@ -246,6 +264,14 @@
 
   <xsl:template match="*[contains-token(@class, 'topic/body')]">
     <xsl:apply-templates/>
+  </xsl:template>
+
+  <xsl:template match="*[contains-token(@class, 'topic/draft-comment')]">
+    <p>
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
+      <xsl:apply-templates/>
+    </p>
   </xsl:template>
 
   <xsl:template match="*[contains-token(@class, 'topic/fig')]">
@@ -522,6 +548,11 @@
     <xsl:next-match/>
   </xsl:template>
 
+  <xsl:template match="*[contains-token(@class, 'topic/draft-comment')]" mode="class">
+    <xsl:text>draft-comment</xsl:text>
+    <xsl:next-match/>
+  </xsl:template>
+
   <!-- Prefix templates -->
 
   <xsl:mode name="prefix" on-no-match="deep-skip"/>
@@ -555,6 +586,23 @@
     <xsl:attribute name="data-resolved-conkeyref" select="@resolved:conkeyref"/>
     <xsl:next-match/>
   </xsl:template>
+
+  <xsl:template match="*[contains-token(@class, 'topic/draft-comment')]" mode="prefix">
+    <b class="generated label">
+      <xsl:text>Comment</xsl:text>
+      <xsl:if test="@author">
+        <xsl:text> by </xsl:text>
+        <xsl:value-of select="@author"/>
+      </xsl:if>
+      <xsl:if test="@time">
+        <xsl:text> at </xsl:text>
+        <xsl:value-of select="@time"/>
+      </xsl:if>
+      <xsl:text>: </xsl:text>
+    </b>
+    <xsl:next-match/>
+  </xsl:template>
+
 
   <!--
   <xsl:template match="*[contains-token(@class, 'topic/navtitle')]" mode="prefix">
