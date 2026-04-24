@@ -54,6 +54,10 @@ It provides features like completion and goto definition for many code editors, 
 * DTD grammar caching
 * Recover from incomplete XML elements or attributes
 
+### Preview
+
+* Side-by-side preview for DITA topics
+
 ## Development
 
 Prerequisites:

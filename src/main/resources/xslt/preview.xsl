@@ -9,6 +9,7 @@
   <xsl:import href="keyref.xsl"/>
   <xsl:import href="conref.xsl"/>
   <xsl:import href="coderef.xsl"/>
+  <xsl:import href="simpletable.xsl"/>
 
   <xsl:output method="html" version="5" indent="no"/>
 
@@ -27,6 +28,10 @@
   </xsl:param>
 
   <xsl:variable name="css" as="xs:string">
+    :root {
+      line-height: 1.5;
+    }
+
     a:before {
       content: "🔗";
     }
@@ -89,9 +94,61 @@
       padding: 0.5rem;
     }
 
+    table {
+      &amp;.frame__all {
+        border: solid 3px var(--vscode-editor-foreground);
+      }
+      &amp;.frame__top {
+        border-top: solid 3px var(--vscode-editor-foreground);
+      }
+      &amp;.frame__bottom {
+        border-bottom: solid 3px var(--vscode-editor-foreground);
+      }
+      &amp;.frame__topbot {
+        border-top: solid 3px var(--vscode-editor-foreground);
+        border-bottom: solid 3px var(--vscode-editor-foreground);
+      }
+      &amp;.frame__sides {
+        border-left: solid 3px var(--vscode-editor-foreground);
+        border-right: solid 3px var(--vscode-editor-foreground);
+      }
+    }
+    
+    dd > p:first-child {
+      margin-top: 0;
+    }
+
+    dd + dt {
+      margin-top: 0.5rem;
+    }
+    dt {
+      font-weight: bold;
+    }
+
+    dd {
+      margin-left: 2rem;
+    }
+
+    .sl {
+      list-style-type: none;
+    }
+
+    .term {
+      font-style: italic;
+    }
+
+    .draft-comment {
+      padding: 0.5rem;
+    }
+
     @media (prefers-color-scheme: dark) {
       pre {
         background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, pink);
+      }
+
+      .draft-comment {
+        border-left: solid 3px color-mix(in srgb, var(--vscode-editor-foreground) 90%, white);
+        background-color: color-mix(in srgb, var(--vscode-editor-background) 50%, green);
       }
 
       .replaced, .generated, .conref, .conkeyref,
@@ -104,6 +161,11 @@
     @media (prefers-color-scheme: light) {
       pre {
         background-color: color-mix(in srgb, var(--vscode-editor-background) 90%, black);
+      }
+
+      .draft-comment {
+        border-left: solid 3px color-mix(in srgb, var(--vscode-editor-foreground) 90%, black);
+        background-color: color-mix(in srgb, var(--vscode-editor-background) 50%, green);
       }
 
       .replaced, .generated, .conref, .conkeyref,
@@ -122,6 +184,8 @@
     </head>
   </xsl:variable>
 
+  <xsl:variable name="root" select="/"/>
+
   <xsl:template match="/">
     <xsl:variable name="keyref-resolved" as="document-node()">
       <xsl:choose>
@@ -137,7 +201,7 @@
     </xsl:variable>
     <xsl:variable name="conref-resolved" as="document-node()">
       <xsl:choose>
-        <xsl:when test="exists($keyrefs) and $keyref-resolved//@conref">
+        <xsl:when test="$keyref-resolved//@conref">
           <xsl:document>
             <xsl:apply-templates select="$keyref-resolved/*" mode="conref"/>
           </xsl:document>
@@ -208,6 +272,14 @@
     <xsl:apply-templates/>
   </xsl:template>
 
+  <xsl:template match="*[contains-token(@class, 'topic/draft-comment')]">
+    <p>
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
+      <xsl:apply-templates/>
+    </p>
+  </xsl:template>
+
   <xsl:template match="*[contains-token(@class, 'topic/fig')]">
     <figure>
       <xsl:call-template name="common-attributes"/>
@@ -225,8 +297,9 @@
   </xsl:template>
 
   <xsl:template match="*[contains-token(@class, 'topic/image')]">
-    <img src="{resolve-uri(@href, base-uri(.))}">
-      <xsl:apply-templates select="@*" mode="common-attributes"/>
+    <img src="{resolve-uri(@href, base-uri($root))}">
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
       <xsl:choose>
         <xsl:when test="*[contains-token(@class, 'topic/alt')]">
           <xsl:attribute name="alt">
@@ -278,6 +351,25 @@
     </code>
   </xsl:template>
 
+  <xsl:template match="*[contains-token(@class, 'xml-d/xmlelement')]" priority="10">
+    <code>
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
+      <xsl:text>&lt;</xsl:text>
+      <xsl:apply-templates/>
+      <xsl:text>&gt;</xsl:text>
+    </code>
+  </xsl:template>
+
+  <xsl:template match="*[contains-token(@class, 'xml-d/xmlatt')]" priority="10">
+    <code>
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
+      <xsl:text>@</xsl:text>
+      <xsl:apply-templates/>
+    </code>
+  </xsl:template>
+
   <xsl:template match="*[contains-token(@class, 'topic/p')]">
     <p>
       <xsl:call-template name="common-attributes"/>
@@ -314,7 +406,7 @@
     <ul>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
-      <xsl:apply-templates/>
+      <xsl:apply-templates select="*"/>
     </ul>
   </xsl:template>
 
@@ -322,7 +414,7 @@
     <ol>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
-      <xsl:apply-templates/>
+      <xsl:apply-templates select="*"/>
     </ol>
   </xsl:template>
 
@@ -334,8 +426,53 @@
     </li>
   </xsl:template>
 
+  <xsl:template match="*[contains-token(@class, 'topic/sl')]">
+    <ul>
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
+      <xsl:apply-templates select="*"/>
+    </ul>
+  </xsl:template>
+
+  <xsl:template match="*[contains-token(@class, 'topic/sli')]">
+    <li>
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
+      <xsl:apply-templates/>
+    </li>
+  </xsl:template>
+
+  <xsl:template match="*[contains-token(@class, 'topic/dl')]">
+    <dl>
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
+      <xsl:apply-templates select="*"/>
+    </dl>
+  </xsl:template>
+
+  <xsl:template match="*[contains-token(@class, 'topic/dlentry')]">
+    <xsl:apply-templates select="*"/>
+  </xsl:template>
+
+  <xsl:template match="*[contains-token(@class, 'topic/dt')]">
+    <dt>
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
+      <xsl:apply-templates/>
+    </dt>
+  </xsl:template>
+
+  <xsl:template match="*[contains-token(@class, 'topic/dd')]">
+    <dd>
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
+      <xsl:apply-templates/>
+    </dd>
+  </xsl:template>
+
   <xsl:template match="*[contains-token(@class, 'topic/keyword') or
-                         contains-token(@class, 'topic/ph')]">
+                         contains-token(@class, 'topic/ph') or
+                         contains-token(@class, 'topic/term')]">
     <span>
       <xsl:call-template name="common-attributes"/>
       <xsl:apply-templates select="." mode="prefix"/>
@@ -429,6 +566,20 @@
     <xsl:next-match/>
   </xsl:template>
 
+  <xsl:template match="*[contains-token(@class, 'topic/term')]" mode="class">
+    <xsl:text>term</xsl:text>
+    <xsl:next-match/>
+  </xsl:template>
+
+  <xsl:template match="*[contains-token(@class, 'topic/sl')]" mode="class">
+    <xsl:text>sl</xsl:text>
+    <xsl:next-match/>
+  </xsl:template>
+
+  <xsl:template match="*[contains-token(@class, 'topic/draft-comment')]" mode="class">
+    <xsl:text>draft-comment</xsl:text>
+    <xsl:next-match/>
+  </xsl:template>
 
   <!-- Prefix templates -->
 
@@ -463,6 +614,23 @@
     <xsl:attribute name="data-resolved-conkeyref" select="@resolved:conkeyref"/>
     <xsl:next-match/>
   </xsl:template>
+
+  <xsl:template match="*[contains-token(@class, 'topic/draft-comment')]" mode="prefix">
+    <b class="generated label">
+      <xsl:text>Comment</xsl:text>
+      <xsl:if test="@author">
+        <xsl:text> by </xsl:text>
+        <xsl:value-of select="@author"/>
+      </xsl:if>
+      <xsl:if test="@time">
+        <xsl:text> at </xsl:text>
+        <xsl:value-of select="@time"/>
+      </xsl:if>
+      <xsl:text>: </xsl:text>
+    </b>
+    <xsl:next-match/>
+  </xsl:template>
+
 
   <!--
   <xsl:template match="*[contains-token(@class, 'topic/navtitle')]" mode="prefix">

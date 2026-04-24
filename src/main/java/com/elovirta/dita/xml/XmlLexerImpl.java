@@ -6,6 +6,8 @@ import org.eclipse.lsp4j.Diagnostic;
 
 public class XmlLexerImpl implements XmlLexer {
 
+  private static final char BOM = (char) 65279;
+
   private final boolean errorCorrection;
 
   private enum State {
@@ -44,6 +46,9 @@ public class XmlLexerImpl implements XmlLexer {
   public void setInput(char[] input) {
     this.input = input;
     this.pos = 0;
+    if (this.input.length != 0 && this.input[0] == BOM) {
+      this.pos++;
+    }
     this.line = 1;
     this.column = 1;
     this.hasNext = true;

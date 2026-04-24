@@ -654,7 +654,7 @@ public class DitaTextDocumentService implements TextDocumentService {
           var html = preview.generatePreview(documentCache.document());
           var result = new PreviewResult();
           result.setHtml(html);
-          logger.info("Preview generated in {} ms", System.currentTimeMillis() - start);
+          logger.debug("Preview generated in {} ms", System.currentTimeMillis() - start);
           return result;
         });
   }

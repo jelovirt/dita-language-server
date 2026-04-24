@@ -86,7 +86,7 @@ shadowJar {
 spotless {
     java {
         googleJavaFormat()
-        target 'src/**/*.java'
+        target 'src/**/*.java', 'buildSrc/src/main/java/**/*.java'
         targetExclude 'build/**'
     }
 }
