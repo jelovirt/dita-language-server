@@ -129,6 +129,10 @@
       margin-left: 2rem;
     }
 
+    .sl {
+      list-style-type: none;
+    }
+
     .term {
       font-style: italic;
     }
@@ -419,6 +423,22 @@
     </li>
   </xsl:template>
 
+  <xsl:template match="*[contains-token(@class, 'topic/sl')]">
+    <ul>
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
+      <xsl:apply-templates select="*"/>
+    </ul>
+  </xsl:template>
+
+  <xsl:template match="*[contains-token(@class, 'topic/sli')]">
+    <li>
+      <xsl:call-template name="common-attributes"/>
+      <xsl:apply-templates select="." mode="prefix"/>
+      <xsl:apply-templates/>
+    </li>
+  </xsl:template>
+
   <xsl:template match="*[contains-token(@class, 'topic/dl')]">
     <dl>
       <xsl:call-template name="common-attributes"/>
@@ -545,6 +565,11 @@
 
   <xsl:template match="*[contains-token(@class, 'topic/term')]" mode="class">
     <xsl:text>term</xsl:text>
+    <xsl:next-match/>
+  </xsl:template>
+
+  <xsl:template match="*[contains-token(@class, 'topic/sl')]" mode="class">
+    <xsl:text>sl</xsl:text>
     <xsl:next-match/>
   </xsl:template>
 
